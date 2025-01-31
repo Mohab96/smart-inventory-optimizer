@@ -9,7 +9,7 @@
     "generate:maindb": "npx prisma generate --schema=./prisma/main/schema.prisma",
     "generate:dwh": "npx prisma generate --schema=./prisma/dwh/schema.prisma",
     "migrate:maindb": "npx prisma migrate dev --schema=./prisma/main/schema.prisma --create-only",
-    "migrate:dwh": "npx prisma migrate dev --schema=./prisma/dwh/schema.prisma --create-only",
+    "migrate:dwh": "npx prisma migrate dev --schema=./prisma/main/schema.prisma --create-only",
     "deploy:maindb": "npx prisma migrate deploy --schema=./prisma/main/schema.prisma",
     "deploy:dwh": "npx prisma migrate deploy --schema=./prisma/dwh/schema.prisma"
   },
@@ -35,6 +35,5 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "winston": "^3.17.0"
-  },
-  "type": "commonjs"
+  }
 }
