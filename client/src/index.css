@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
+
+#root {
+  /* padding: 0; */
+  /* margin: 0 auto; */
+  /* width: 100vw; */
+  justify-content: center;
+  text-align: start;
+}
