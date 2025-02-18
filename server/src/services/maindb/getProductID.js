@@ -14,6 +14,6 @@ module.exports = async (productName, businessID) => {
 
     return product?.id || null;
   } catch (error) {
-    throw new Error(`Error fetching product ID: ${error.message}`);
+    return null;
   }
 };
