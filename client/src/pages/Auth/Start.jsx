@@ -1,23 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  selectPosition,
-  setPosition,
-} from "../../store/features/positionSlice";
+import { useDispatch } from "react-redux";
+import { setPosition } from "../../store/features/positionSlice";
 const Start = () => {
   const dispatch = useDispatch();
   const [selectedOption, setSelectedOption] = useState("");
-  const position = useSelector(selectPosition);
   const navigate = useNavigate();
 
   const positions = [
     { value: "manager", label: "Manager" },
     { value: "staff", label: "Staff" },
   ];
-  useEffect(() => {
-    if (position) console.log(position);
-  }, [position]);
 
   const handleSelection = (e) => {
     setSelectedOption(e.target.value);

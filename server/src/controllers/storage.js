@@ -1,11 +1,27 @@
 const createSignedUploadURL = require("../services/storage/createSignedUploadURL");
 const createSignedURL = require("../services/storage/createSignedURL");
 const deleteProfileImage = require("../services/storage/deleteFile");
+const { v4: uuidv4 } = require("uuid");
 
 async function uploadURL(req, res, next) {
-  const path = req.user.businessId + ".jpg";
+  const { type } = req.params;
+  let ext;
+  let uuid = "";
+  let bucketName;
+
+  if (type === "image") {
+    ext = ".jpg";
+    bucketName = "ProfileImage";
+  } else if (type === "csv") {
+    ext = ".csv";
+    uuid = uuidv4();
+    bucketName = "csvFiles";
+  } else {
+    return res.status(400).json({ message: "Invalid file type" });
+  }
+  const path = req.user.businessId + uuid + ext;
   try {
-    const { data, error } = await createSignedUploadURL(path, "ProfileImage");
+    const { data, error } = await createSignedUploadURL(path, bucketName);
     if (error)
       return res.status(500).json({
         message: `could not generate signed upload URL, ${error.message}`,

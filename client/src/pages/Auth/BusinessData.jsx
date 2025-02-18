@@ -1,14 +1,15 @@
 import { useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { setToken, selectToken } from "../../store/features/tokenSlice";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { setCredentials } from "../../store/features/authSlice";
 const StepperForm = () => {
-  const token = useSelector(selectToken);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [managerData, setManagerData] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+
   // Manager form
   const {
     register: registerManager,
@@ -45,6 +46,7 @@ const StepperForm = () => {
     if (isValid && managerData) {
       // Combine manager and business data
       const { image, ...rest } = businessData;
+      image;
       const combinedData = {
         admin: { ...managerData },
         business: {
@@ -52,9 +54,6 @@ const StepperForm = () => {
           establishmentDate: new Date().toISOString(),
         },
       };
-      console.log("Combined Data:", combinedData);
-
-      // Make POST request
       try {
         const response = await fetch(
           "https://smart-inventory-optimizer.vercel.app/api/auth/register",
@@ -66,28 +65,26 @@ const StepperForm = () => {
             body: JSON.stringify(combinedData),
           }
         );
-
-        if (response.ok) {
-          const authToken = response.headers.get("Authorization");
-          dispatch(setToken(authToken.split(" ")[1]));
-          console.log("Data submitted successfully!");
-        } else {
-          const js = await response.json();
-          console.error("Failed to submit data:", js.message);
+        const data = await response.json();
+        if (!response.ok) {
+          throw Error(data.message);
         }
+        const authToken = response.headers.get("Authorization");
+        dispatch(setCredentials(authToken.split(" ")[1]));
+        navigate("/staff-management");
       } catch (error) {
-        console.error("Error submitting data:", error);
+        setErrorMessage(error.message);
       }
     }
   };
-  useEffect(() => {
-    if (token) {
-      console.log(token);
-      navigate("/staff-management");
-    }
-  }, [token, navigate]);
   return (
     <div className="container max-w-xl mx-auto my-[80px] p-6">
+      {" "}
+      {errorMessage && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+          {errorMessage}
+        </div>
+      )}
       {/* Stepper */}
       <div className="flex justify-center mb-8 ">
         {steps.map((step) => (
@@ -111,7 +108,6 @@ const StepperForm = () => {
           </div>
         ))}
       </div>
-
       {/* Form */}
       {currentStep === 1 && (
         <form className="space-y-4">
@@ -204,7 +200,6 @@ const StepperForm = () => {
           </div>
         </form>
       )}
-
       {currentStep === 2 && (
         <form
           className="space-y-4"

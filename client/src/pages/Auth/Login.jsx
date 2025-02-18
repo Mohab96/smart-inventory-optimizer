@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,51 +5,28 @@ import BgImg from "../../assets/images/signUpImg.jpg";
 import logo from "../../assets/images/logo.png";
 import InputForm from "../../components/common/InputForm";
 import { selectPosition } from "../../store/features/positionSlice";
-import { setCredentials, setError } from "../../store/features/authSlice";
-import { setToken } from "../../store/features/tokenSlice";
+import { login } from "../../store/actions/authActions";
+import { selectAuthError } from "../../store/features/authSlice";
 
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const position = useSelector(selectPosition);
+  const error = useSelector(selectAuthError);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    dispatch(setError(null));
     try {
-      const response = await fetch(
-        "https://smart-inventory-optimizer.vercel.app/api/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Login failed");
-      }
-      const authToken = response.headers.get("Authorization");
-      dispatch(setToken(authToken.split(" ")[1]));
-      const data = await response.json();
-      dispatch(
-        setCredentials({
-          token: data.token,
-          user: data.user,
-        })
-      );
-
+      dispatch(login({ username, password }));
+      if (error) throw Error(error);
       navigate("/staff-management");
     } catch (error) {
-      dispatch(setError(error.message));
-    } finally {
+      setErrorMessage(error.message);
       setIsSubmitting(false);
     }
   };
@@ -106,7 +82,11 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-
+            {errorMessage && (
+              <div className="bg-red-100 text-red-700 rounded-lg block w-full xl:w-3/4 px-3 py-2 ">
+                {errorMessage}
+              </div>
+            )}
             <button
               type="submit"
               className={`bg-orange-500 text-white font-bold py-2 px-4 rounded-lg mt-8 w-full xl:w-3/4 ${
@@ -121,7 +101,7 @@ export default function Login() {
 
         {position === "manager" && (
           <p className="mt-10 text-center text-sm text-gray-500">
-            Don't have an account?
+            Don&apos;t have an account?
             <Link
               to="/business-data"
               className="text-orange-500 font-medium hover:text-orange-600 px-1"

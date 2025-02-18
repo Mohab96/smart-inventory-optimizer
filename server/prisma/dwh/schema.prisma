@@ -14,7 +14,7 @@ model BusinessDimension {
     businessName     String
     productRevenues  ProductRevenueFact[]
     categoryRevenues CategoryRevenueFact[]
-    productPrices    BatchPrice[]
+    batches          BatchInfo[]
     inventoryLevels  InventoryFact[]
     transactions     TransactionFact[]
 }
@@ -35,7 +35,7 @@ model ProductDimension {
     nextExpiryDate    DateDimension?       @relation(fields: [nextExpiryDateId], references: [dateId])
     CategoryDimension CategoryDimension    @relation(fields: [categoryId], references: [categoryId])
     productRevenues   ProductRevenueFact[]
-    prices            BatchPrice[]
+    batches           BatchInfo[]
     InventoryFact     InventoryFact[]
     transactions      TransactionFact[]
 }
@@ -68,11 +68,13 @@ model CategoryRevenueFact {
     @@id([businessId, categoryId])
 }
 
-model BatchPrice {
+model BatchInfo {
     productId      Int
     businessId     String
     dateId         Int
     purchase_price Decimal
+    selling_price  Decimal
+    expiry_date    DateTime
 
     date     DateDimension     @relation(fields: [dateId], references: [dateId])
     business BusinessDimension @relation(fields: [businessId], references: [businessId])
@@ -92,7 +94,7 @@ model DateDimension {
 
     productRevenues  ProductRevenueFact[]
     categoryRevenues CategoryRevenueFact[]
-    batchPrices      BatchPrice[]
+    batches          BatchInfo[]
     expiringProducts ProductDimension[]
     inventorylevels  InventoryFact[]
     transactions     TransactionFact[]

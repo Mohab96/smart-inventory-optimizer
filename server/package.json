@@ -43,6 +43,7 @@
     "libphonenumber-js": "^1.11.19",
     "nodemailer": "^6.10.0",
     "swagger-ui-express": "^4.3.0",
+    "uuid": "^11.0.5",
     "winston": "^3.17.0",
     "yamljs": "^0.3.0"
   },

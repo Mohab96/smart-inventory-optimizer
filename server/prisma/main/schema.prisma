@@ -16,7 +16,7 @@ model Business {
   description       String?
   createdAt         DateTime       @default(now())
   User              User[]
-  Batch             Batch[]
+  Product           Product[]
   CSVStatus         CSVStatus[]
   Notification      Notification[]
 }
@@ -41,6 +41,7 @@ model CSVStatus {
   path             String
   businessRelation Business @relation(fields: [businessId], references: [id])
   businessId       String
+  errors           String?
 }
 
 model Notification {
@@ -57,7 +58,7 @@ model Transaction {
   date          DateTime @default(now())
   amount        Int
   discount      Decimal  @default(0.0)
-  batchRelation Batch    @relation(fields: [batchId], references: [id])
+  batchRelation Batch    @relation(fields: [batchId], references: [generatedId])
   batchId       Int
 }
 
@@ -66,29 +67,30 @@ model Category {
   name          String    @unique
   description   String?
   hasExpiryDate Boolean
-  Image         String?
+  image         String?
   Porduct       Product[]
 }
 
 model Product {
-  id               Int      @id @default(autoincrement())
-  name             String   @unique
-  categoryRelation Category @relation(fields: [categoryId], references: [id])
-  categoryId       Int
+  id               Int       @id @default(autoincrement())
+  name             String
+  categoryRelation Category? @relation(fields: [categoryId], references: [id])
+  categoryId       Int?
   Batch            Batch[]
+  Business         Business? @relation(fields: [businessId], references: [id])
+  businessId       String?
 }
 
 model Batch {
-  id               Int           @id @default(autoincrement())
-  expiryDate       DateTime
-  sellingPrice     Int
-  costOfGoods      Int
-  remQuantity      Int
-  soldQuantity     Int
-  dateOfReceipt    DateTime      @default(now())
-  businessRelation Business      @relation(fields: [businessId], references: [id])
-  businessId       String
-  productRelation  Product       @relation(fields: [productId], references: [id])
-  productId        Int
-  Transaction      Transaction[]
+  generatedId     Int           @id @default(autoincrement())
+  id              Int
+  expiryDate      DateTime
+  sellingPrice    Int
+  costOfGoods     Int
+  remQuantity     Int
+  soldQuantity    Int
+  dateOfReceipt   DateTime      @default(now())
+  productRelation Product       @relation(fields: [productId], references: [id])
+  productId       Int
+  Transaction     Transaction[]
 }

@@ -1,26 +1,31 @@
-import { setCredentials, setLoading, setError, logout } from '../features/authSlice';
+import {
+  setCredentials,
+  setLoading,
+  setError,
+  logout as logoutUser,
+} from "../features/authSlice";
 
-// Login action
 export const login = (credentials) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
-    
-    // Replace with your API call
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials),
-    });
-    
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message || 'Login failed');
-    }
+    const response = await fetch(
+      "https://smart-inventory-optimizer.vercel.app/api/auth/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      }
+    );
 
-    dispatch(setCredentials(data));
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Login failed");
+    }
+    dispatch(
+      setCredentials(response.headers.get("Authorization").split(" ")[1])
+    );
   } catch (error) {
     dispatch(setError(error.message));
   } finally {
@@ -28,8 +33,6 @@ export const login = (credentials) => async (dispatch) => {
   }
 };
 
-// Logout action
-export const logoutUser = () => (dispatch) => {
-  // Add any cleanup logic here
-  dispatch(logout());
+export const logout = () => (dispatch) => {
+  dispatch(logoutUser());
 };

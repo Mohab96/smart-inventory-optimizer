@@ -535,15 +535,27 @@ paths:
         "500":
           description: Internal Server Error
 
-  /api/storage/upload:
+  /api/storage/upload/{type}:
     get:
       summary: Generate a signed upload URL
-      description: Generates a signed URL for uploading an image for the authenticated business.
+      description: >
+        Generates a signed URL for uploading an image or CSV file for the authenticated business.
+        The file type is specified as a path parameter.
       operationId: getSignedUploadURL
       tags:
         - Storage
       security:
         - bearerAuth: []
+      parameters:
+        - in: path
+          name: type
+          required: true
+          schema:
+            type: string
+            enum:
+              - image
+              - csv
+          description: Type of file to be uploaded. Allowed values are "image" and "csv".
       responses:
         "200":
           description: Signed upload URL generated successfully
@@ -554,18 +566,20 @@ paths:
                 properties:
                   URL:
                     type: string
-                    description: Signed URL for uploading the image
+                    description: Signed URL for uploading the file
                     example: "https://example.com/upload/signedUrl"
                   token:
                     type: string
                     description: Token associated with the signed URL
                     example: "abc123token"
+        "400":
+          description: Bad Request - Invalid file type provided
         "401":
           description: Unauthorized - Authentication token is missing or invalid
         "403":
           description: Forbidden - Access denied
         "500":
-          description: Internal Server Error - Image could not be uploaded
+          description: Internal Server Error - Could not generate signed upload URL
 
   /api/storage/access:
     get:

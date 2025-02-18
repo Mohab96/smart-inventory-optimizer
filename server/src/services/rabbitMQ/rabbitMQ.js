@@ -5,7 +5,7 @@ let connection = null;
 const getConnection = async () => {
   try {
     connection = connection || (await amqp.connect(process.env.RABBITMQ_URL));
-    winston.info("Connected to RabbitMQ successfully");
+    winston.info("Connected to RabbitMQ successfully...");
     return connection;
   } catch (ex) {
     winston.error("couldn't connect to RabbitMQ", ex);

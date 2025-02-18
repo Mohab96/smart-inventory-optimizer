@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import { selectToken } from "../../store/features/tokenSlice";
+import { selectToken } from "../../store/features/authSlice";
+import DeleteModal from "../../components/common/DeleteModal";
+import AddModal from "../../components/common/AddModal";
 
 const StaffManagement = () => {
-  const token = useSelector(selectToken);
-  useEffect(() => {
-    if (!token) {
-      return "Loading...";
-    }
-  }, [token]);
-  console.log(token);
+  // States
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
@@ -21,6 +16,7 @@ const StaffManagement = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const token = useSelector(selectToken);
 
   const fetchStaffMembers = async () => {
     setIsLoading(true);
@@ -34,13 +30,10 @@ const StaffManagement = () => {
           },
         }
       );
-      if (!response.ok) {
-        const j = await response.json();
-        console.log(j.message);
-      }
-      console.log("Ok");
       const data = await response.json();
-      console.log(data.data);
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
       setTeamMembers(data.data);
       setErrorMessage("");
     } catch (error) {
@@ -53,92 +46,6 @@ const StaffManagement = () => {
   useEffect(() => {
     fetchStaffMembers();
   }, [currentPage, orderBy, sortOrder, token]);
-
-  const handleAddMember = () => setShowAddModal(true);
-
-  const handleDeleteClick = (member) => {
-    setMemberToDelete(member);
-    setShowDeleteModal(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    try {
-      const response = await fetch(`/api/staff/${memberToDelete.id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to delete member");
-      }
-      await fetchStaffMembers();
-      setShowDeleteModal(false);
-      setMemberToDelete(null);
-    } catch (error) {
-      setErrorMessage(error.message);
-    }
-  };
-
-  const DeleteModal = () => (
-    <div className="fixed inset-0 z-10 overflow-y-auto">
-      <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <div
-          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-          onClick={() => setShowDeleteModal(false)}
-        ></div>
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="sm:flex sm:items-start">
-              <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                <svg
-                  className="h-6 w-6 text-red-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-              </div>
-              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                <h3 className="text-lg leading-6 font-medium text-gray-900">
-                  Delete team member
-                </h3>
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">
-                    Are you sure you want to delete {memberToDelete?.name}? This
-                    action cannot be undone.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            <button
-              type="button"
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-              onClick={handleConfirmDelete}
-            >
-              Delete
-            </button>
-            <button
-              type="button"
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-              onClick={() => setShowDeleteModal(false)}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="my-8 mx-auto p-6 max-w-4xl">
@@ -192,7 +99,7 @@ const StaffManagement = () => {
           </select>
           <button
             className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-            onClick={handleAddMember}
+            onClick={() => setShowAddModal(true)}
           >
             Add Member
           </button>
@@ -213,7 +120,6 @@ const StaffManagement = () => {
         </div>
       </div>
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-        {/* Add Table Body */}
         {isLoading ? (
           <div className="text-center py-4">Loading team members...</div>
         ) : teamMembers.length > 0 ? (
@@ -241,9 +147,24 @@ const StaffManagement = () => {
                 <div className="col-span-1 flex justify-end">
                   <button
                     className="text-gray-400 hover:text-gray-600"
-                    onClick={() => handleDeleteClick(member)}
+                    onClick={() => {
+                      setMemberToDelete(member);
+                      setShowDeleteModal(true);
+                    }}
                   >
-                    {/* Your existing delete icon SVG */}
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
                   </button>
                 </div>
               </div>
@@ -269,9 +190,18 @@ const StaffManagement = () => {
           Next
         </button>
       </div>
-      {showDeleteModal && <DeleteModal />}
+      {showDeleteModal && (
+        <DeleteModal
+          setErrorMessage={setErrorMessage}
+          setShowDeleteModal={setShowDeleteModal}
+          memberToDelete={memberToDelete}
+          setMemberToDelete={setMemberToDelete}
+          fetchStaffMembers={fetchStaffMembers}
+        />
+      )}
       {showAddModal && (
         <AddModal
+          setErrorMessage={setErrorMessage}
           token={token}
           fetchStaffMembers={fetchStaffMembers}
           showAddModal={showAddModal}
@@ -287,216 +217,6 @@ const StaffManagement = () => {
       )}
     </div>
   );
-};
-
-const AddModal = ({
-  token,
-  fetchStaffMembers,
-  showAddModal,
-  setShowAddModal,
-  initialStaffState,
-}) => {
-  const [newStaff, setNewStaff] = useState(initialStaffState);
-
-  // const handleAddStaff = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       "https://smart-inventory-optimizer.vercel.app/api/staff",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //         body: JSON.stringify({
-  //           staff: {
-  //             name: localStaff.name || undefined,
-  //             email: localStaff.email,
-  //             username: localStaff.username,
-  //             password: localStaff.password,
-  //             phoneNumber: localStaff.phoneNumber || undefined,
-  //           },
-  //         }),
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       throw new Error(errorData.message || "Failed to create staff");
-  //     }
-
-  //     await fetchStaffMembers();
-  //     setShowAddModal(false);
-  //     setLocalStaff(initialStaffState);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  if (!showAddModal) return null;
-
-  return (
-    <div className="fixed inset-0 z-10 overflow-y-auto">
-      <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <div
-          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-          onClick={() => setShowAddModal(false)}
-        ></div>
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="sm:flex sm:items-start">
-              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                <h3 className="text-lg leading-6 font-medium text-gray-900">
-                  Add New Staff Member
-                </h3>
-                <div className="mt-2 space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
-                      value={newStaff.email}
-                      onChange={(e) =>
-                        setNewStaff({ ...newStaff, email: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Username *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
-                      value={newStaff.username}
-                      onChange={(e) =>
-                        setNewStaff({ ...newStaff, username: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Password *
-                    </label>
-                    <input
-                      type="password"
-                      required
-                      className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
-                      value={newStaff.password}
-                      onChange={(e) =>
-                        setNewStaff({ ...newStaff, password: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
-                      value={newStaff.name}
-                      onChange={(e) =>
-                        setNewStaff({ ...newStaff, name: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      className="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
-                      value={newStaff.phoneNumber}
-                      onChange={(e) =>
-                        setNewStaff({
-                          ...newStaff,
-                          phoneNumber: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            <button
-              type="button"
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm"
-              onClick={async () => {
-                try {
-                  const response = await fetch(
-                    "https://smart-inventory-optimizer.vercel.app/api/staff",
-                    {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                      },
-                      body: JSON.stringify({
-                        staff: {
-                          name: newStaff.name || undefined,
-                          email: newStaff.email,
-                          username: newStaff.username,
-                          password: newStaff.password,
-                          phoneNumber: newStaff.phoneNumber || undefined,
-                        },
-                      }),
-                    }
-                  );
-                  if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(
-                      errorData.message || "Failed to create staff"
-                    );
-                  }
-                  await fetchStaffMembers();
-                  setShowAddModal(false);
-                  setNewStaff({
-                    name: "",
-                    email: "",
-                    username: "",
-                    password: "",
-                    phoneNumber: "",
-                  });
-                } catch (error) {
-                  setErrorMessage(error.message);
-                }
-              }}
-            >
-              Add
-            </button>
-            <button
-              type="button"
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-              onClick={() => setShowAddModal(false)}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-AddModal.propTypes = {
-  token: PropTypes.string.isRequired,
-  fetchStaffMembers: PropTypes.func.isRequired,
-  showAddModal: PropTypes.bool.isRequired,
-  setShowAddModal: PropTypes.func.isRequired,
-  initialStaffState: PropTypes.shape({
-    name: PropTypes.string,
-    email: PropTypes.string,
-    username: PropTypes.string,
-    password: PropTypes.string,
-    phoneNumber: PropTypes.string,
-  }).isRequired,
 };
 
 export default StaffManagement;
