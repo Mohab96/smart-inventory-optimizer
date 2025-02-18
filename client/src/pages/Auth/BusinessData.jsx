@@ -82,6 +82,7 @@ const StepperForm = () => {
   };
   useEffect(() => {
     if (token) {
+      console.log(token);
       navigate("/staff-management");
     }
   }, [token, navigate]);

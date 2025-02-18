@@ -1,17 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectPosition,
+  setPosition,
+} from "../../store/features/positionSlice";
 const Start = () => {
+  const dispatch = useDispatch();
   const [selectedOption, setSelectedOption] = useState("");
+  const position = useSelector(selectPosition);
   const navigate = useNavigate();
 
   const positions = [
     { value: "manager", label: "Manager" },
     { value: "staff", label: "Staff" },
   ];
+  useEffect(() => {
+    if (position) console.log(position);
+  }, [position]);
 
   const handleSelection = (e) => {
     setSelectedOption(e.target.value);
+    dispatch(setPosition(e.target.value));
   };
 
   const handleSubmit = () => {
@@ -24,9 +34,7 @@ const Start = () => {
   return (
     <div className="bg-gray-100 w-full h-screen flex justify-center items-center">
       <div className="w-full max-w-md bg-white shadow-md rounded-lg p-8">
-        <h2 className="text-2xl font-semibold mb-6">
-          Select Your Position
-        </h2>
+        <h2 className="text-2xl font-semibold mb-6">Select Your Position</h2>
         <div className="flex flex-col gap-4">
           {positions.map((position) => (
             <label
