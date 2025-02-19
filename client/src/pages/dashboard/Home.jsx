@@ -5,9 +5,13 @@ import Header from "../../components/common/Header";
 import AreaChart from "../../components/charts/AreaChart";
 import StatsGrid from "../../components/charts/StatsGrid";
 import SalesCard from "../../components/charts/SalesCard";
+import { useSelector } from "react-redux";
+import { selectToken } from "../../store/features/authSlice";
 
 const Dashboard = () => {
   const [drawerOpen, setDrawerOpen] = useState(true);
+  const token = useSelector(selectToken);
+  // console.log(token);
 
   return (
     <div className="h-screen flex flex-col">
