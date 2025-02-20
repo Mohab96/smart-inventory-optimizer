@@ -36,6 +36,7 @@ async function login(req, res, next) {
       .set("Authorization", `Bearer ${token}`) // Attach the token to the header
       .json({
         message: "Login successfully",
+        token,
       });
   } catch (ex) {
     next(ex);

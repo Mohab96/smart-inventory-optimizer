@@ -214,6 +214,9 @@ paths:
                   message:
                     type: string
                     example: "Login successfully"
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         "400":
           description: Bad Request - Invalid input or incorrect credentials
         "500":
@@ -377,6 +380,9 @@ paths:
                         type: string
                       name:
                         type: string
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         "400":
           description: Bad Request - Missing data or validation error
         "500":

@@ -79,6 +79,7 @@ async function createAdmin(req, res, next) {
       .set("Authorization", `Bearer ${token}`)
       .json({
         message: "Admin and Business created successfully",
+        token,
         admin: {
           id: admin.id,
           email: admin.email,
