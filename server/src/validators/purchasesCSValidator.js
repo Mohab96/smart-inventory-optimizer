@@ -17,7 +17,7 @@ const validatePurchases = async (readableStream, options) => {
         rowNumber: rowNumber,
         error: err.details[0].message,
       });
-      winston.debug(err);
+      console.debug(err);
     }
   }
 
