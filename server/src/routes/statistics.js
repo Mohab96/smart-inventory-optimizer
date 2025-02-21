@@ -4,6 +4,8 @@ const authenticate = require("../middlewares/authenticate");
 const authorize = require("../middlewares/authorizate");
 const getProdcutsRevenues = require("../controllers/productsRevenues");
 const getProductsStock = require("../controllers/productsStock");
+const productsSalesController = require("../controllers/products-sales");
+const categorySalesController = require("../controllers/category-sales");
 
 statisticsRouter.get(
   "/category-revenue",
@@ -20,5 +22,16 @@ statisticsRouter.get(
   [authenticate, authorize],
   getProductsStock
 );
+
+statisticsRouter.get(
+  "/products-sales",
+  [authenticate, authorize],
+  productsSalesController
+); // top sales products
+statisticsRouter.get(
+  "/category-sales",
+  [authenticate, authorize],
+  categorySalesController
+); // top sales categories
 
 module.exports = statisticsRouter;
