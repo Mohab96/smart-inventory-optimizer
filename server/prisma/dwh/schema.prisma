@@ -31,8 +31,6 @@ model ProductDimension {
     productId         Int                  @id @default(autoincrement())
     name              String
     categoryId        Int
-    nextExpiryDateId  Int?
-    nextExpiryDate    DateDimension?       @relation(fields: [nextExpiryDateId], references: [dateId])
     CategoryDimension CategoryDimension    @relation(fields: [categoryId], references: [categoryId])
     productRevenues   ProductRevenueFact[]
     batches           BatchInfo[]
@@ -96,9 +94,10 @@ model DateDimension {
     productRevenues  ProductRevenueFact[]
     categoryRevenues CategoryRevenueFact[]
     batches          BatchInfo[]
-    expiringProducts ProductDimension[]
     inventorylevels  InventoryFact[]
     transactions     TransactionFact[]
+
+    @@unique(fullDate)
 }
 
 model InventoryFact {
@@ -121,8 +120,6 @@ model TransactionFact {
     dateId        Int
     amount        Int
     discount      Decimal
-    sellingPrice  Decimal
-    purchasePrice Decimal
 
     business BusinessDimension @relation(fields: [businessId], references: [businessId])
     product  ProductDimension  @relation(fields: [productId], references: [productId])
