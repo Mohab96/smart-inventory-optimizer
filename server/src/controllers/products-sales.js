@@ -1,4 +1,5 @@
 const prisma = require("../../prisma/dwh/client");
+const winston = require("winston");
 /*
     raw sql queries for each of the following:
 
@@ -56,7 +57,7 @@ const productsSalesController = async (req, res, next) => {
   const limit = +req.query.limit || 10;
   const businessId = req.user.businessId;
   const order = req.query.orderBy || "desc";
-  const category = req.query.category || null;
+  const category = req.query.category || null; /// name of the category
   const month = +req.query.month || null;
   const year = +req.query.year || null;
   let categoryData;
@@ -67,7 +68,7 @@ const productsSalesController = async (req, res, next) => {
         select: { categoryId: true },
       });
     } catch (error) {
-      console.log(error);
+      winston.error(error);
       return res.status(500).json({ message: "Internal Server error" });
     }
     if (!categoryData)
@@ -98,6 +99,7 @@ const productsSalesController = async (req, res, next) => {
         data: results,
       });
     } catch (error) {
+      winston.error(error);
       return res.status(500).json({ message: "Internal Server error" });
     }
   }
@@ -125,6 +127,7 @@ const productsSalesController = async (req, res, next) => {
         data: results,
       });
     } catch (error) {
+      winston.error(error);
       return res.status(500).json({ message: "Internal Server error" });
     }
   }
@@ -159,6 +162,7 @@ const productsSalesController = async (req, res, next) => {
         data: results,
       });
     } catch (error) {
+      winston.error(error);
       return res.status(500).json({ message: "Internal Server error" });
     }
   }
