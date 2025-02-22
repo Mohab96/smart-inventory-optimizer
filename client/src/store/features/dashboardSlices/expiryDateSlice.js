@@ -7,9 +7,9 @@ const initialState = {
   error: "",
 };
 
-export const fetchRevenue = createAsyncThunk(
-  "revenue/fetchRevenue",
-  async ({ startDate, endDate }) => {
+export const fetchExpiryDate = createAsyncThunk(
+  "expiryDate/fetchExpiryDate",
+  async ({ page = 1, limit = 10, orderBy = "asc" }) => {
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -18,8 +18,7 @@ export const fetchRevenue = createAsyncThunk(
 
     return axios
       .get(
-        `${import.meta.env.VITE_BASE_URL}/api/statistics/monthly-category-revenues?startDate=${startDate}&endDate=${endDate}`,
-
+        `${import.meta.env.VITE_BASE_URL}/api/statistics/products-expiringsoon?page=${page}&limit=${limit}&orderBy=${orderBy}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -30,25 +29,24 @@ export const fetchRevenue = createAsyncThunk(
   }
 );
 
-const revenueSlice = createSlice({
-  name: "revenue",
+const expiryDateSlice = createSlice({
+  name: "expiryDate",
   initialState,
   extraReducers: (builder) => {
-    builder.addCase(fetchRevenue.pending, (state) => {
+    builder.addCase(fetchExpiryDate.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(fetchRevenue.fulfilled, (state, action) => {
+    builder.addCase(fetchExpiryDate.fulfilled, (state, action) => {
       state.loading = false;
       state.data = action.payload;
       state.error = "";
     });
-    builder.addCase(fetchRevenue.rejected, (state, action) => {
+    builder.addCase(fetchExpiryDate.rejected, (state, action) => {
       state.loading = false;
       state.data = [];
-
       state.error = action.error.message;
     });
   },
 });
 
-export default revenueSlice.reducer;
+export default expiryDateSlice.reducer;
