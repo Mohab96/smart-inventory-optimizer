@@ -1,27 +1,26 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Header from "../../components/common/Header";
 // import SalesCard from "../../components/charts/SalesCard";
 // import ProgressCard from "../../components/charts/ProgressCard";
 import AreaChart from "../../components/charts/AreaChart";
 import StatsGrid from "../../components/charts/StatsGrid";
-import SalesCard from "../../components/charts/SalesCard";
 import { useDispatch, useSelector } from "react-redux";
 import { selectToken } from "../../store/features/authSlice";
-import { fetchRevenue } from "../../store/features/dashboardSlices/revenueSlice";
+import MonthlyFilterCard from "../../components/charts/MonthlyFilterCard";
 
 const Dashboard = () => {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const token = useSelector(selectToken);
   // console.log(token);
 
-  const revenue = useSelector((state) => state.revenue);
-  const dispatch = useDispatch();
+  // const revenue = useSelector((state) => state.revenue);
+  // const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(fetchRevenue());
-  }, []);
+  // useEffect(() => {
+  //   dispatch(fetchRevenue());
+  // }, []);
 
-  console.log(revenue);
+  // console.log(revenue);
 
   return (
     <div className="h-screen flex flex-col">
@@ -82,11 +81,18 @@ const Dashboard = () => {
             <div className="col-span-1 md:col-span-2 xl:col-span-2 w-full">
               <AreaChart />
             </div>
-
             {/* Placeholder for another component in the 3rd column */}
             <div className="col-span-1 h-80 flex items-center justify-center">
-              <SalesCard />
+              <MonthlyFilterCard />
             </div>
+            {/* AreaChart taking 2 columns */}
+            <div className="col-span-1 h-80 flex items-center justify-center">
+              <MonthlyFilterCard />
+            </div>
+            <div className="col-span-1 md:col-span-2 xl:col-span-2 w-full">
+              <AreaChart />
+            </div>
+            {/* Placeholder for another component in the 3rd column */}
           </div>
         </div>
       </div>
