@@ -103,7 +103,7 @@ export default function Login() {
           <p className="mt-10 text-center text-sm text-gray-500">
             Don&apos;t have an account?
             <Link
-              to="/business-data"
+              to="/register"
               className="text-orange-500 font-medium hover:text-orange-600 px-1"
             >
               Sign Up

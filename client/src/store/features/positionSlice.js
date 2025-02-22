@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  value: null,
+  value: localStorage.getItem("position") || null,
 };
 
 export const positionSlice = createSlice({
@@ -10,6 +10,7 @@ export const positionSlice = createSlice({
   reducers: {
     setPosition: (state, action) => {
       state.value = action.payload;
+      localStorage.setItem("position", state.value);
     },
   },
 });
