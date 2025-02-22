@@ -14,6 +14,7 @@ const getConnection = async () => {
 };
 
 const createChannel = async () => {
+  if (!connection) await getConnection(); // just to make sure that a connection is established to avoid any unexpected errors
   return await connection.createChannel();
 };
 

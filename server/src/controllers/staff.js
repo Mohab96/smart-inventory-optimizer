@@ -103,7 +103,7 @@ async function deleteStaff(req, res, next) {
   }
 }
 async function listStaff(req, res, next) {
-  const page = parseInt(req.query.sortBy) || 1;
+  const page = parseInt(req.query.page) || 1;
   const orderBy = req.query.orderBy || "name";
   const sortOrder = req.query.sortOrder || "asc";
   try {
