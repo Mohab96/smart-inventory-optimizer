@@ -14,6 +14,178 @@ servers:
         default: "3000"
 
 paths:
+  /api/statistics/monthly-category-revenues:
+    get:
+      summary: Get categoris revenues in spacific duration
+      description: |
+        Retrieves monthly revenue statistics grouped by category for the specified date range.
+        The endpoint aggregates revenue by category and month. Each entry in the response includes the category ID, category name,
+        and an array of monthly revenues where each month is represented in YYYY-MM format.
+      operationId: getMonthlyCategoryRevenues
+      tags:
+        - Statistics
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          description: Start date of the period (ISO 8601 format)
+          required: true
+          schema:
+            type: string
+            format: date-time
+            example: "2023-01-01T00:00:00Z"
+        - name: endDate
+          in: query
+          description: End date of the period (ISO 8601 format)
+          required: true
+          schema:
+            type: string
+            format: date-time
+            example: "2023-12-31T23:59:59Z"
+      responses:
+        "200":
+          description: Successful response with monthly category revenue data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        categoryId:
+                          type: number
+                          description: Unique identifier of the category.
+                        categoryName:
+                          type: string
+                          description: Name of the category.
+                        monthlyRevenues:
+                          type: array
+                          description: Array of revenue objects for each month in the given range.
+                          items:
+                            type: object
+                            properties:
+                              month:
+                                type: string
+                                description: Month in YYYY-MM format.
+                                example: "2023-01"
+                              revenue:
+                                type: number
+                                description: Total revenue for the month.
+        "400":
+          description: Bad Request - Missing or invalid startDate/endDate.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "startDate and endDate are required"
+        "500":
+          description: Internal Server Error.
+      x-codeSamples:
+        - lang: JavaScript
+          source: |
+            fetch('/api/statistics/monthly-category-revenues?startDate=2023-01-01T00:00:00Z&endDate=2023-12-31T23:59:59Z', {
+              method: 'GET',
+              headers: {
+                'Authorization': 'Bearer <your_token>',
+                'Content-Type': 'application/json'
+              }
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+
+  components:
+    securitySchemes:
+      bearerAuth:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+
+  /api/statistics/products-expiringsoon:
+    get:
+      summary: Get products expiring soon between now and the next month
+      description: |
+        Retrieves a paginated list of products with batches expiring within the next month.
+        Each entry includes the product ID, product name, expiry date, and the aggregated quantity of items expiring.
+      operationId: getProductsExpiringSoon
+      tags:
+        - Statistics
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination (default is 1)
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page (default is 10)
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: orderBy
+          in: query
+          description: Order results by expiry date ("asc" for ascending, "desc" for descending; default is "asc")
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        "200":
+          description: Successful response with a list of products expiring soon.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productId:
+                          type: integer
+                          description: Unique identifier of the product.
+                        productName:
+                          type: string
+                          description: Name of the product.
+                        expiryDate:
+                          type: string
+                          format: date-time
+                          description: Expiry date of the product batch.
+                        quantity:
+                          type: number
+                          description: Aggregated quantity of products expiring.
+        "401":
+          description: Unauthorized - Authentication token is missing or invalid.
+        "500":
+          description: Internal Server Error.
+      x-codeSamples:
+        - lang: JavaScript
+          source: |
+            fetch('/api/products/expiring-soon?page=1&limit=10&orderBy=asc', {
+              method: 'GET',
+              headers: {
+                'Authorization': 'Bearer <your_token>',
+                'Content-Type': 'application/json'
+              }
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+
   /api/statistics/products-revenues:
     get:
       summary: Get revenue of all products for a specific business
@@ -127,6 +299,54 @@ paths:
         "500":
           description: Internal Server Error
 
+  /api/statistics/category-revenue:
+    get:
+      summary: Get category revenue statistics
+      description: Retrieves revenue statistics grouped by categoryId for the authenticated business.
+      tags:
+        - Statistics
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response with category revenue data.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: integer
+                      description: The ID of the category.
+                    revenueAmount:
+                      type: number
+                      description: Total revenue amount for the category.
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating an internal server error.
+      x-codeSamples:
+        - lang: JavaScript
+          source: |
+            fetch('/api/statistics/category-revenue', {
+              method: 'GET',
+              headers: {
+                'Authorization': 'Bearer <your_token>',
+                'Content-Type': 'application/json'
+              }
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+
   /api/auth/login:
     post:
       summary: Authenticate user and return JWT token
@@ -166,6 +386,9 @@ paths:
                   message:
                     type: string
                     example: "Login successfully"
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         "400":
           description: Bad Request - Invalid input or incorrect credentials
         "500":
@@ -329,6 +552,9 @@ paths:
                         type: string
                       name:
                         type: string
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         "400":
           description: Bad Request - Missing data or validation error
         "500":
@@ -634,6 +860,90 @@ paths:
           description: Forbidden - Access denied
         "500":
           description: Internal Server Error - Could not delete object
+
+  /api/products:
+    post:
+      summary: Create a new product
+      description: Creates a new product for the authenticated business user.
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the product.
+                categoryId:
+                  type: integer
+                  description: The ID of the category to which the product belongs (optional).
+              required:
+                - name
+      responses:
+        "201":
+          description: Product created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: The unique identifier of the created product.
+                      name:
+                        type: string
+                        description: The name of the product.
+                      categoryId:
+                        type: integer
+                        description: The ID of the category to which the product belongs.
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating the reason for failure.
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating an internal server error.
+      x-codeSamples:
+        - lang: JavaScript
+          source: |
+            fetch('/products', {
+              method: 'POST',
+              headers: {
+                'Authorization': 'Bearer <your_token>',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                name: 'Sample Product',
+                categoryId: 1
+              })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
 
 components:
   securitySchemes:

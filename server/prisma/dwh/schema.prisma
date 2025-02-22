@@ -72,6 +72,7 @@ model BatchInfo {
     productId      Int
     businessId     String
     dateId         Int
+    quantity       Int
     purchase_price Decimal
     selling_price  Decimal
     expiry_date    DateTime
