@@ -1,17 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../../components/common/Header";
 // import SalesCard from "../../components/charts/SalesCard";
 // import ProgressCard from "../../components/charts/ProgressCard";
 import AreaChart from "../../components/charts/AreaChart";
 import StatsGrid from "../../components/charts/StatsGrid";
 import SalesCard from "../../components/charts/SalesCard";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectToken } from "../../store/features/authSlice";
+import { fetchRevenue } from "../../store/features/dashboardSlices/revenueSlice";
 
 const Dashboard = () => {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const token = useSelector(selectToken);
   // console.log(token);
+
+  const revenue = useSelector((state) => state.revenue);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchRevenue());
+  }, []);
+
+  console.log(revenue);
 
   return (
     <div className="h-screen flex flex-col">

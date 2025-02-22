@@ -24,7 +24,7 @@ export default function Login() {
     try {
       dispatch(login({ username, password }));
       if (error) throw Error(error);
-      navigate("/staff-management");
+      navigate("/dashboard");
     } catch (error) {
       setErrorMessage(error.message);
       setIsSubmitting(false);
