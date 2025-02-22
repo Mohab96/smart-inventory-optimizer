@@ -31,13 +31,10 @@ async function login(req, res, next) {
     ///JWT
     const token = generateToken(user);
 
-    res
-      .status(200)
-      .set("Authorization", `Bearer ${token}`) // Attach the token to the header
-      .json({
-        message: "Login successfully",
-        token,
-      });
+    res.status(200).json({
+      message: "Login successfully",
+      token,
+    });
   } catch (ex) {
     next(ex);
   }

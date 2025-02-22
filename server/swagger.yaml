@@ -16,7 +16,7 @@ servers:
 paths:
   /api/statistics/monthly-category-revenues:
     get:
-      summary: Get categoris revenues in spacific duration 
+      summary: Get categoris revenues in spacific duration
       description: |
         Retrieves monthly revenue statistics grouped by category for the specified date range.
         The endpoint aggregates revenue by category and month. Each entry in the response includes the category ID, category name,
@@ -185,13 +185,6 @@ paths:
             .then(response => response.json())
             .then(data => console.log(data))
             .catch(error => console.error('Error:', error));
-
-  components:
-    securitySchemes:
-      bearerAuth:
-        type: http
-        scheme: bearer
-        bearerFormat: JWT
 
   /api/statistics/products-revenues:
     get:
