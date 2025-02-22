@@ -19,6 +19,7 @@ export const fetchRevenue = createAsyncThunk(
     return axios
       .get(
         `${import.meta.env.VITE_BASE_URL}/api/statistics/monthly-category-revenues?startDate=${startDate}&endDate=${endDate}`,
+
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -44,6 +45,7 @@ const revenueSlice = createSlice({
     builder.addCase(fetchRevenue.rejected, (state, action) => {
       state.loading = false;
       state.data = [];
+
       state.error = action.error.message;
     });
   },
