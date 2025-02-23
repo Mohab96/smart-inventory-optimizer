@@ -1,31 +1,36 @@
 import { useNavigate } from "react-router-dom";
+
 const StatsGrid = () => {
   const stats = [
     {
       value: "2,340",
-      label: "Reven this month",
+      label: "Sales this month",
       percentage: "14.6%",
       color: "text-green-400",
+      path: "/sales",
       iconPath:
         "M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z",
     },
     {
       value: "5,355",
-      label: "Sales this month",
-      percentage: "32.9%",
-      color: "text-green-400",
+      label: "Expiring categories",
+      percentage: "-5.2%",
+      color: "text-red-400",
+      path: "/categoriesExpiringSoon",
       iconPath:
-        "M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z",
+        "M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z",
     },
     {
       value: "385",
-      label: "Offers this month",
+      label: "Expiring Products",
       percentage: "-2.7%",
       color: "text-red-400",
+      path: "/expiryDateProducts",
       iconPath:
         "M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z",
     },
   ];
+
   const navigate = useNavigate();
 
   return (
@@ -46,7 +51,7 @@ const StatsGrid = () => {
             </div>
             <div className="flex flex-col">
               <div
-                className={`flex items-center justify-center flex-1 ${stat.color} text-base  font-bold`}
+                className={`flex items-center justify-center flex-1 ${stat.color} text-base font-bold`}
               >
                 {stat.percentage}
                 <svg
@@ -64,11 +69,8 @@ const StatsGrid = () => {
               </div>
               <div>
                 <a
-                  // href="#"
-                  onClick={() => {
-                    navigate("/expiryDateProducts");
-                  }}
-                  className="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-blue-600 hover:text-blue-700 dark:hover:text-blue-500  hover:bg-gray-100 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 px-3 py-2"
+                  onClick={() => navigate(stat.path)}
+                  className="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-blue-600 hover:text-blue-700 dark:hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 cursor-pointer"
                 >
                   Show All
                   <svg
