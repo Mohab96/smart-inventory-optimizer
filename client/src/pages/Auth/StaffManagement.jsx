@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectToken } from "../../store/features/authSlice";
 import DeleteModal from "../../components/common/DeleteModal";
@@ -22,7 +22,9 @@ const StaffManagement = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://smart-inventory-optimizer.vercel.app/api/staff?page=${currentPage}&orderBy=${orderBy}&sortOrder=${sortOrder}`,
+        `${
+          import.meta.env.VITE_BASE_URL
+        }/api/staff?page=${currentPage}&orderBy=${orderBy}&sortOrder=${sortOrder}`,
         {
           method: "GET",
           headers: {
