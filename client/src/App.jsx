@@ -9,6 +9,7 @@ import Dashboard from "./pages/dashboard/Home";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import AuthRoute from "./utils/AuthRoute";
 import NotFound from "./pages/NotFound";
+import ExpiryDateProducts from "./pages/dashboard/ExpiryDateProducts";
 function App() {
   return (
     <Router>
@@ -52,6 +53,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/expiryDateProducts"
+          element={
+            <ProtectedRoute>
+              <ExpiryDateProducts />
             </ProtectedRoute>
           }
         />
