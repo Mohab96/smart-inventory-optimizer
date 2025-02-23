@@ -13,7 +13,7 @@ const AddModal = ({
   const handleAddStaff = async () => {
     try {
       const response = await fetch(
-        "https://smart-inventory-optimizer.vercel.app/api/staff",
+        `${import.meta.env.VITE_BASE_URL}/api/staff`,
         {
           method: "POST",
           headers: {

@@ -2,14 +2,15 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
-import BusinessData from "./pages/Auth/BusinessData";
 import Start from "./pages/Auth/Start";
 import StaffManagement from "./pages/Auth/StaffManagement";
 import Dashboard from "./pages/dashboard/Home";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import AuthRoute from "./utils/AuthRoute";
 import NotFound from "./pages/NotFound";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
 import ExpiryDateProducts from "./pages/dashboard/ExpiryDateProducts";
+
 function App() {
   return (
     <Router>
@@ -40,13 +41,13 @@ function App() {
           }
         />
         <Route
-          path="/businessdata"
+          path="/forgotpassword"
           element={
             <AuthRoute>
-              <BusinessData />
+              <ForgotPassword />
             </AuthRoute>
           }
-        ></Route>
+        />
         {/* Protected Routes */}
         <Route
           path="/dashboard"
@@ -64,6 +65,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/staffmanagement"
           element={

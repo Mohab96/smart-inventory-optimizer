@@ -9,7 +9,7 @@ export const login = (credentials) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await fetch(
-      "https://smart-inventory-optimizer.vercel.app/api/auth/login",
+      `${import.meta.env.VITE_BASE_URL}/api/auth/login`,
       {
         method: "POST",
         headers: {
@@ -23,11 +23,9 @@ export const login = (credentials) => async (dispatch) => {
     if (!response.ok) {
       throw new Error(data.message || "Login failed");
     }
-    dispatch(
-      setCredentials(response.headers.get("Authorization").split(" ")[1])
-    );
+    dispatch(setCredentials(data.token));
   } catch (error) {
-    dispatch(setError(error.message));
+    dispatch(setError(error.message + "aaaaaaaa"));
   } finally {
     dispatch(setLoading(false));
   }

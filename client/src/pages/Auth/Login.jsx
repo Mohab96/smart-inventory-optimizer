@@ -22,6 +22,7 @@ export default function Login() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      console.log(username, password);
       dispatch(login({ username, password }));
       if (error) throw Error(error);
       navigate("/dashboard");
@@ -100,15 +101,26 @@ export default function Login() {
         </div>
 
         {position === "manager" && (
-          <p className="mt-10 text-center text-sm text-gray-500">
-            Don&apos;t have an account?
-            <Link
-              to="/register"
-              className="text-orange-500 font-medium hover:text-orange-600 px-1"
-            >
-              Sign Up
-            </Link>
-          </p>
+          <div>
+            <p className="mt-10 text-center text-sm text-gray-500">
+              Don&apos;t have an account?
+              <Link
+                to="/register"
+                className="text-orange-500 font-medium hover:text-orange-600 px-1"
+              >
+                Register
+              </Link>
+            </p>
+            <p className="mt-4 text-center text-sm text-gray-500">
+              Forgot your password?
+              <Link
+                to="/forgotpassword"
+                className="text-orange-500 font-medium hover:text-orange-600 px-1"
+              >
+                Reset Password
+              </Link>
+            </p>
+          </div>
         )}
       </div>
     </div>

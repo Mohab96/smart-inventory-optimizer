@@ -14,7 +14,7 @@ const DeleteModal = ({
   const handleConfirmDelete = async () => {
     try {
       const response = await fetch(
-        `https://smart-inventory-optimizer.vercel.app/api/staff/${memberToDelete.id}`,
+        `${import.meta.env.VITE_BASE_URL}/api/staff/${memberToDelete.id}`,
         {
           method: "DELETE",
           headers: {
