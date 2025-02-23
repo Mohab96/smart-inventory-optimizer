@@ -56,7 +56,7 @@ const StepperForm = () => {
       };
       try {
         const response = await fetch(
-          "https://smart-inventory-optimizer.vercel.app/api/auth/register",
+          `${import.meta.env.VITE_BASE_URL}/api/auth/register`,
           {
             method: "POST",
             headers: {
@@ -69,9 +69,8 @@ const StepperForm = () => {
         if (!response.ok) {
           throw Error(data.message);
         }
-        const authToken = response.headers.get("Authorization");
-        dispatch(setCredentials(authToken.split(" ")[1]));
-        navigate("/staff-management");
+        dispatch(setCredentials(data.token));
+        navigate("/register");
       } catch (error) {
         setErrorMessage(error.message);
       }
