@@ -29,6 +29,28 @@ export const fetchExpiryDate = createAsyncThunk(
   }
 );
 
+export const fetchCategoriesExpiringSoon = createAsyncThunk(
+  "expiryDate/fetchCategoriesExpiringSoon",
+  async ({ page = 1, limit = 10, orderBy = "asc" }) => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("Token is missing!");
+    }
+
+    return axios
+      .get(
+        `${import.meta.env.VITE_BASE_URL}/api/statistics/categories-expiringsoon?page=${page}&limit=${limit}&orderBy=${orderBy}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => res.data);
+  }
+);
+
 const expiryDateSlice = createSlice({
   name: "expiryDate",
   initialState,
@@ -42,6 +64,21 @@ const expiryDateSlice = createSlice({
       state.error = "";
     });
     builder.addCase(fetchExpiryDate.rejected, (state, action) => {
+      state.loading = false;
+      state.data = [];
+      state.error = action.error.message;
+    });
+
+    // ⬇️ إضافة الحالة الجديدة لجلب الفئات (Categories)
+    builder.addCase(fetchCategoriesExpiringSoon.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(fetchCategoriesExpiringSoon.fulfilled, (state, action) => {
+      state.loading = false;
+      state.data = action.payload;
+      state.error = "";
+    });
+    builder.addCase(fetchCategoriesExpiringSoon.rejected, (state, action) => {
       state.loading = false;
       state.data = [];
       state.error = action.error.message;

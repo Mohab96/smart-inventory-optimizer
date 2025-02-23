@@ -1,17 +1,11 @@
-import { useEffect, useState } from "react";
 import Header from "../../components/common/Header";
-// import SalesCard from "../../components/charts/SalesCard";
-// import ProgressCard from "../../components/charts/ProgressCard";
+
 import AreaChart from "../../components/charts/AreaChart";
 import StatsGrid from "../../components/charts/StatsGrid";
-import { useDispatch, useSelector } from "react-redux";
-import { selectToken } from "../../store/features/authSlice";
 import MonthlyFilterCard from "../../components/charts/MonthlyFilterCard";
 
-
 const Dashboard = () => {
-  const [drawerOpen, setDrawerOpen] = useState(true);
-  const token = useSelector(selectToken);
+  // const [drawerOpen, setDrawerOpen] = useState(true);
   // console.log(token);
   // const revenue = useSelector((state) => state.revenue);
   // const dispatch = useDispatch();
@@ -22,16 +16,13 @@ const Dashboard = () => {
 
   // console.log(revenue);
 
-
   return (
     <div className="h-screen flex flex-col">
       <Header />
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <div
-          className={`w-64 z-40 h-full p-4 overflow-y-auto transition-transform ${
-            drawerOpen ? "translate-x-0" : "-translate-x-full"
-          } bg-white dark:bg-gray-800`}
+          className={`w-64 z-40 h-full p-4 overflow-y-auto transition-transform  bg-white dark:bg-gray-800`}
         >
           <h5 className="text-base font-semibold text-gray-200 uppercase dark:text-gray-400">
             Menu

@@ -18,60 +18,50 @@ const MonthlyFilterCard = () => {
     error,
   } = useSelector((state) => state.revenue);
 
-  // Initial dates (ISO strings)
   const [startDate, setStartDate] = useState("2023-01-01T00:00:00Z");
   const [endDate, setEndDate] = useState("2023-12-31T23:59:59Z");
 
-  // Dispatch fetchRevenue whenever the dates change
   useEffect(() => {
     dispatch(fetchRevenue({ startDate, endDate }));
   }, [dispatch, startDate, endDate]);
 
-  // Helper to format the ISO string for the date input (YYYY-MM-DD)
   const formatForInput = (isoString) => isoString.substring(0, 10);
 
-  // Handle date changes from the inputs
   const handleStartDateChange = (e) => {
-    const date = e.target.value;
-    // Append time for the start of the day in ISO format
-    setStartDate(date + "T00:00:00Z");
+    setStartDate(e.target.value + "T00:00:00Z");
   };
 
   const handleEndDateChange = (e) => {
-    const date = e.target.value;
-    // Append time for the end of the day in ISO format
-    setEndDate(date + "T23:59:59Z");
+    setEndDate(e.target.value + "T23:59:59Z");
   };
 
   return (
-    <div className="max-w-sm w-full h-full bg-white rounded-lg shadow-sm dark:bg-gray-800 p-4 md:p-6">
-      {/* Date Inputs */}
-      <div className="mb-4 flex gap-4">
+    <div className="max-w-sm w-full h-full bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 md:p-6">
+      <div className="mb-4 flex gap-4 w-fu">
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Start Date:
           </label>
           <input
             type="date"
             value={formatForInput(startDate)}
             onChange={handleStartDateChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             End Date:
           </label>
           <input
             type="date"
             value={formatForInput(endDate)}
             onChange={handleEndDateChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
       </div>
 
-      {/* Sales Card Header */}
       <div className="flex justify-between">
         <div>
           <h5 className="leading-none text-3xl font-bold text-gray-900 dark:text-white pb-2">
@@ -101,7 +91,6 @@ const MonthlyFilterCard = () => {
         </div>
       </div>
 
-      {/* Sales Chart */}
       <div className="mt-5 h-40">
         {loading ? (
           <p>Loading...</p>
@@ -117,6 +106,27 @@ const MonthlyFilterCard = () => {
             </BarChart>
           </ResponsiveContainer>
         )}
+        <a
+          href="#"
+          className="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-blue-600 hover:text-blue-700 dark:hover:text-blue-500  hover:bg-gray-100 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 px-3 py-2"
+        >
+          Sales Report
+          <svg
+            className="w-2.5 h-2.5 ms-1.5 rtl:rotate-180"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 6 10"
+          >
+            <path
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="m1 9 4-4-4-4"
+            />
+          </svg>
+        </a>
       </div>
     </div>
   );

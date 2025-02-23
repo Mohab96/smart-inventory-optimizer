@@ -9,7 +9,9 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 import AuthRoute from "./utils/AuthRoute";
 import NotFound from "./pages/NotFound";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
-import ManagerRoute from "./utils/ManagerRoute";
+import ExpiryDateProducts from "./pages/dashboard/ExpiryDateProducts";
+import CategoriesExpiringSoon from "./pages/dashboard/CategoriesExpiringSoon";
+
 function App() {
   return (
     <Router>
@@ -57,13 +59,28 @@ function App() {
           }
         />
         <Route
+          path="/expiryDateProducts"
+          element={
+            <ProtectedRoute>
+              <ExpiryDateProducts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/categoriesExpiringSoon"
+          element={
+            <ProtectedRoute>
+              <CategoriesExpiringSoon />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/staffmanagement"
           element={
-            <ManagerRoute>
-              <ProtectedRoute>
-                <StaffManagement />
-              </ProtectedRoute>
-            </ManagerRoute>
+            <ProtectedRoute>
+              <StaffManagement />
+            </ProtectedRoute>
           }
         ></Route>
         {/* Not Found */}
