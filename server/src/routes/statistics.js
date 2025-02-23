@@ -4,8 +4,9 @@ const authenticate = require("../middlewares/authenticate");
 const authorize = require("../middlewares/authorizate");
 const getProdcutsRevenues = require("../controllers/productsRevenues");
 const getProductsStock = require("../controllers/productsStock");
-const getMonthlyCategoryRevenues = require("../controllers/MonthlyCategoryRevenues");
+const getMonthlyCategoryRevenues = require("../controllers/monthlyCategoryRevenues");
 const getProductsExpiringSoon = require("../controllers/productsExpiringSoon");
+const getCategoriesExpiringSoon = require("../controllers/CategoriesExpiringSoon");
 
 statisticsRouter.get(
   "/category-revenue",
@@ -31,5 +32,10 @@ statisticsRouter.get(
   "/products-expiringsoon",
   [authenticate, authorize],
   getProductsExpiringSoon
+);
+statisticsRouter.get(
+  "/categories-expiringsoon",
+  [authenticate, authorize],
+  getCategoriesExpiringSoon
 );
 module.exports = statisticsRouter;
