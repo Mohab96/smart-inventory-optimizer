@@ -10,7 +10,7 @@ async function run() {
   await require("./services/rabbitMQ/rabbitMQ").getConnection();
   await require("./services/rabbitMQ/purchasesConsumer")();
   await require("./services/rabbitMQ/salesConsumer")();
-  require("./startup/pipelines");
+  // require("./startup/pipelines");
   const port = process.env.PORT || 3000;
   app.listen(port, () => winston.info(`Listening on port ${port}...`));
 }

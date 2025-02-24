@@ -6,6 +6,8 @@ async function executeWithRetry(
 ) {
   for (let retries = 0; retries < maxRetries; retries++) {
     try {
+      if (params === null) return fn();
+
       return fn(...params);
     } catch (error) {
       if (retries === maxRetries - 1) {

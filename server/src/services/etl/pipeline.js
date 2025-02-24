@@ -1,11 +1,8 @@
 const cron = require("node-cron");
-const winston = require("winston/lib/winston/config");
-const executeWithRetry = require("../../utils/executeWithRetry");
+const winston = require("winston");
 
 class Pipeline {
   constructor(extract, transform, load, scheduleExpression, name) {
-    console.log(typeof extract);
-
     if (typeof extract === "function") {
       this.extract = extract;
     } else {
@@ -38,7 +35,8 @@ class Pipeline {
 
   async execute() {
     try {
-      cron.schedule(this.scheduleExpression, executeWithRetry(doWork));
+      // cron.schedule(this.scheduleExpression, executeWithRetry(this.doWork));
+      cron.schedule(this.scheduleExpression, this.doWork);
     } catch (error) {
       winston.error(error);
     }
