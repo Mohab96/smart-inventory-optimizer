@@ -5,13 +5,13 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://smart-inventory-optimizer.vercel.app/
-    description: SIO API
   - url: "http://localhost:{port}"
     description: Local server
     variables:
       port:
         default: "2000"
+  - url: https://smart-inventory-optimizer.vercel.app/
+    description: SIO API
 
 paths:
   /api/statistics/monthly-category-revenues:
