@@ -84,7 +84,7 @@ model Product {
 model Batch {
   generatedId     Int           @id @default(autoincrement())
   id              Int
-  expiryDate      DateTime
+  expiryDate      DateTime?
   sellingPrice    Int
   costOfGoods     Int
   remQuantity     Int

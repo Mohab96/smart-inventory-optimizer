@@ -1,10 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./features/authSlice";
-import tokenReducer from "./features/tokenSlice";
+import positionReducer from "./features/positionSlice";
+import revenueReducer from "./features/dashboardSlices/revenueSlice";
+import expiryDateReducer from "./features/dashboardSlices/expiryDateSlice";
+import lowStockReducer from "./features/dashboardSlices/lowStockSlice";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    token: tokenReducer,
+    position: positionReducer,
+    revenue: revenueReducer,
+    expiryDate: expiryDateReducer,
+    lowStock: lowStockReducer,
   },
 });

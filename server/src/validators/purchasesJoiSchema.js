@@ -22,8 +22,7 @@ const purchasesSchema = Joi.object({
     "number.positive": "Quantity must be a positive number.",
   }),
 
-  expiryDate: Joi.date().min("now").required().messages({
-    "any.required": "Expiry Date is required.",
+  expiryDate: Joi.date().min("now").empty("").allow(null).messages({
     "date.base": "Expiry Date must be a valid date.",
     "date.min": "Expiry Date must be in the future.",
   }),

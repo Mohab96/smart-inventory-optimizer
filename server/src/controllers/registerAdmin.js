@@ -74,20 +74,18 @@ async function createAdmin(req, res, next) {
     const token = generateToken(admin);
 
     //Send the response with the JWT attached to the header
-    res
-      .status(201)
-      .set("Authorization", `Bearer ${token}`)
-      .json({
-        message: "Admin and Business created successfully",
-        admin: {
-          id: admin.id,
-          email: admin.email,
-        },
-        business: {
-          id: business.id,
-          name: business.name,
-        },
-      });
+    res.status(201).json({
+      message: "Admin and Business created successfully",
+      token,
+      admin: {
+        id: admin.id,
+        email: admin.email,
+      },
+      business: {
+        id: business.id,
+        name: business.name,
+      },
+    });
   } catch (ex) {
     next(ex);
   }

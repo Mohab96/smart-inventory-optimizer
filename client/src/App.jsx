@@ -1,23 +1,140 @@
-import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import Login from "./pages/Auth/Login";
-import SignUp from "./pages/Auth/SignUp";
-import BusinessData from "./pages/Auth/BusinessData";
+import Register from "./pages/Auth/Register";
 import Start from "./pages/Auth/Start";
 import StaffManagement from "./pages/Auth/StaffManagement";
-import StaffManagement2 from "./pages/Auth/StaffManagement2";
+import Dashboard from "./pages/dashboard/Home";
+import ProtectedRoute from "./utils/ProtectedRoute";
+import AuthRoute from "./utils/AuthRoute";
+import NotFound from "./pages/NotFound";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
+import ExpiryDateProducts from "./pages/dashboard/ExpiryDateProducts";
+import CategoriesExpiringSoon from "./pages/dashboard/CategoriesExpiringSoon";
+import LowStockProducts from "./pages/dashboard/lowStockProducts";
+import NewProductAddition from "./pages/NewProductAddition/NewProductAddition";
+import TransactionsFeeding from "./pages/TransactionsFeeding/TransactionsFeeding";
+import ImageUpload from "./pages/ImageUpload";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Start />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/business-data" element={<BusinessData />}></Route>
-        <Route path="/staff-management" element={<StaffManagement />}></Route>
-        <Route path="/staff-management2" element={<StaffManagement2 />}></Route>
+        {/* Auth Routes */}
+        <Route
+          path="/"
+          element={
+            <AuthRoute>
+              <Start />
+            </AuthRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <AuthRoute>
+              <Login />
+            </AuthRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <AuthRoute>
+              <Register />
+            </AuthRoute>
+          }
+        />
+        <Route
+          path="/forgotpassword"
+          element={
+            <AuthRoute>
+              <ForgotPassword />
+            </AuthRoute>
+          }
+        />
+        {/* Protected Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/expiryDateProducts"
+          element={
+            <ProtectedRoute>
+              <ExpiryDateProducts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/categoriesExpiringSoon"
+          element={
+            <ProtectedRoute>
+              <CategoriesExpiringSoon />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/lowStockProducts"
+          element={
+            <ProtectedRoute>
+              <LowStockProducts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/transactionsFeeding"
+          element={
+            <ProtectedRoute>
+              <TransactionsFeeding />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/staffmanagement"
+          element={
+            <ProtectedRoute>
+              <StaffManagement />
+            </ProtectedRoute>
+          }
+        ></Route>
+
+        <Route
+          path="/newProductAddition"
+          element={
+            <div className="pt-36 min-h-screen bg-gray-50 px-4">
+              <ProtectedRoute>
+                <NewProductAddition />
+              </ProtectedRoute>
+            </div>
+          }
+        ></Route>
+        <Route
+          path="/transactionsFeeding"
+          element={
+            <div className="pt-36 min-h-screen bg-gray-50 px-4">
+              <ProtectedRoute>
+                <TransactionsFeeding />
+              </ProtectedRoute>
+            </div>
+          }
+        ></Route>
+        <Route
+          path="/imageUpload"
+          element={
+            <div className="pt-36 min-h-screen bg-gray-50 px-4">
+              <ProtectedRoute>
+                <ImageUpload />
+              </ProtectedRoute>
+            </div>
+          }
+        ></Route>
+        {/* Not Found */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
