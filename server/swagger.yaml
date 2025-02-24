@@ -337,10 +337,10 @@ paths:
             default: desc
         - name: category
           in: query
-          description: Filter by product category name
+          description: Filter by product category id
           required: false
           schema:
-            type: string
+            type: integer
         - name: month
           in: query
           description: Filter by month (numeric)
