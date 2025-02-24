@@ -4,6 +4,7 @@ import Header from "../../components/common/Header";
 import { selectToken } from "../../store/features/authSlice";
 import { fetchExpiryDate } from "../../store/features/dashboardSlices/expiryDateSlice";
 import { useEffect, useState } from "react";
+import { fetchLowStock } from "../../store/features/dashboardSlices/lowStockSlice";
 
 const LowStockProducts = () => {
   const dispatch = useDispatch();
@@ -20,7 +21,7 @@ const LowStockProducts = () => {
   // Dispatch fetchExpiryDate when the token or page changes.
   useEffect(() => {
     if (token) {
-      dispatch(fetchExpiryDate({ page, limit, orderBy: "asc" }));
+      dispatch(fetchLowStock({ page, limit, orderBy: "asc" }));
     }
   }, [dispatch, token, page, limit]);
 

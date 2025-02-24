@@ -53,6 +53,29 @@ export const fetchCategoryRevenue = createAsyncThunk(
   }
 );
 
+export const fetchProductsRevenue = createAsyncThunk(
+  "revenue/fetchProductsRevenue",
+  async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("Token is missing!");
+    }
+
+    return axios
+      .get(
+        `${import.meta.env.VITE_BASE_URL}/api/statistics/category-revenue`,
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => res.data);
+  }
+);
+
 const revenueSlice = createSlice({
   name: "revenue",
   initialState,
