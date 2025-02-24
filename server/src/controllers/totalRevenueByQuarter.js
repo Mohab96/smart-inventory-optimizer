@@ -48,7 +48,7 @@ const getTotalRevenueByQuarter = async (req, res, next) => {
         revenue = aggregateResult._sum.revenueAmount
           ? aggregateResult._sum.revenueAmount.toString()
           : "0";
-        totalRevenue += aggregateResult._sum.revenueAmount;
+        totalRevenue += parseInt(revenue, 10);
       }
       return {
         quarter,
