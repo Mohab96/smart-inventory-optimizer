@@ -8,6 +8,7 @@ const endpoints = require("../utils/endpoints");
 const error = require("../middlewares/error");
 const staff = require("../routes/staff");
 const auth = require("../routes/auth");
+const submissionsRouter = require("../routes/submissions");
 const statisticsRouter = require("../routes/statistics");
 const acknowledgementRouter = require("../routes/acknowledgement");
 const storageRouter = require("../routes/storage");
@@ -35,5 +36,6 @@ module.exports = function (app) {
   app.use(endpoints.STATISTICS, statisticsRouter);
   app.use(endpoints.STORAGE, storageRouter);
   app.use(endpoints.ACKNOWLEDGEMENT, acknowledgementRouter);
+  app.use(endpoints.SUBMISSIONS, submissionsRouter);
   app.use(error); //make sure this is the last route always
 };
