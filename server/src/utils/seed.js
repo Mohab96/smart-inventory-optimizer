@@ -191,4 +191,4 @@ async function seedDatabase(
   console.log(`${transactions.count} transactions created.`);
 }
 
-seedDatabase(2000, 2100, 100, 500, 50, 5000, 1500, 10000, 10000, 50000);
+seedDatabase(2020, 2030, 100, 500, 50, 5000, 1500, 10000, 10000, 50000);

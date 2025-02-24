@@ -21,12 +21,27 @@ const yearlyRevenuePerMonth = async (req, res) => {
     const dateIdList = dateIds.map((d) => d.dateId);
 
     const revenueRecords = await dwhClient.productRevenueFact.findMany({
-      where: { businessId, dateId: { in: dateIdList } },
+      where: {
+        AND: [{ dateId: { in: dateIdList } }, { businessId: businessId }],
+      },
       include: { date: true },
     });
 
     // Initialize an object to accumulate revenue per month
-    const monthlyRevenue = {};
+    const monthlyRevenue = {
+      january: 0,
+      february: 0,
+      march: 0,
+      april: 0,
+      may: 0,
+      june: 0,
+      july: 0,
+      august: 0,
+      september: 0,
+      october: 0,
+      november: 0,
+      december: 0,
+    };
 
     revenueRecords.forEach((record) => {
       // The date relation gives us the month (1-12)
@@ -46,7 +61,7 @@ const yearlyRevenuePerMonth = async (req, res) => {
       }
     });
 
-    res.status(200).json(monthlyRevenue);
+    res.status(200).json({ year, data: monthlyRevenue });
   } catch (error) {
     winston.error(error);
     res.status(500).send("Internal Server Error");
