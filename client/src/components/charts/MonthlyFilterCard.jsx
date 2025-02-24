@@ -9,7 +9,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import {
-  fetchCategoryRevenue,
+  // fetchCategoryRevenue,
+  fetchMonthlyRevenue,
   // fetchMonthlyRevenue,
 } from "../../store/features/dashboardSlices/revenueSlice";
 
@@ -25,8 +26,8 @@ const MonthlyFilterCard = () => {
   const [endDate, setEndDate] = useState("2023-12-31T23:59:59Z");
 
   useEffect(() => {
-    // dispatch(fetchMonthlyRevenue({ startDate, endDate }));
-    dispatch(fetchCategoryRevenue());
+    dispatch(fetchMonthlyRevenue({ startDate, endDate }));
+    // dispatch(fetchMonthlyRevenue());
   }, [dispatch, startDate, endDate]);
 
   const formatForInput = (isoString) => isoString.substring(0, 10);
