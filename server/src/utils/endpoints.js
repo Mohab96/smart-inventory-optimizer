@@ -7,6 +7,7 @@ const STORAGE = `${VERSION}/storage`;
 const ACKNOWLEDGEMENT = `${VERSION}/ack`;
 const PRODUCTS = `${VERSION}/products`;
 const CATEGORIES = `${VERSION}/categories`;
+const SUBMISSIONS = `${VERSION}/submission`;
 
 module.exports = {
   AUTH,
@@ -17,4 +18,5 @@ module.exports = {
   ACKNOWLEDGEMENT,
   PRODUCTS,
   CATEGORIES,
+  SUBMISSIONS,
 };

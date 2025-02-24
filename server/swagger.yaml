@@ -331,10 +331,10 @@ paths:
             default: desc
         - name: category
           in: query
-          description: Filter by product category name
+          description: Filter by product category id
           required: false
           schema:
-            type: string
+            type: integer
         - name: month
           in: query
           description: Filter by month (numeric)
@@ -1059,6 +1059,48 @@ paths:
           description: Forbidden - Access denied
         "500":
           description: Internal Server Error - Could not delete object
+  /api/submission/csv:
+    get:
+      summary: Get CSV submission statuses
+      description: >
+        Retrieves CSV submission statuses for the authenticated business.
+        Returns a list of CSV submissions including their unique ID, current status,
+        uploaded date, and any errors encountered during processing.
+      operationId: listSubmissions
+      tags:
+        - Submission
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response with a list of CSV submission statuses.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Unique identifier of the CSV submission.
+                        status:
+                          type: string
+                          description: Current status of the CSV submission.
+                        uploadedDate:
+                          type: string
+                          format: date-time
+                          description: Date and time when the CSV was uploaded.
+                        errors:
+                          type: string
+                          description: Error details if any issues were encountered.
+        "401":
+          description: Unauthorized - Authentication token is missing or invalid.
+        "500":
+          description: Internal Server Error.
 
   /api/products:
     post:
