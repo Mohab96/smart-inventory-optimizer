@@ -12,6 +12,7 @@ const getCategoriesExpiringSoon = require("../controllers/categoriesExpiringSoon
 const yearlyRevenuePerCategory = require("../controllers/yearlyRevenuePerCategory");
 const yearlyRevenuePerMonth = require("../controllers/yearlyRevenuePerMonth");
 const getTotalRevenueByYear = require("../controllers/totalRevenueByYear");
+const getTotalRevenueByQuarter = require("../controllers/totalRevenueByQuarter");
 
 statisticsRouter.get(
   "/category-revenue",
@@ -76,6 +77,11 @@ statisticsRouter.get(
   "/total-revenue-per-year",
   [authenticate, authorize],
   getTotalRevenueByYear
+);
+statisticsRouter.get(
+  "/total-revenue-per-quarter",
+  [authenticate, authorize],
+  getTotalRevenueByQuarter
 );
 
 module.exports = statisticsRouter;
