@@ -17,6 +17,7 @@ model BusinessDimension {
     batches          BatchInfo[]
     inventoryLevels  InventoryFact[]
     transactions     TransactionFact[]
+    products         ProductDimension[]
 }
 
 model CategoryDimension {
@@ -28,14 +29,17 @@ model CategoryDimension {
 }
 
 model ProductDimension {
-    productId         Int                  @id @default(autoincrement())
-    name              String
-    categoryId        Int
-    CategoryDimension CategoryDimension    @relation(fields: [categoryId], references: [categoryId])
-    productRevenues   ProductRevenueFact[]
-    batches           BatchInfo[]
-    InventoryFact     InventoryFact[]
-    transactions      TransactionFact[]
+    productId  Int    @id @default(autoincrement())
+    name       String
+    categoryId Int
+    businessId String
+
+    category        CategoryDimension    @relation(fields: [categoryId], references: [categoryId])
+    business        BusinessDimension    @relation(fields: [businessId], references: [businessId])
+    productRevenues ProductRevenueFact[]
+    batches         BatchInfo[]
+    inventoryLevels InventoryFact[]
+    transactions    TransactionFact[]
 }
 
 model ProductRevenueFact {
@@ -67,13 +71,13 @@ model CategoryRevenueFact {
 }
 
 model BatchInfo {
-    productId      Int
-    businessId     String
-    dateId         Int
-    quantity       Int
-    purchase_price Decimal
-    selling_price  Decimal
-    expiry_date    DateTime
+    productId     Int
+    businessId    String
+    dateId        Int
+    quantity      Int
+    purchasePrice Decimal
+    sellingPrice  Decimal
+    expiryDate    DateTime
 
     date     DateDimension     @relation(fields: [dateId], references: [dateId])
     business BusinessDimension @relation(fields: [businessId], references: [businessId])
