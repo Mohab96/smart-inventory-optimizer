@@ -52,7 +52,7 @@ const getProductsExpiringSoon = async (req, res, next) => {
     const results = groupedBatches.map((group) => ({
       productId: group.productId,
       productName: productMap[group.productId] || null,
-      expiryDate: group.expiry_date,
+      expiryDate: group.expiryDate,
       quantity: group._sum.quantity,
     }));
 
