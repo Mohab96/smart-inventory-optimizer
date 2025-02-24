@@ -7,7 +7,6 @@ import ProfitGrid from "../../components/charts/ProfitGrid";
 
 const Dashboard = () => {
 
-
   return (
     <div className="h-screen flex flex-col">
       <Header />

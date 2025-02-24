@@ -12,7 +12,9 @@ import ForgotPassword from "./pages/Auth/ForgotPassword";
 import ExpiryDateProducts from "./pages/dashboard/ExpiryDateProducts";
 import CategoriesExpiringSoon from "./pages/dashboard/CategoriesExpiringSoon";
 import LowStockProducts from "./pages/dashboard/lowStockProducts";
-import TransactionsFeeding from "./pages/transactionsFeeding/TransactionsFeeding";
+import NewProductAddition from "./pages/NewProductAddition/NewProductAddition";
+import TransactionsFeeding from "./pages/TransactionsFeeding/TransactionsFeeding";
+import ImageUpload from "./pages/ImageUpload";
 
 function App() {
   return (
@@ -98,6 +100,37 @@ function App() {
             <ProtectedRoute>
               <StaffManagement />
             </ProtectedRoute>
+          }
+        ></Route>
+
+        <Route
+          path="/newProductAddition"
+          element={
+            <div className="pt-36 min-h-screen bg-gray-50 px-4">
+              <ProtectedRoute>
+                <NewProductAddition />
+              </ProtectedRoute>
+            </div>
+          }
+        ></Route>
+        <Route
+          path="/transactionsFeeding"
+          element={
+            <div className="pt-36 min-h-screen bg-gray-50 px-4">
+              <ProtectedRoute>
+                <TransactionsFeeding />
+              </ProtectedRoute>
+            </div>
+          }
+        ></Route>
+        <Route
+          path="/imageUpload"
+          element={
+            <div className="pt-36 min-h-screen bg-gray-50 px-4">
+              <ProtectedRoute>
+                <ImageUpload />
+              </ProtectedRoute>
+            </div>
           }
         ></Route>
         {/* Not Found */}

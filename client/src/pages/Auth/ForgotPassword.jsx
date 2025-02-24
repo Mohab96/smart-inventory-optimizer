@@ -9,12 +9,12 @@ const ForgotPassword = () => {
   } = useForm();
 
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [apiError, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const onSubmit = async (data) => {
     console.log("submit");
     try {
-    console.log("Try");
+      console.log("Try");
       setErrorMessage("");
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/auth/forget-password`,
@@ -26,10 +26,11 @@ const ForgotPassword = () => {
           body: JSON.stringify({ email: data.email }),
         }
       );
+      console.log("response");
       if (!response.ok) {
-        throw Error(response.errors);
+        throw new Error(response.errors);
       }
-    console.log("Ok");
+      console.log("Ok");
       const token = response.headers.get("Authorization").split(" ")[1];
       console.log("Password reset token (test):", token);
       setIsSubmitted(true);
@@ -75,8 +76,10 @@ const ForgotPassword = () => {
             )}
           </div>
 
-          {apiError && (
-            <div className="text-red-500 text-sm text-center">{apiError}</div>
+          {errorMessage && (
+            <div className="text-red-500 text-sm text-center">
+              {errorMessage}
+            </div>
           )}
 
           <button
