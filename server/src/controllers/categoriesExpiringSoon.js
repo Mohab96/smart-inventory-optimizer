@@ -11,13 +11,13 @@ const getCategoriesExpiringSoon = async (req, res, next) => {
   oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
 
   try {
-    // Group batches by productId and expiry_date that match the date filter,
+    // Group batches by productId and expiryDate that match the date filter,
     // summing the quantities for each group.
     const groupedBatches = await dwhClient.batchInfo.groupBy({
-      by: ["productId", "expiry_date"],
+      by: ["productId", "expiryDate"],
       where: {
         businessId,
-        expiry_date: {
+        expiryDate: {
           gt: currentDate,
           lte: oneMonthLater,
         },
@@ -26,7 +26,7 @@ const getCategoriesExpiringSoon = async (req, res, next) => {
         quantity: true,
       },
       orderBy: {
-        expiry_date: order,
+        expiryDate: order,
       },
       skip: (page - 1) * limit,
       take: limit,
@@ -80,7 +80,7 @@ const getCategoriesExpiringSoon = async (req, res, next) => {
 
       // Append the batch info (expiry date and aggregated quantity)
       categoryMap[catId].products[product.productId].batches.push({
-        expiryDate: batch.expiry_date,
+        expiryDate: batch.expiryDate,
         quantity: batch._sum.quantity,
       });
     });
