@@ -5,6 +5,8 @@ const username = Joi.string().alphanum().required();
 const password = Joi.string().min(8).required();
 const email = Joi.string().email().required();
 const phoneNumber = Joi.string()
+  .empty("")
+  .allow(null)
   .replace(/[^\d+]/g, "")
   .custom(phoneValidator);
 const name = Joi.string().max(30);

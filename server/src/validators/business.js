@@ -3,7 +3,7 @@ const Joi = require("joi");
 const businessSchema = Joi.object({
   name: Joi.string().max(30).required(),
   establishmentDate: Joi.date().max("now").required(),
-  description: Joi.string(),
+  description: Joi.string().empty("").allow(null),
 });
 
 module.exports = businessSchema;
