@@ -545,6 +545,55 @@ paths:
             .then(data => console.log(data))
             .catch(error => console.error('Error:', error));
 
+  /api/statistics/yearly-revenue-per-month:
+    get:
+      summary: Get yearly revenue per month
+      description: Retrieves the revenue of a business per month for a given year.
+      tags:
+        - Statistics
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: year
+          schema:
+            type: integer
+            example: 2024
+          required: false
+          description: The year for which to fetch revenue data. Defaults to the current year if not provided.
+      responses:
+        "200":
+          description: Successfully retrieved the monthly revenue data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  year:
+                    type: integer
+                    example: 2024
+                  data:
+                    type: object
+                    example:
+                      january: 400
+                      february: 5000
+                      march: 3200
+                      april: 7000
+                      may: 1000
+                      june: 4500
+                      july: 6500
+                      august: 3000
+                      september: 7200
+                      october: 8100
+                      november: 9000
+                      december: 5000
+        "400":
+          description: Invalid request parameters.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "500":
+          description: Internal Server Error.
+
   /api/auth/login:
     post:
       summary: Authenticate user and return JWT token
@@ -1059,6 +1108,7 @@ paths:
           description: Forbidden - Access denied
         "500":
           description: Internal Server Error - Could not delete object
+
   /api/submission/csv:
     get:
       summary: Get CSV submission statuses
