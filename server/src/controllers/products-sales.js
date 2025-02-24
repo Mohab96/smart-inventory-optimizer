@@ -57,28 +57,16 @@ const productsSalesController = async (req, res, next) => {
   const limit = +req.query.limit || 10;
   const businessId = req.user.businessId;
   const order = req.query.orderBy || "desc";
-  const category = req.query.category || null; /// name of the category
+  const category = req.query.category || null; /// category id
   const month = +req.query.month || null;
   const year = +req.query.year || null;
-  let categoryData;
   if (category) {
-    try {
-      categoryData = await prisma.categoryDimension.findFirst({
-        where: { categoryName: category },
-        select: { categoryId: true },
-      });
-    } catch (error) {
-      winston.error(error);
-      return res.status(500).json({ message: "Internal Server error" });
-    }
-    if (!categoryData)
-      return res.status(404).json({ message: "Category not found" });
     try {
       const results = await prisma.productRevenueFact.findMany({
         where: {
           businessId: businessId,
           product: {
-            categoryId: categoryData.categoryId,
+            categoryId: category,
           },
         },
         select: {
