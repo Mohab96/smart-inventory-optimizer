@@ -298,6 +298,150 @@ paths:
           description: Unauthorized - Authentication token is missing or invalid
         "500":
           description: Internal Server Error
+  /api/statistics/products-sales:
+    get:
+      summary: Get Top Sales Products
+      description: >
+        Retrieves top sales products for the authenticated business.
+        Supports optional filters:
+          - Filter by product category (by category name)
+          - Filter by specific month and/or year
+        Returns a paginated list of products with their total units sold.
+      operationId: getProductSales
+      tags:
+        - Statistics
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination (default is 1)
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page (default is 10)
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: orderBy
+          in: query
+          description: Order results by totalUnitsSold ("asc" for ascending, "desc" for descending, default is "desc")
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: category
+          in: query
+          description: Filter by product category name
+          required: false
+          schema:
+            type: string
+        - name: month
+          in: query
+          description: Filter by month (numeric)
+          required: false
+          schema:
+            type: integer
+        - name: year
+          in: query
+          description: Filter by year (numeric)
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successful response with a list of product sales
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        totalUnitsSold:
+                          type: integer
+                          description: Total number of units sold for the product
+                        product:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              description: Name of the product
+        "404":
+          description: Not Found - Category not found (if filtering by category)
+        "401":
+          description: Unauthorized - Authentication token is missing or invalid
+        "500":
+          description: Internal Server Error
+
+  /api/statistics/category-sales:
+    get:
+      summary: Get Top Sales Categories
+      description: >
+        Retrieves top sales categories for the authenticated business.
+        Returns a paginated list of categories with their total units sold.
+      operationId: getCategorySales
+      tags:
+        - Statistics
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination (default is 1)
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page (default is 10)
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: orderBy
+          in: query
+          description: Order results by totalUnitsSold ("asc" for ascending, "desc" for descending, default is "desc")
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        "200":
+          description: Successful response with a list of category sales
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        totalUnitsSold:
+                          type: integer
+                          description: Total number of units sold for the category
+                        category:
+                          type: object
+                          properties:
+                            categoryName:
+                              type: string
+                              description: Name of the category
+        "401":
+          description: Unauthorized - Authentication token is missing or invalid
+        "500":
+          description: Internal Server Error
 
   /api/statistics/category-revenue:
     get:
