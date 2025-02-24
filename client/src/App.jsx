@@ -11,6 +11,8 @@ import NotFound from "./pages/NotFound";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
 import ExpiryDateProducts from "./pages/dashboard/ExpiryDateProducts";
 import CategoriesExpiringSoon from "./pages/dashboard/CategoriesExpiringSoon";
+import LowStockProducts from "./pages/dashboard/lowStockProducts";
+import TransactionsFeeding from "./pages/transactionsFeeding/TransactionsFeeding";
 
 function App() {
   return (
@@ -74,7 +76,22 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+        <Route
+          path="/lowStockProducts"
+          element={
+            <ProtectedRoute>
+              <LowStockProducts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/transactionsFeeding"
+          element={
+            <ProtectedRoute>
+              <TransactionsFeeding />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/staffmanagement"
           element={
