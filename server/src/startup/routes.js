@@ -12,6 +12,9 @@ const submissionsRouter = require("../routes/submissions");
 const statisticsRouter = require("../routes/statistics");
 const acknowledgementRouter = require("../routes/acknowledgement");
 const storageRouter = require("../routes/storage");
+const productsRouter = require("../routes/products");
+const categoriesRouter = require("../routes/categories");
+
 const CSS_URL =
   "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
 module.exports = function (app) {
@@ -36,6 +39,8 @@ module.exports = function (app) {
   app.use(endpoints.STATISTICS, statisticsRouter);
   app.use(endpoints.STORAGE, storageRouter);
   app.use(endpoints.ACKNOWLEDGEMENT, acknowledgementRouter);
+  app.use(endpoints.PRODUCTS, productsRouter);
+  app.use(endpoints.CATEGORIES, categoriesRouter);
   app.use(endpoints.SUBMISSIONS, submissionsRouter);
   app.use(error); //make sure this is the last route always
 };

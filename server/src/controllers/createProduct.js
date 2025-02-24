@@ -1,6 +1,10 @@
 const mainClient = require("../../prisma/main/client");
+const createProductValidator = require("../validators/createProductValidator");
 
 const createProduct = async (req, res) => {
+  const { error } = createProductValidator.validate(userData);
+  if (error) res.status(400).json({ message: error.details[0].message });
+
   const { name, categoryId } = req.body;
 
   const name_exists = await mainClient.product.findFirst({

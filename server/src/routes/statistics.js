@@ -8,7 +8,8 @@ const productsSalesController = require("../controllers/products-sales");
 const categorySalesController = require("../controllers/category-sales");
 const getMonthlyCategoryRevenues = require("../controllers/monthlyCategoryRevenues");
 const getProductsExpiringSoon = require("../controllers/productsExpiringSoon");
-const getCategoriesExpiringSoon = require("../controllers/CategoriesExpiringSoon");
+const getCategoriesExpiringSoon = require("../controllers/categoriesExpiringSoon");
+const yearlyRevenuePerCategory = require("../controllers/yearlyRevenuePerCategory");
 
 statisticsRouter.get(
   "/category-revenue",
@@ -56,6 +57,12 @@ statisticsRouter.get(
   "/categories-expiringsoon",
   [authenticate, authorize],
   getCategoriesExpiringSoon
+);
+
+statisticsRouter.get(
+  "/yearly-revenue-per-category",
+  [authenticate],
+  yearlyRevenuePerCategory
 );
 
 module.exports = statisticsRouter;
