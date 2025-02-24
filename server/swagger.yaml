@@ -11,7 +11,7 @@ servers:
     description: Local server
     variables:
       port:
-        default: "3000"
+        default: "2000"
 
 paths:
   /api/statistics/monthly-category-revenues:
@@ -100,13 +100,6 @@ paths:
             .then(response => response.json())
             .then(data => console.log(data))
             .catch(error => console.error('Error:', error));
-
-  components:
-    securitySchemes:
-      bearerAuth:
-        type: http
-        scheme: bearer
-        bearerFormat: JWT
 
   /api/statistics/products-expiringsoon:
     get:
@@ -298,6 +291,7 @@ paths:
           description: Unauthorized - Authentication token is missing or invalid
         "500":
           description: Internal Server Error
+
   /api/statistics/products-sales:
     get:
       summary: Get Top Sales Products
@@ -477,6 +471,66 @@ paths:
                   error:
                     type: string
                     description: Error message indicating an internal server error.
+      x-codeSamples:
+        - lang: JavaScript
+          source: |
+            fetch('/api/statistics/category-revenue', {
+              method: 'GET',
+              headers: {
+                'Authorization': 'Bearer <your_token>',
+                'Content-Type': 'application/json'
+              }
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+
+  /api/statistics/yearly-revenue-per-category:
+    get:
+      summary: Get yearly revenue per category
+      description: Fetches the total revenue and units sold per category for a given year.
+      tags:
+        - Statistics
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: year
+          in: query
+          required: false
+          description: The year for which revenue data is requested (default is the current year)
+          schema:
+            type: integer
+            example: 2024
+      responses:
+        "200":
+          description: Successful response with revenue data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  year:
+                    type: integer
+                    example: 2024
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        categoryName:
+                          type: string
+                          example: "Beverages"
+                        totalRevenue:
+                          type: number
+                          format: float
+                          example: 50000.75
+                        totalUnitsSold:
+                          type: integer
+                          example: 1200
+        "401":
+          description: Unauthorized - Authentication required
+        "500":
+          description: Internal Server Error
       x-codeSamples:
         - lang: JavaScript
           source: |
@@ -978,6 +1032,7 @@ paths:
           description: Forbidden - Access denied
         "500":
           description: Internal Server Error - Could not generate signed URL
+
   /api/storage/delete:
     delete:
       summary: Delete profile image
@@ -1088,6 +1143,50 @@ paths:
             .then(response => response.json())
             .then(data => console.log(data))
             .catch(error => console.error('Error:', error));
+
+  /api/categories:
+    get:
+      summary: Get list of categories
+      description: Retrieves all categories from the database.
+      operationId: listCategories
+      tags:
+        - Categories
+      responses:
+        "200":
+          description: A list of categories.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 4
+                    name:
+                      type: string
+                      example: "Dairy Products"
+                    description:
+                      type: string
+                      example: "Milk, cheese, and other dairy products"
+                    hasExpiryDate:
+                      type: boolean
+                      example: true
+                    image:
+                      type: string
+                      nullable: true
+                      example: null
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "An error occurred while fetching categories"
 
 components:
   securitySchemes:

@@ -6,6 +6,7 @@ const API_DOCS = `${VERSION}/docs`;
 const STORAGE = `${VERSION}/storage`;
 const ACKNOWLEDGEMENT = `${VERSION}/ack`;
 const PRODUCTS = `${VERSION}/products`;
+const CATEGORIES = `${VERSION}/categories`;
 
 module.exports = {
   AUTH,
@@ -15,4 +16,5 @@ module.exports = {
   STORAGE,
   ACKNOWLEDGEMENT,
   PRODUCTS,
+  CATEGORIES,
 };
