@@ -53,7 +53,7 @@ model ProductRevenueFact {
     business BusinessDimension @relation(fields: [businessId], references: [businessId])
     product  ProductDimension  @relation(fields: [productId], references: [productId])
 
-    @@id([productId, businessId])
+    @@id([productId, businessId, dateId])
 }
 
 model CategoryRevenueFact {
@@ -67,10 +67,11 @@ model CategoryRevenueFact {
     business BusinessDimension @relation(fields: [businessId], references: [businessId])
     category CategoryDimension @relation(fields: [categoryId], references: [categoryId])
 
-    @@id([businessId, categoryId])
+    @@id([businessId, categoryId, dateId])
 }
 
 model BatchInfo {
+    batchId       Int      @id @default(autoincrement())
     productId     Int
     businessId    String
     dateId        Int
@@ -82,8 +83,6 @@ model BatchInfo {
     date     DateDimension     @relation(fields: [dateId], references: [dateId])
     business BusinessDimension @relation(fields: [businessId], references: [businessId])
     product  ProductDimension  @relation(fields: [productId], references: [productId])
-
-    @@id([productId, businessId])
 }
 
 model DateDimension {

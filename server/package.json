@@ -13,7 +13,7 @@
     "deploy:maindb": "npx prisma migrate deploy --schema=./prisma/main/schema.prisma",
     "deploy:dwh": "npx prisma migrate deploy --schema=./prisma/dwh/schema.prisma",
     "postinstall": "npm run generate:maindb && npm run generate:dwh",
-    "populate-date": "node ./src/utils/populateDateDimension"
+    "seed": "node ./src/utils/seed.js"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
     "prisma": "^6.2.1"
   },
   "dependencies": {
+    "@faker-js/faker": "^9.5.0",
     "@prisma/client": "^6.2.1",
     "@supabase/supabase-js": "^2.48.1",
     "amqplib": "^0.10.5",
