@@ -12,10 +12,10 @@ const getProductsExpiringSoon = async (req, res, next) => {
 
   try {
     const groupedBatches = await dwhClient.batchInfo.groupBy({
-      by: ["productId", "expiry_date"],
+      by: ["productId", "expiryDate"],
       where: {
         businessId: businessId,
-        expiry_date: {
+        expiryDate: {
           gt: currentDate,
           lte: oneMonthLater,
         },
@@ -24,7 +24,7 @@ const getProductsExpiringSoon = async (req, res, next) => {
         quantity: true,
       },
       orderBy: {
-        expiry_date: order,
+        expiryDate: order,
       },
       skip: (page - 1) * limit,
       take: limit,

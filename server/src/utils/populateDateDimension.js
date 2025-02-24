@@ -33,13 +33,12 @@ async function populateDateDimension(startYear, endYear) {
     }
 
     // Insert all records in bulk
-    console.log(`Inserting ${records.length} records into DateDimension...`);
-    await prisma.dateDimension.createMany({
+    const dates = await prisma.dateDimension.createMany({
       data: records,
       skipDuplicates: true, // Prevent duplicate entries if the table already has some data
     });
 
-    console.log(`DateDimension populated successfully.`);
+    return dates;
   } catch (error) {
     console.error("Error populating DateDimension:", error.message);
   } finally {
@@ -57,11 +56,11 @@ function getWeekNumber(date) {
   return 1 + Math.ceil(diff / 7);
 }
 
-async function main() {
+async function populate() {
   const startYear = +process.argv[2];
   const endYear = +process.argv[3];
 
   await populateDateDimension(startYear, endYear);
 }
 
-main();
+module.exports = populateDateDimension;
