@@ -25,7 +25,7 @@ export const login = (credentials) => async (dispatch) => {
     }
     dispatch(setCredentials(data.token));
   } catch (error) {
-    dispatch(setError(error.message + "aaaaaaaa"));
+    dispatch(setError(error.message));
   } finally {
     dispatch(setLoading(false));
   }
