@@ -594,6 +594,43 @@ paths:
         "500":
           description: Internal Server Error.
 
+  /api/statistics/total-revenue-per-year:
+    get:
+      summary: Get total revenue by year
+      description: Retrieves the aggregated total revenue of a business for a given year.
+      tags:
+        - Statistics
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: year
+          schema:
+            type: integer
+            example: 2023
+          required: false
+          description: The year for which to fetch the revenue data. Defaults to the current year if not provided.
+      responses:
+        "200":
+          description: Successfully retrieved the total revenue data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  year:
+                    type: integer
+                    example: 2023
+                  totalRevenue:
+                    type: string
+                    example: "150000.00"
+        "400":
+          description: Invalid request parameters.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "500":
+          description: Internal Server Error.
+
   /api/auth/login:
     post:
       summary: Authenticate user and return JWT token
