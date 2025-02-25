@@ -15,6 +15,7 @@ import LowStockProducts from "./pages/dashboard/lowStockProducts";
 import NewProductAddition from "./pages/newProductAddition/NewProductAddition";
 import TransactionsFeeding from "./pages/TransactionsFeeding/TransactionsFeeding";
 import ImageUpload from "./pages/ImageUpload";
+import YearRevenues from "./pages/dashboard/YearRevenues";
 
 function App() {
   return (
@@ -75,6 +76,14 @@ function App() {
           element={
             <ProtectedRoute>
               <CategoriesExpiringSoon />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/yearRevenues"
+          element={
+            <ProtectedRoute>
+              <YearRevenues />
             </ProtectedRoute>
           }
         />

@@ -3,76 +3,85 @@ import axios from "axios";
 
 const initialState = {
   loading: false,
-  data: [],
+  monthlyData: null,
+  quarterlyData: null,
+  categoryRevenue: null,
+  productsRevenue: null,
   error: "",
 };
 
+// Fetch Monthly Revenue
 export const fetchMonthlyRevenue = createAsyncThunk(
   "revenue/fetchMonthlyRevenue",
   async ({ startDate, endDate }) => {
     const token = localStorage.getItem("token");
+    if (!token) throw new Error("Token is missing!");
 
-    if (!token) {
-      throw new Error("Token is missing!");
-    }
-
-    return axios
-      .get(
-        `${import.meta.env.VITE_BASE_URL}/api/statistics/monthly-category-revenues?startDate=${startDate}&endDate=${endDate}`,
-
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((res) => res.data);
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/api/statistics/monthly-category-revenues?startDate=${startDate}&endDate=${endDate}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
   }
 );
 
+// Fetch Category Revenue
 export const fetchCategoryRevenue = createAsyncThunk(
   "revenue/fetchCategoryRevenue",
   async () => {
     const token = localStorage.getItem("token");
+    if (!token) throw new Error("Token is missing!");
 
-    if (!token) {
-      throw new Error("Token is missing!");
-    }
-
-    return axios
-      .get(
-        `${import.meta.env.VITE_BASE_URL}/api/statistics/category-revenue`,
-
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((res) => res.data);
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/api/statistics/category-revenue`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
   }
 );
 
+// Fetch Products Revenue (Fixed duplicate API endpoint)
 export const fetchProductsRevenue = createAsyncThunk(
   "revenue/fetchProductsRevenue",
   async () => {
     const token = localStorage.getItem("token");
+    if (!token) throw new Error("Token is missing!");
 
-    if (!token) {
-      throw new Error("Token is missing!");
-    }
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/api/statistics/products-revenue`, // Make sure this endpoint is correct
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+  }
+);
 
-    return axios
-      .get(
-        `${import.meta.env.VITE_BASE_URL}/api/statistics/category-revenue`,
+// Fetch Revenue Per Month
+export const fetchRevenuesPerMonth = createAsyncThunk(
+  "revenue/fetchRevenuesPerMonth",
+  async ({ year }) => {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Token is missing!");
 
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((res) => res.data);
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/api/statistics/yearly-revenue-per-month?year=${year}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+  }
+);
+
+// Fetch Revenue Per Quarter
+export const fetchRevenuesPerQuarter = createAsyncThunk(
+  "revenue/fetchRevenuesPerQuarter",
+  async ({ year }) => {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Token is missing!");
+
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/api/statistics/total-revenue-per-quarter?year=${year}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
   }
 );
 
@@ -80,35 +89,81 @@ const revenueSlice = createSlice({
   name: "revenue",
   initialState,
   extraReducers: (builder) => {
-    builder.addCase(fetchMonthlyRevenue.pending, (state) => {
-      state.loading = true;
-    });
-    builder.addCase(fetchMonthlyRevenue.fulfilled, (state, action) => {
-      state.loading = false;
-      state.data = action.payload;
-      state.error = "";
-    });
-    builder.addCase(fetchMonthlyRevenue.rejected, (state, action) => {
-      state.loading = false;
-      state.data = [];
+    builder
+      // Handle fetchMonthlyRevenue
+      .addCase(fetchMonthlyRevenue.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchMonthlyRevenue.fulfilled, (state, action) => {
+        state.loading = false;
+        state.monthlyData = action.payload;
+        state.error = "";
+      })
+      .addCase(fetchMonthlyRevenue.rejected, (state, action) => {
+        state.loading = false;
+        state.monthlyData = null;
+        state.error = action.error.message;
+      })
 
-      state.error = action.error.message;
-    });
+      // Handle fetchCategoryRevenue
+      .addCase(fetchCategoryRevenue.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchCategoryRevenue.fulfilled, (state, action) => {
+        state.loading = false;
+        state.categoryRevenue = action.payload;
+        state.error = "";
+      })
+      .addCase(fetchCategoryRevenue.rejected, (state, action) => {
+        state.loading = false;
+        state.categoryRevenue = null;
+        state.error = action.error.message;
+      })
 
-    builder.addCase(fetchCategoryRevenue.pending, (state) => {
-      state.loading = true;
-    });
-    builder.addCase(fetchCategoryRevenue.fulfilled, (state, action) => {
-      state.loading = false;
-      state.data = action.payload;
-      state.error = "";
-    });
-    builder.addCase(fetchCategoryRevenue.rejected, (state, action) => {
-      state.loading = false;
-      state.data = [];
+      // Handle fetchProductsRevenue
+      .addCase(fetchProductsRevenue.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchProductsRevenue.fulfilled, (state, action) => {
+        state.loading = false;
+        state.productsRevenue = action.payload;
+        state.error = "";
+      })
+      .addCase(fetchProductsRevenue.rejected, (state, action) => {
+        state.loading = false;
+        state.productsRevenue = null;
+        state.error = action.error.message;
+      })
 
-      state.error = action.error.message;
-    });
+      // Handle fetchRevenuesPerMonth
+      .addCase(fetchRevenuesPerMonth.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchRevenuesPerMonth.fulfilled, (state, action) => {
+        state.loading = false;
+        state.monthlyData = action.payload;
+        state.error = "";
+      })
+      .addCase(fetchRevenuesPerMonth.rejected, (state, action) => {
+        state.loading = false;
+        state.monthlyData = null;
+        state.error = action.error.message;
+      })
+
+      // Handle fetchRevenuesPerQuarter
+      .addCase(fetchRevenuesPerQuarter.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchRevenuesPerQuarter.fulfilled, (state, action) => {
+        state.loading = false;
+        state.quarterlyData = action.payload;
+        state.error = "";
+      })
+      .addCase(fetchRevenuesPerQuarter.rejected, (state, action) => {
+        state.loading = false;
+        state.quarterlyData = null;
+        state.error = action.error.message;
+      });
   },
 });
 

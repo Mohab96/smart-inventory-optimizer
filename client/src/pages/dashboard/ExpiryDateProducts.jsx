@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Header from "../../components/common/Header";
 import Sidebar from "../../components/common/Sidebar";
 import { selectToken } from "../../store/features/authSlice";
-import { fetchExpiryDate } from "../../store/features/dashboardSlices/expiryDateSlice";
-import ExpiryProductsTable from "../../components/tables/ExpiryProductsTable";
+import { fetchProductsExpiringSoon } from "../../store/features/dashboardSlices/expiryDateSlice";
+import ExpiryProductsTable from "../../components/tables/ProductsExpiringSoonTable";
 
 const ExpiryDateProducts = () => {
   const dispatch = useDispatch();
@@ -17,9 +17,9 @@ const ExpiryDateProducts = () => {
 
   useEffect(() => {
     if (token) {
-      dispatch(fetchExpiryDate({ page, limit, orderBy: "asc" })).then(
+      dispatch(fetchProductsExpiringSoon({ page, limit, orderBy: "asc" })).then(
         (result) => {
-          if (fetchExpiryDate.fulfilled.match(result)) {
+          if (fetchProductsExpiringSoon.fulfilled.match(result)) {
             // console.log("API Response:", result.payload);
           }
         }
