@@ -7,8 +7,8 @@ const initialState = {
   error: "",
 };
 
-export const fetchExpiryDate = createAsyncThunk(
-  "expiryDate/fetchExpiryDate",
+export const fetchProductsExpiringSoon = createAsyncThunk(
+  "expiryDate/fetchProductsExpiringSoon",
   async ({ page = 1, limit = 10, orderBy = "asc" }) => {
     const token = localStorage.getItem("token");
 
@@ -55,21 +55,20 @@ const expiryDateSlice = createSlice({
   name: "expiryDate",
   initialState,
   extraReducers: (builder) => {
-    builder.addCase(fetchExpiryDate.pending, (state) => {
+    builder.addCase(fetchProductsExpiringSoon.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(fetchExpiryDate.fulfilled, (state, action) => {
+    builder.addCase(fetchProductsExpiringSoon.fulfilled, (state, action) => {
       state.loading = false;
       state.data = action.payload;
       state.error = "";
     });
-    builder.addCase(fetchExpiryDate.rejected, (state, action) => {
+    builder.addCase(fetchProductsExpiringSoon.rejected, (state, action) => {
       state.loading = false;
       state.data = [];
       state.error = action.error.message;
     });
 
-    // ⬇️ إضافة الحالة الجديدة لجلب الفئات (Categories)
     builder.addCase(fetchCategoriesExpiringSoon.pending, (state) => {
       state.loading = true;
     });
