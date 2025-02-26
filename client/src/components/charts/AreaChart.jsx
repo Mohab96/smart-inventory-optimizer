@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   LineChart,
   Line,
@@ -7,75 +8,77 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { fetchRevenuesPerMonth } from "../../store/features/dashboardSlices/revenueSlice";
 
 const AreaChart = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedRange, setSelectedRange] = useState("Last 7 days");
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
 
+  useEffect(() => {
+    if (token) {
+      console.log("Fetching data for year:", selectedYear);
+      dispatch(fetchRevenuesPerMonth({ year: selectedYear }));
+    }
+  }, [dispatch, token, selectedYear]);
+
+  const {
+    loading,
+    monthlyData: revenue,
+    error,
+  } = useSelector((state) => state.revenue);
+
+  // Convert revenue object into an array format
+  const revenueData = revenue?.data
+    ? Object.entries(revenue.data).map(([month, revenue]) => ({
+        month: month.charAt(0).toUpperCase() + month.slice(1), // Capitalize month
+        revenue,
+      }))
+    : [];
+
+  // Calculate total revenue for the selected year
+  const totalRevenue = revenueData.reduce(
+    (sum, entry) => sum + (entry.revenue || 0),
+    0
+  );
+
+  // Handle dropdown toggle
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const selectRange = (range) => {
-    setSelectedRange(range);
+  // Handle year selection
+  const selectYear = (year) => {
+    setSelectedYear(year);
     setIsDropdownOpen(false);
   };
 
-  const dropdownOptions = [
-    "Yesterday",
-    "Today",
-    "Last 7 days",
-    "Last 30 days",
-    "Last 90 days",
-  ];
+  const currentYear = new Date().getFullYear();
+  const lastYear = currentYear - 1;
+  const dropdownOptions = [currentYear, lastYear];
 
-  // Updated chart data to show revenue instead of users
-  const chartData = [
-    { month: "Jan", revenue: 32000 },
-    { month: "Feb", revenue: 50000 },
-    { month: "Mar", revenue: 100000 },
-    { month: "Apr", revenue: 40000 },
-    { month: "May", revenue: 80000 },
-    { month: "Jun", revenue: 120000 },
-  ];
+  // console.log(revenue);
 
   return (
     <div className="col-span-1 md:col-span-2 xl:col-span-2 w-full">
-      <div className="w-full h-full bg-white rounded-lg shadow-sm dark:bg-gray-800 p-4 md:p-6">
-        {/* Top Section */}
+      <div className="w-full  flex flex-col justify-between bg-white rounded-lg shadow-sm dark:bg-gray-800 p-4 md:p-6">
+        {/* Top Section - Total Revenue */}
         <div className="flex justify-between">
-          <div>
-            <h5 className="leading-none text-3xl font-bold text-gray-900 dark:text-white pb-2">
-              $32.4k
-            </h5>
-            <p className="text-base font-normal text-gray-500 dark:text-gray-400">
-              Sales this Quarter
+          <div className="flex w-full justify-between items-center">
+            <p className="text-3xl font-bold text-gray-500 dark:text-gray-200">
+              Total Revenues
             </p>
-          </div>
-          <div className="flex items-center px-2.5 py-0.5 text-base font-semibold text-green-500 dark:text-green-500 text-center">
-            12%
-            <svg
-              className="w-3 h-3 ms-1"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 10 14"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M5 13V1m0 0L1 5m4-4 4 4"
-              />
-            </svg>
+            <h5 className=" text-3xl font-bold text-gray-900 dark:text-white pb-2">
+              ${totalRevenue.toLocaleString()}
+            </h5>
           </div>
         </div>
 
         {/* Chart Section */}
         <div id="area-chart" className="h-32 mt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
+            <LineChart data={revenueData}>
               <XAxis dataKey="month" stroke="#9CA3AF" />
               <YAxis stroke="#9CA3AF" />
               <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
@@ -90,7 +93,7 @@ const AreaChart = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Bottom Section */}
+        {/* Bottom Section - Year Selection Dropdown */}
         <div className="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between">
           <div className="flex justify-between items-center pt-5">
             {/* Dropdown Button */}
@@ -99,7 +102,7 @@ const AreaChart = () => {
                 onClick={toggleDropdown}
                 className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
               >
-                {selectedRange}
+                {selectedYear}
                 <svg
                   className="w-2.5 m-2.5 ms-1.5"
                   aria-hidden="true"
@@ -121,13 +124,13 @@ const AreaChart = () => {
               {isDropdownOpen && (
                 <div className="absolute z-10 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
                   <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
-                    {dropdownOptions.map((option) => (
-                      <li key={option}>
+                    {dropdownOptions.map((year) => (
+                      <li key={year}>
                         <button
-                          onClick={() => selectRange(option)}
+                          onClick={() => selectYear(year)}
                           className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                         >
-                          {option}
+                          {year}
                         </button>
                       </li>
                     ))}

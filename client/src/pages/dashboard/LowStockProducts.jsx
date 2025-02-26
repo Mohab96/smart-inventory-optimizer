@@ -2,7 +2,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import Header from "../../components/common/Header";
 import { selectToken } from "../../store/features/authSlice";
-import { fetchExpiryDate } from "../../store/features/dashboardSlices/expiryDateSlice";
 import { useEffect, useState } from "react";
 import { fetchLowStock } from "../../store/features/dashboardSlices/lowStockSlice";
 
