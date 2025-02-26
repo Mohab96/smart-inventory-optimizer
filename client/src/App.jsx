@@ -22,6 +22,7 @@ function App() {
   return (
     <Router>
       <Routes>
+      <Route path="/register" element={<Register />} />
         {/* Auth Routes */}
         <Route
           path="/"
@@ -36,14 +37,6 @@ function App() {
           element={
             <AuthRoute>
               <Login />
-            </AuthRoute>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <AuthRoute>
-              <Register />
             </AuthRoute>
           }
         />

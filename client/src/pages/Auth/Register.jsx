@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import Select from "react-select";
 import BgImg from "../../assets/images/signUpImg.jpg";
 import logo from "../../assets/images/logo.png";
 import { setCredentials } from "../../store/features/authSlice";
+import ImageUpload from "./ImageUpload";
+import CSVUpload from "./CSVUpload";
 
-// List of all country options with dialing codes
 const countryOptions = [
   { value: "+93", label: "Afghanistan (+93)" },
   { value: "+355", label: "Albania (+355)" },
@@ -250,9 +251,8 @@ const countryOptions = [
 ];
 
 export default function Register() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
+  const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState(1);
   const [managerData, setManagerData] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -274,12 +274,13 @@ export default function Register() {
     formState: { errors: errorsBusiness },
   } = useForm();
 
-  const steps = [{ number: 1 }, { number: 2 }];
+  const steps = [{ number: 1 }, { number: 2 }, { number: 3 }, { number: 4 }];
 
   // Handle next step (manager form)
   const handleNextStep = async () => {
     const isValid = await triggerManager();
     if (isValid) {
+      setErrorMessage("");
       handleSubmitManager((data) => {
         console.log(data);
         const countryCode = data.countryCode?.value || "";
@@ -324,9 +325,7 @@ export default function Register() {
           throw Error(data.message);
         }
         await dispatch(setCredentials(data.token));
-        navigate("/imageUpload", {
-          state: { from: location.pathname },
-        });
+        setCurrentStep(currentStep + 1);
       } catch (error) {
         setErrorMessage(error.message);
         console.log(error.message);
@@ -370,7 +369,7 @@ export default function Register() {
                 </div>
                 {step.number !== steps.length && (
                   <div
-                    className={`w-[300px] h-1 transition ${
+                    className={`w-[140px] h-1 transition ${
                       currentStep > step.number
                         ? "bg-orange-500"
                         : "bg-gray-200"
@@ -544,6 +543,48 @@ export default function Register() {
                 </button>
               </div>
             </form>
+          )}
+          {currentStep === 3 && (
+            <div>
+              {<ImageUpload></ImageUpload>}
+              <div className="flex justify-between mt-6">
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
+                  className="px-4 py-2 text-orange-500"
+                >
+                  ← Back
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(currentStep + 1)}
+                  className="px-4 py-2 bg-orange-500 text-white rounded"
+                >
+                  Next Step →
+                </button>
+              </div>
+            </div>
+          )}
+          {currentStep === 4 && (
+            <div>
+              {<CSVUpload></CSVUpload>}
+              <div className="flex justify-between mt-6">
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
+                  className="px-4 py-2 text-orange-500"
+                >
+                  ← Back
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate("/dashboard")}
+                  className="px-4 py-2 bg-orange-500 text-white rounded"
+                >
+                  Finish
+                </button>
+              </div>
+            </div>
           )}
         </div>
         {currentStep === 1 && (

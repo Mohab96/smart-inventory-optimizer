@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { selectToken } from "../store/features/authSlice";
-import { Link } from "react-router-dom";
+import { selectToken } from "../../store/features/authSlice";
+import { useState } from "react";
 
 const ImageUpload = () => {
   const [file, setFile] = useState(null);
@@ -12,7 +11,6 @@ const ImageUpload = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const token = useSelector(selectToken);
-  // Configure dropzone for image files
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
       "image/*": [".jpeg", ".jpg", ".png", ".webp"],
@@ -81,7 +79,7 @@ const ImageUpload = () => {
         <div
           {...getRootProps()}
           className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
-            ${isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"}
+            ${isDragActive ? "border-orange-500 bg-orange-50" : "border-gray-300"}
             ${error ? "border-red-500 bg-red-50" : ""}`}
         >
           <input {...getInputProps()} />
@@ -113,12 +111,6 @@ const ImageUpload = () => {
             <p className="text-green-500 text-sm text-center">
               Image uploaded successfully!
             </p>
-            <Link
-              to={"/dashboard"}
-              className="mt-4 max-w-48 text-center py-2 px-4 rounded-md text-white transition-colors bg-green-600 hover:bg-green-700"
-            >
-              Continue
-            </Link>
           </div>
         )}
 
@@ -131,7 +123,7 @@ const ImageUpload = () => {
               ${
                 loading
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
+                  : "bg-orange-600 hover:bg-orange-700"
               }`}
           >
             {loading ? "Uploading..." : "Upload Image"}
@@ -141,5 +133,4 @@ const ImageUpload = () => {
     </div>
   );
 };
-
 export default ImageUpload;
