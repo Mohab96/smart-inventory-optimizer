@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import BgImg from "../../assets/images/signUpImg.jpg";
 import logo from "../../assets/images/logo.png";
@@ -10,14 +10,12 @@ import { selectAuthError } from "../../store/features/authSlice";
 
 export default function Login() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const position = useSelector(selectPosition);
   const error = useSelector(selectAuthError);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -25,9 +23,9 @@ export default function Login() {
       console.log(username, password);
       dispatch(login({ username, password }));
       if (error) throw Error(error);
-      navigate("/dashboard");
     } catch (error) {
       setErrorMessage(error.message);
+    } finally {
       setIsSubmitting(false);
     }
   };

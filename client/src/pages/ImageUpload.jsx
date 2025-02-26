@@ -3,6 +3,7 @@ import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { selectToken } from "../store/features/authSlice";
+import { Link, useLocation } from "react-router-dom";
 
 const ImageUpload = () => {
   const [file, setFile] = useState(null);
@@ -11,7 +12,9 @@ const ImageUpload = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const token = useSelector(selectToken);
-
+  const location = useLocation();
+  const from = location.state?.from;
+  console.log(from);
   // Configure dropzone for image files
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
@@ -28,16 +31,22 @@ const ImageUpload = () => {
   });
 
   const handleUpload = async () => {
-    if (!file) {
-      setError("Please select an image first");
-      return;
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/api/storage/delete`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } catch (err) {
+      setError(err ? err.response.data.message : "Can't Replace your image");
     }
-
     try {
       setLoading(true);
       setError(null);
       setSuccess(false);
-
       // Step 1: Get pre-signed URL from our server
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/storage/upload/image`,
@@ -47,27 +56,19 @@ const ImageUpload = () => {
           },
         }
       );
-
       const { URL: presignedUrl, signedToken } = response.data;
-
-      try {
-        // Step 2: Upload directly to cloud storage using pre-signed URL
-        await axios.put(presignedUrl, file, {
-          headers: {
-            "Content-Type": file.type,
-            Authorization: `Bearer ${signedToken}`,
-          },
-        });
-
-        setSuccess(true);
-        setTimeout(() => setSuccess(false), 5000);
-        setFile(null);
-        setPreview(null);
-      } catch (error) {
-        console.log(error + "Second");
-      }
+      // Step 2: Upload directly to cloud storage using pre-signed URL
+      await axios.put(presignedUrl, file, {
+        headers: {
+          "Content-Type": file.type,
+          Authorization: `Bearer ${signedToken}`,
+        },
+      });
+      setSuccess(true);
+      setFile(null);
+      setPreview(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message + "First" : "Upload failed");
+      setError(err ? err.response.data.message : "Upload failed");
     } finally {
       setLoading(false);
     }
@@ -76,7 +77,7 @@ const ImageUpload = () => {
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">
-        Business Image Upload
+        Upload business&apos;s image
       </h2>
 
       <div className="space-y-4">
@@ -102,7 +103,7 @@ const ImageUpload = () => {
                   : "Drag & drop image, or click to select"}
               </p>
               <p className="text-sm text-gray-500 mt-2">
-                Supported formats: JPEG, PNG, WEBP
+                Supported formats: JPEG, JPG, PNG, WEBP
               </p>
             </div>
           )}
@@ -111,9 +112,18 @@ const ImageUpload = () => {
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
         {success && (
-          <p className="text-green-500 text-sm text-center">
-            Image uploaded successfully!
-          </p>
+          <div className="flex flex-col items-center">
+            <p className="text-green-500 text-sm text-center">
+              Image uploaded successfully!
+            </p>
+            <Link
+              to={from == "/register" ? "/transactionsFeeding" : "/dashboard"}
+              state={{ from: location.pathname }}
+              className="mt-4 max-w-48 text-center py-2 px-4 rounded-md text-white transition-colors bg-green-600 hover:bg-green-700"
+            >
+              Continue
+            </Link>
+          </div>
         )}
 
         {file && (

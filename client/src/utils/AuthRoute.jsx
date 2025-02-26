@@ -4,7 +4,9 @@ import propTypes from "prop-types";
 import { Navigate } from "react-router-dom";
 const AuthRoute = ({ children }) => {
   const isAuthenticated = useSelector(selectToken);
-  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
   return children;
 };
 AuthRoute.propTypes = {

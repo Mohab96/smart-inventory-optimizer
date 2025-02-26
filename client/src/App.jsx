@@ -15,7 +15,7 @@ import LowStockProducts from "./pages/dashboard/lowStockProducts";
 import NewProductAddition from "./pages/newProductAddition/NewProductAddition";
 import TransactionsFeeding from "./pages/TransactionsFeeding/TransactionsFeeding";
 import ImageUpload from "./pages/ImageUpload";
-
+import Header from "./components/common/Header";
 function App() {
   return (
     <Router>
@@ -90,7 +90,10 @@ function App() {
           path="/transactionsFeeding"
           element={
             <ProtectedRoute>
-              <TransactionsFeeding />
+              <Header></Header>
+              <div className="mt-24">
+                <TransactionsFeeding />
+              </div>
             </ProtectedRoute>
           }
         />
@@ -109,16 +112,6 @@ function App() {
             <div className="pt-36 min-h-screen bg-gray-50 px-4">
               <ProtectedRoute>
                 <NewProductAddition />
-              </ProtectedRoute>
-            </div>
-          }
-        ></Route>
-        <Route
-          path="/transactionsFeeding"
-          element={
-            <div className="pt-36 min-h-screen bg-gray-50 px-4">
-              <ProtectedRoute>
-                <TransactionsFeeding />
               </ProtectedRoute>
             </div>
           }

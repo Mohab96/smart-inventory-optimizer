@@ -1,11 +1,16 @@
+import axios from "axios";
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
-
+import { useSelector } from "react-redux";
+import { selectToken } from "../../store/features/authSlice";
+import { Link } from "react-router-dom";
+  
 const TransactionsFeeding = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const token = useSelector(selectToken);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
@@ -20,10 +25,6 @@ const TransactionsFeeding = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file) {
-      setError("Please select a CSV file first");
-      return;
-    }
 
     setLoading(true);
     setError(null);
@@ -33,26 +34,27 @@ const TransactionsFeeding = () => {
     formData.append("file", file);
 
     try {
-      const response = await fetch(
+      // Step 1: Get pre-signed URL from our server
+      const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/storage/upload/csv`,
         {
-          method: "POST",
           headers: {
-            "Content-Type": "text/csv",
+            Authorization: `Bearer ${token}`,
           },
-          body: formData,
         }
       );
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
+      const { URL: presignedUrl, signedToken } = response.data;
+      // Step 2: Upload directly to cloud storage using pre-signed URL
+      await axios.put(presignedUrl, file, {
+        headers: {
+          "Content-Type": file.type,
+          Authorization: `Bearer ${signedToken}`,
+        },
+      });
       setSuccess(true);
       setFile(null);
-      setTimeout(() => setSuccess(false), 5000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
+      setError(err ? err.response.data.message : "Upload failed");
     } finally {
       setLoading(false);
     }
@@ -60,7 +62,9 @@ const TransactionsFeeding = () => {
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">CSV Upload</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">
+        CSV Upload
+      </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div
@@ -89,27 +93,35 @@ const TransactionsFeeding = () => {
 
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
-        {success && (
-          <p className="text-green-500 text-sm text-center">
-            File uploaded successfully!
-          </p>
-        )}
-
-        <button
-          type="submit"
-          disabled={loading || !file}
-          className={`w-full py-2 px-4 rounded-md text-white transition-colors
+        {!success && (
+          <button
+            type="submit"
+            disabled={loading || !file}
+            className={`w-full py-2 px-4 rounded-md text-white transition-colors
             ${
               loading || !file
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700"
             }`}
-        >
-          {loading ? "Uploading..." : "Upload CSV"}
-        </button>
+          >
+            {loading ? "Uploading..." : "Upload CSV"}
+          </button>
+        )}
       </form>
+      {success && (
+        <div className="flex flex-col items-center">
+          <p className="text-green-500 text-sm text-center">
+            File uploaded successfully!
+          </p>
+          <Link
+            to="/dashboard"
+            className="mt-4 max-w-48 text-center py-2 px-4 rounded-md text-white transition-colors bg-green-600 hover:bg-green-700"
+          >
+            Continue
+          </Link>
+        </div>
+      )}
     </div>
   );
 };
-
 export default TransactionsFeeding;
