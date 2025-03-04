@@ -30,7 +30,7 @@ const ExpiryProductsTable = ({ products }) => {
             products.map((product) => (
               <tr
                 key={product.productId}
-                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
+                className="bg-white border-b text-lg dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
                 <th
                   scope="row"

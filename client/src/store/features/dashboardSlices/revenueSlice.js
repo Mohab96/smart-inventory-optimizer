@@ -7,6 +7,7 @@ const initialState = {
   quarterlyData: null,
   categoryRevenue: null,
   productsRevenue: null,
+  totalYearRevenue: null, // Added this for total revenue state
   error: "",
 };
 
@@ -40,7 +41,7 @@ export const fetchCategoryRevenue = createAsyncThunk(
   }
 );
 
-// Fetch Products Revenue (Fixed duplicate API endpoint)
+// Fetch Products Revenue
 export const fetchProductsRevenue = createAsyncThunk(
   "revenue/fetchProductsRevenue",
   async () => {
@@ -48,7 +49,7 @@ export const fetchProductsRevenue = createAsyncThunk(
     if (!token) throw new Error("Token is missing!");
 
     const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/api/statistics/products-revenue`, // Make sure this endpoint is correct
+      `${import.meta.env.VITE_BASE_URL}/api/statistics/products-revenue`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     return response.data;
@@ -79,6 +80,21 @@ export const fetchRevenuesPerQuarter = createAsyncThunk(
 
     const response = await axios.get(
       `${import.meta.env.VITE_BASE_URL}/api/statistics/total-revenue-per-quarter?year=${year}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+  }
+);
+
+// Fetch Total Year Revenue (Fixed API URL)
+export const fetchTotalYearRevenue = createAsyncThunk(
+  "revenue/fetchTotalYearRevenue",
+  async ({ year }) => {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Token is missing!");
+
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/api/statistics/total-revenue-per-year?year=${year}`, // Fixed URL
       { headers: { Authorization: `Bearer ${token}` } }
     );
     return response.data;
@@ -162,6 +178,21 @@ const revenueSlice = createSlice({
       .addCase(fetchRevenuesPerQuarter.rejected, (state, action) => {
         state.loading = false;
         state.quarterlyData = null;
+        state.error = action.error.message;
+      })
+
+      // Handle fetchTotalYearRevenue (Added missing reducer)
+      .addCase(fetchTotalYearRevenue.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchTotalYearRevenue.fulfilled, (state, action) => {
+        state.loading = false;
+        state.totalYearRevenue = action.payload;
+        state.error = "";
+      })
+      .addCase(fetchTotalYearRevenue.rejected, (state, action) => {
+        state.loading = false;
+        state.totalYearRevenue = null;
         state.error = action.error.message;
       });
   },

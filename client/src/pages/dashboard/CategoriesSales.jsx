@@ -6,7 +6,7 @@ import { selectToken } from "../../store/features/authSlice";
 import { fetchProductsExpiringSoon } from "../../store/features/dashboardSlices/expiryDateSlice";
 import ExpiryProductsTable from "../../components/tables/ProductsExpiringSoonTable";
 
-const ExpiryDateProducts = () => {
+const CategoriesSales = () => {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const { loading, data, error } = useSelector((state) => state.expiryDate);
@@ -36,7 +36,7 @@ const ExpiryDateProducts = () => {
         <Sidebar />
         <div className="flex-1 overflow-y-auto p-4 dark:bg-gray-700">
           <h2 className="text-2xl font-semibold text-white mb-4">
-            Products Expiring soon
+            Expiring Products
           </h2>
           {loading ? (
             <p className="text-white">Loading...</p>
@@ -77,4 +77,4 @@ const ExpiryDateProducts = () => {
   );
 };
 
-export default ExpiryDateProducts;
+export default CategoriesSales;

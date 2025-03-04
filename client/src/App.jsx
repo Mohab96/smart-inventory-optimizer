@@ -17,6 +17,7 @@ import TransactionsFeeding from "./pages/TransactionsFeeding/TransactionsFeeding
 import ImageUpload from "./pages/ImageUpload";
 import Header from "./components/common/Header";
 import YearRevenues from "./pages/dashboard/YearRevenues";
+import QuarterlyRevenues from "./pages/dashboard/QuarterlyRevenues";
 
 function App() {
   return (
@@ -78,6 +79,14 @@ function App() {
           element={
             <ProtectedRoute>
               <YearRevenues />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quarterRevenues"
+          element={
+            <ProtectedRoute>
+              <QuarterlyRevenues />
             </ProtectedRoute>
           }
         />
