@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   LineChart,
@@ -8,41 +8,71 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { fetchRevenuesPerMonth } from "../../store/features/dashboardSlices/revenueSlice";
+import {
+  fetchRevenuesPerMonth,
+  fetchRevenuesPerQuarter,
+} from "../../store/features/dashboardSlices/revenueSlice";
 import Loading from "../common/Loading";
 
-const AreaChart = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+const QuarterChart = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
+  const loading = useSelector((state) => state.revenue.loading);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const monthlyRevenue = useSelector((state) => state.revenue.monthlyData);
+  const quarterlyRevenue = useSelector((state) => state.revenue.quarterlyData);
+  const quarterlyChartData = useMemo(() => {
+    if (!quarterlyRevenue?.data?.quarterlyRevenue) return [];
+
+    return quarterlyRevenue.data.quarterlyRevenue.map((quarter, index) => ({
+      name: `Q${index + 1}`,
+      revenue: quarter.totalRevenue,
+    }));
+  }, [quarterlyRevenue]);
+
+  const fetchCalled = useRef(false); // Prevent unnecessary fetch calls
 
   useEffect(() => {
-    if (token) {
+    if (token && !fetchCalled.current) {
       dispatch(fetchRevenuesPerMonth({ year: selectedYear }));
+      dispatch(fetchRevenuesPerQuarter({ year: selectedYear }));
+      fetchCalled.current = true; // Mark as called
     }
-  }, [dispatch, token, selectedYear]);
+  }, [selectedYear, token, dispatch]);
 
-  const {
-    loading,
-    monthlyData: revenue,
-    error,
-  } = useSelector((state) => state.revenue);
+  const currentMonth = new Date()
+    .toLocaleString("en-US", { month: "long" })
+    .toLowerCase();
+  const previousMonth = new Date(new Date().setMonth(new Date().getMonth() - 1))
+    .toLocaleString("en-US", { month: "long" })
+    .toLowerCase();
 
-  // Convert revenue object into an array format
-  const revenueData = revenue?.data
-    ? Object.entries(revenue.data).map(([month, revenue]) => ({
-        month: month.charAt(0).toUpperCase() + month.slice(1),
-        revenue,
-      }))
-    : [];
+  const currentQuarter = Math.floor(new Date().getMonth() / 3);
 
-  const totalRevenue = revenueData.reduce((sum, entry) => {
-    if (typeof entry.revenue === "number") {
-      return sum + entry.revenue;
-    }
-    return sum; // Ignore non-numeric values
-  }, 0);
+  const currentMonthRevenue = monthlyRevenue?.data?.[currentMonth] ?? 0;
+  // console.log(currentQuarter);
+
+  const previousMonthRevenue = monthlyRevenue?.data?.[previousMonth] ?? 0;
+  const currentQuarterRevenue =
+    quarterlyRevenue?.data?.quarterlyRevenue[currentQuarter].totalRevenue ?? 0;
+  const previousQuarterRevenue =
+    quarterlyRevenue?.data?.[currentQuarter - 1] ?? 0;
+
+  const calculatePercentageChange = (current, previous) => {
+    return previous > 0 ? ((current - previous) / previous) * 100 : 0;
+  };
+
+  const monthlyChange = useMemo(
+    () => calculatePercentageChange(currentMonthRevenue, previousMonthRevenue),
+    [currentMonthRevenue, previousMonthRevenue]
+  );
+  const quarterlyChange = useMemo(
+    () =>
+      calculatePercentageChange(currentQuarterRevenue, previousQuarterRevenue),
+    [currentQuarterRevenue, previousQuarterRevenue]
+  );
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -57,6 +87,11 @@ const AreaChart = () => {
   const lastYear = currentYear - 1;
   const dropdownOptions = [currentYear, lastYear];
 
+  //   console.log(quarterlyRevenue);
+  const totalRevenue = quarterlyRevenue?.data?.quarterlyRevenue?.reduce(
+    (sum, quarter) => sum + Number(quarter.totalRevenue || 0),
+    0
+  );
   return (
     <div className="col-span-1 md:col-span-2 xl:col-span-2 w-full">
       <div className="w-full flex flex-col justify-between bg-white rounded-lg shadow-sm dark:bg-gray-800 p-4 md:p-6">
@@ -70,7 +105,7 @@ const AreaChart = () => {
               <Loading /> // Show loading spinner in the top section
             ) : (
               <h5 className="text-3xl font-bold text-gray-900 dark:text-white pb-2">
-                ${totalRevenue.toLocaleString()}
+                ${Number(totalRevenue).toLocaleString()}
               </h5>
             )}
           </div>
@@ -82,8 +117,8 @@ const AreaChart = () => {
             <Loading /> // Show loading spinner instead of the chart
           ) : (
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueData}>
-                <XAxis dataKey="month" stroke="#9CA3AF" />
+              <LineChart data={quarterlyChartData}>
+                <XAxis dataKey="name" stroke="#9CA3AF" />
                 <YAxis stroke="#9CA3AF" />
                 <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
                 <Line
@@ -172,4 +207,4 @@ const AreaChart = () => {
   );
 };
 
-export default AreaChart;
+export default QuarterChart;

@@ -10,7 +10,9 @@ import {
   fetchRevenuesPerQuarter,
 } from "../../store/features/dashboardSlices/revenueSlice";
 import { useEffect, useState } from "react";
-import PieChart from "../../components/charts/PieChart";
+import QuarterPieChart from "../../components/charts/QuarterPieChart";
+import QuarterChart from "../../components/charts/QuarterChart";
+// import PieChart from "../../components/charts/PieChart";
 
 const Dashboard = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -19,7 +21,7 @@ const Dashboard = () => {
 
   const monthlyRevenue = useSelector((state) => state.revenue.monthlyData);
   const quarterlyRevenue = useSelector((state) => state.revenue.quarterlyData);
-  console.log(quarterlyRevenue?.data?.quarterlyRevenue);
+  // console.log(quarterlyRevenue?.data?.quarterlyRevenue);
 
   useEffect(() => {
     if (token) {
@@ -67,12 +69,12 @@ const Dashboard = () => {
           <ProfitGrid />
           <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 py-5">
             <AreaChart />
-            <MonthlyFilterCard />
+            <QuarterPieChart />
           </div>
           <LossGrid />
           <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 py-5">
-            <AreaChart />
-            <MonthlyFilterCard />
+            <QuarterPieChart />
+            <QuarterChart />
           </div>
         </div>
       </div>
