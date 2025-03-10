@@ -1258,6 +1258,15 @@ paths:
         "500":
           description: Internal Server Error - Could not generate signed upload URL
 
+  /api/storage/ack:
+    post:
+      summary: send acknowledgement to the server
+      operationId: ack
+      tags:
+        - Storage
+      security:
+        - bearerAuth: []
+
   /api/storage/access:
     get:
       summary: Generate a signed access URL
@@ -1483,7 +1492,50 @@ paths:
                   error:
                     type: string
                     example: "An error occurred while fetching categories"
-
+  /api/submissions/csv:
+    get:
+      summary: List Submissions history
+      description: Retrieves all CSV submission records for the authenticated business. Each submission record includes its unique ID, current status, upload date, and any associated error messages.
+      operationId: listSubmissions
+      tags:
+        - Submissions
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successfully retrieved CSV submissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Unique identifier of the submission
+                          example: 123
+                        status:
+                          type: string
+                          description: Current processing status of the submission
+                          example: "processed"
+                        uploadedDate:
+                          type: string
+                          format: date-time
+                          description: Date and time when the submission was uploaded
+                          example: "2023-04-05T14:48:00.000Z"
+                        errors:
+                          type: string
+                          nullable: true
+                          description: Error details if any issues occurred during processing
+                          example: "No errors"
+        "401":
+          description: Unauthorized - Authentication token is missing or invalid
+        "500":
+          description: Internal server error - Could not retrieve submissions
 components:
   securitySchemes:
     bearerAuth:
