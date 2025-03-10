@@ -797,7 +797,7 @@ paths:
         "500":
           description: Internal Server Error
 
-  /api/transactions:
+  /api/statistics/transactions:
     get:
       summary: Get Transaction History
       description: >
