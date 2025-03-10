@@ -797,6 +797,102 @@ paths:
         "500":
           description: Internal Server Error
 
+  /api/transactions:
+    get:
+      summary: Get Transaction History
+      description: >
+        Retrieves transaction history for the authenticated business for a specific date.
+        The `date` query parameter is used to specify the day (using the fullDate range from midnight to midnight).
+      operationId: getTransactionHistory
+      tags:
+        - Statistics
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: date
+          in: query
+          description: >
+            formatted date example (e.g., "MM-DD-YYYY") to filter transactions on that day.
+            If omitted, the current date is used.
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: Successful response with a list of transactions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        transactionId:
+                          type: integer
+                          description: Unique identifier for the transaction.
+                        businessId:
+                          type: string
+                          description: Business identifier.
+                        productId:
+                          type: integer
+                          description: Product identifier.
+                        dateId:
+                          type: integer
+                          description: Identifier for the related date record.
+                        amount:
+                          type: integer
+                          description: The transaction amount.
+                        discount:
+                          type: number
+                          format: float
+                          description: Discount applied to the transaction.
+                        date:
+                          type: object
+                          description: The related date dimension record.
+                          properties:
+                            dateId:
+                              type: integer
+                            fullDate:
+                              type: string
+                              format: date-time
+                            day:
+                              type: integer
+                            week:
+                              type: integer
+                            month:
+                              type: integer
+                            quarter:
+                              type: integer
+                            year:
+                              type: integer
+                        product:
+                          type: object
+                          description: The related product dimension record.
+                          properties:
+                            productId:
+                              type: integer
+                            name:
+                              type: string
+                            categoryId:
+                              type: integer
+                            businessId:
+                              type: string
+                        business:
+                          type: object
+                          description: The related business dimension record.
+                          properties:
+                            businessId:
+                              type: string
+                            businessName:
+                              type: string
+        "401":
+          description: Unauthorized - Authentication token is missing or invalid.
+        "500":
+          description: Internal Server Error.
   /api/auth/login:
     post:
       summary: Authenticate user and return JWT token
