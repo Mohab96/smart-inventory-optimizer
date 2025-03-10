@@ -13,6 +13,7 @@ const yearlyRevenuePerCategory = require("../controllers/yearlyRevenuePerCategor
 const yearlyRevenuePerMonth = require("../controllers/yearlyRevenuePerMonth");
 const getTotalRevenueByYear = require("../controllers/totalRevenueByYear");
 const getTotalRevenueByQuarter = require("../controllers/totalRevenueByQuarter");
+const getTransactionHistory = require("../controllers/getTransactionHistory");
 
 statisticsRouter.get(
   "/category-revenue",
@@ -82,6 +83,12 @@ statisticsRouter.get(
   "/total-revenue-per-quarter",
   [authenticate, authorize],
   getTotalRevenueByQuarter
+);
+
+statisticsRouter.get(
+  "/transactions",
+  [authenticate, authorize],
+  getTransactionHistory
 );
 
 module.exports = statisticsRouter;
