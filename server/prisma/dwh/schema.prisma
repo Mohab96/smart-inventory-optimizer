@@ -42,6 +42,7 @@ model ProductDimension {
     transactions    TransactionFact[]
 }
 
+// done
 model ProductRevenueFact {
     productId      Int
     businessId     String
@@ -87,7 +88,7 @@ model BatchInfo {
 
 model DateDimension {
     dateId   Int      @id @default(autoincrement())
-    fullDate DateTime
+    fullDate DateTime @db.Date
     day      Int
     week     Int
     month    Int
