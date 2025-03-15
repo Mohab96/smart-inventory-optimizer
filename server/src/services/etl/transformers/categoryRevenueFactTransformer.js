@@ -1,5 +1,4 @@
 const prisma = require("../../../../prisma/dwh/client");
-const { business } = require("../../../../prisma/main/client");
 
 async function categoryRevenueFactTransformer(rawData) {
   const date = new Date();
