@@ -79,6 +79,7 @@ model Product {
   Batch            Batch[]
   Business         Business? @relation(fields: [businessId], references: [id])
   businessId       String?
+  lastModified     DateTime  @default(now()) @updatedAt
 }
 
 model Batch {
@@ -93,4 +94,5 @@ model Batch {
   productRelation Product       @relation(fields: [productId], references: [id])
   productId       Int
   Transaction     Transaction[]
+  lastModified    DateTime      @default(now()) @updatedAt
 }
