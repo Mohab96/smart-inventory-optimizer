@@ -5,7 +5,6 @@ async function productRevenueFactLoader(transformedData) {
   try {
     await prisma.productRevenueFact.createMany({
       data: transformedData,
-      skipDuplicates: true,
     });
   } catch (error) {
     winston.error(error);
