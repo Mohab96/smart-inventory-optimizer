@@ -24,7 +24,7 @@ paths:
         and an array of monthly revenues where each month is represented in YYYY-MM format.
       operationId: getMonthlyCategoryRevenues
       tags:
-        - Statistics
+        - Statistics:Revenue
       security:
         - bearerAuth: []
       parameters:
@@ -107,7 +107,7 @@ paths:
       description: Returns a paginated list of product revenues for the authenticated business.
       operationId: getProductsRevenues
       tags:
-        - Statistics
+        - Statistics:Revenue
       security:
         - bearerAuth: []
       parameters:
@@ -162,7 +162,7 @@ paths:
       summary: Get category revenue statistics
       description: Retrieves revenue statistics grouped by categoryId for the authenticated business.
       tags:
-        - Statistics
+        - Statistics:Revenue
       security:
         - bearerAuth: []
       responses:
@@ -210,7 +210,7 @@ paths:
       summary: Get yearly revenue per category
       description: Fetches the total revenue and units sold per category for a given year.
       tags:
-        - Statistics
+        - Statistics:Revenue
       security:
         - bearerAuth: []
       parameters:
@@ -270,7 +270,7 @@ paths:
       summary: Get yearly revenue per month
       description: Retrieves the revenue of a business per month for a given year.
       tags:
-        - Statistics
+        - Statistics:Revenue
       security:
         - bearerAuth: []
       parameters:
@@ -319,7 +319,7 @@ paths:
       summary: Get total revenue by year
       description: Retrieves the aggregated total revenue of a business for a given year.
       tags:
-        - Statistics
+        - Statistics:Revenue
       security:
         - bearerAuth: []
       parameters:
@@ -359,7 +359,7 @@ paths:
         For each quarter (1 through 4), the endpoint calculates the total revenue based on the date records,
         and returns both the revenue for each quarter as well as the overall total revenue for the year.
       tags:
-        - Statistics
+        - Statistics:Revenue
       security:
         - bearerAuth: []
       parameters:
@@ -430,7 +430,7 @@ paths:
         Each product contains its ID, name, and batch details (expiry date and aggregated quantity).
       operationId: getCategoriesExpiringSoon
       tags:
-        - Statistics
+        - Statistics:expiringDate
       security:
         - bearerAuth: []
       parameters:
@@ -526,7 +526,7 @@ paths:
         Each entry includes the product ID, product name, expiry date, and the aggregated quantity of items expiring.
       operationId: getProductsExpiringSoon
       tags:
-        - Statistics
+        - Statistics:expiringDate
       security:
         - bearerAuth: []
       parameters:
@@ -602,7 +602,7 @@ paths:
       description: Returns a paginated list of products that have stock levels less than or equal to 20 for the authenticated business.
       operationId: getProductsStock
       tags:
-        - Statistics
+        - Statistics:stock
       security:
         - bearerAuth: []
       parameters:
@@ -663,7 +663,7 @@ paths:
         Returns a paginated list of products with their total units sold.
       operationId: getProductSales
       tags:
-        - Statistics
+        - Statistics:sales
       security:
         - bearerAuth: []
       parameters:
@@ -744,7 +744,7 @@ paths:
         Returns a paginated list of categories with their total units sold.
       operationId: getCategorySales
       tags:
-        - Statistics
+        - Statistics:sales
       security:
         - bearerAuth: []
       parameters:
@@ -805,7 +805,7 @@ paths:
         The `date` query parameter is used to specify the day (using the fullDate range from midnight to midnight).
       operationId: getTransactionHistory
       tags:
-        - Statistics
+        - Statistics:transactions
       security:
         - bearerAuth: []
       parameters:
