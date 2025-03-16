@@ -17,8 +17,8 @@ async function batchInfoTransformer(rawData, date = null) {
     const transformedData = rawData.map((row) => ({
       batchId: Number(row.generatedId),
       productId: Number(row.productId),
-      businessId: row.product.businessId,
-      dateId: dateRecord.id,
+      businessId: row.productRelation.businessId,
+      dateId: dateRecord.dateId,
       quantity: Number(row.remQuantity),
       purchasePrice: Number(row.costOfGoods),
       sellingPrice: Number(row.sellingPrice),
