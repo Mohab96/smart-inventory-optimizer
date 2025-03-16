@@ -7,7 +7,7 @@ async function inventoryFactLoader(transformedData) {
       data: transformedData,
     });
   } catch (error) {
-    winston.error(error);
+    winston.error("Loading failed:", error);
   }
 }
 

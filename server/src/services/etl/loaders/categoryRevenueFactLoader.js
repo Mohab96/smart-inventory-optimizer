@@ -7,7 +7,7 @@ async function categoryRevenueFactLoader(transformedData) {
       data: transformedData,
     });
   } catch (error) {
-    winston.error(error);
+    winston.error("Loading failed:", error);
   }
 }
 
