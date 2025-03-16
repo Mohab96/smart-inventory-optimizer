@@ -16,9 +16,9 @@ async function transactionFactTransformer(rawData, date = null) {
 
     const transformedData = rawData.map((row) => ({
       transactionId: Number(row.id),
-      businessId: row.batch.product.businessId,
-      productId: Number(row.batch.productId),
-      dateId: dateRecord.id,
+      businessId: row.batchRelation.productRelation.businessId,
+      productId: Number(row.batchRelation.productId),
+      dateId: dateRecord.dateId,
       amount: Number(row.amount),
       discount: Number(row.discount),
     }));

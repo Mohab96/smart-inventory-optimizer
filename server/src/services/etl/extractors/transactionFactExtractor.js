@@ -1,16 +1,11 @@
 const prisma = require("../../../../prisma/main/client");
 
-async function transactionFactExtractor(startDate = null, endDate = null) {
+async function transactionFactExtractor(date = null) {
   try {
     // Default to yesterday if no dates provided
-    const yesterday = new Date();
-    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
-    startDate = startDate
-      ? new Date(startDate)
-      : new Date(new Date(yesterday).setUTCHours(0, 0, 0, 0));
-    endDate = endDate
-      ? new Date(endDate)
-      : new Date(new Date(yesterday).setUTCHours(23, 59, 59, 999));
+    date = date || new Date(new Date().setDate(new Date().getDate() - 1));
+    const startDate = new Date(new Date(date).setUTCHours(0, 0, 0, 0));
+    const endDate = new Date(new Date(date).setUTCHours(23, 59, 59, 999));
 
     const rawData = await prisma.transaction.findMany({
       where: {
@@ -23,10 +18,10 @@ async function transactionFactExtractor(startDate = null, endDate = null) {
         id: true,
         amount: true,
         discount: true,
-        batch: {
+        batchRelation: {
           select: {
             productId: true,
-            product: {
+            productRelation: {
               select: {
                 businessId: true,
               },
