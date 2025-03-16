@@ -2,7 +2,7 @@ const prisma = require("../../../../prisma/main/client");
 
 async function categoryRevenueFactExtractor(date = null) {
   try {
-    if (!date) date = new Date(new Date().setDate(new Date().getDate() - 1)); //TODO: remove this
+    date = date || new Date(new Date().setDate(new Date().getDate() - 1));
     const targetDate = new Date(date).toISOString().split("T")[0];
     const rawData = await prisma.$queryRaw`
         SELECT
@@ -26,7 +26,6 @@ async function categoryRevenueFactExtractor(date = null) {
     return rawData;
   } catch (error) {
     console.error("Extraction failed:", error);
-    throw error; //TODO: Handle error
   }
 }
 
