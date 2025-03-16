@@ -1,25 +1,32 @@
 const prisma = require("../../../../prisma/dwh/client");
 
-async function categoryRevenueFactTransformer(rawData) {
-  const date = new Date();
-  date.setDate(date.getDate() - 1);
+async function categoryRevenueFactTransformer(rawData, date = null) {
+  try {
+    date = date || new Date(new Date().setDate(new Date().getDate() - 1));
 
-  const dateId = await prisma.DateDimension.findFirst({
-    where: {
-      fullDate: date,
-    },
-    select: { dateId: true },
-  });
-  const transformedData = rawData.map((record) => {
-    return {
-      businessId: record.businessId,
-      categoryId: record.categoryId,
-      dateId: dateId.dateId,
-      revenueAmount: record.totalRevenue,
-      totalUnitsSold: record.totalUnitsSold,
-    };
-  });
-  return transformedData;
+    const dateRecord = await prisma.DateDimension.findFirst({
+      where: {
+        fullDate: date,
+      },
+      select: { dateId: true },
+    });
+
+    if (!dateRecord) {
+      throw new Error(`No DateDimension entry for ${date}`);
+    }
+    const transformedData = rawData.map((record) => {
+      return {
+        businessId: record.businessId,
+        categoryId: record.categoryId,
+        dateId: dateRecord.dateId,
+        revenueAmount: record.totalRevenue,
+        totalUnitsSold: record.totalUnitsSold,
+      };
+    });
+    return transformedData;
+  } catch (error) {
+    console.error("Transformation failed:", error);
+  }
 }
 
 module.exports = categoryRevenueFactTransformer;
