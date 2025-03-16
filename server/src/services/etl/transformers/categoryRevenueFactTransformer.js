@@ -17,10 +17,10 @@ async function categoryRevenueFactTransformer(rawData, date = null) {
     const transformedData = rawData.map((record) => {
       return {
         businessId: record.businessId,
-        categoryId: record.categoryId,
-        dateId: dateRecord.dateId,
-        revenueAmount: record.totalRevenue,
-        totalUnitsSold: record.totalUnitsSold,
+        categoryId: Number(record.categoryId),
+        dateId: Number(dateRecord.dateId),
+        revenueAmount: Number(record.totalRevenue || 0),
+        totalUnitsSold: Number(record.totalUnitsSold),
       };
     });
     return transformedData;

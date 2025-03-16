@@ -16,9 +16,9 @@ async function inventoryFactTransformer(rawData, date = null) {
     const transformedData = rawData.map((record) => {
       return {
         businessId: record.businessId,
-        productId: record.productId,
-        dateId: dateRecord.dateId,
-        currentStock: record.currentStock,
+        productId: Number(record.productId),
+        dateId: Number(dateRecord.dateId),
+        currentStock: Number(record.currentStock),
       };
     });
     return transformedData;
