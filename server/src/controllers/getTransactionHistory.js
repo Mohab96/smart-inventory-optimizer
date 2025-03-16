@@ -32,8 +32,8 @@ const getTransactionHistory = async (req, res) => {
         businessId: businessId,
         date: {
           fullDate: {
-            gte: startOfDay.toISOString(),
-            lt: endOfDay.toISOString(),
+            gte: startOfDay,
+            lt: endOfDay,
           },
         },
       },
