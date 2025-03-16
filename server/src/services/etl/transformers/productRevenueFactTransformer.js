@@ -1,6 +1,6 @@
 const prisma = require("../../../../prisma/dwh/client");
 
-async function productRevenueFactTransformer(rawData, date) {
+async function productRevenueFactTransformer(rawData, date = null) {
   try {
     date = date || new Date(new Date().setDate(new Date().getDate() - 1));
 
