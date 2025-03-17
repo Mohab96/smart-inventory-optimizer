@@ -1,4 +1,4 @@
-const winston = require("winston/lib/winston/config");
+const winston = require("winston");
 const prisma = require("../../../../prisma/dwh/client");
 
 async function transactionFactLoader(transformedData) {

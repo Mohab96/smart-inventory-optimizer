@@ -1,9 +1,9 @@
-const winston = require("winston/lib/winston/config");
+const winston = require("winston");
 const prisma = require("../../../../prisma/dwh/client");
 
 async function inventoryFactLoader(transformedData) {
   try {
-    await prisma.categoryRevenueFact.createMany({
+    await prisma.inventoryFact.createMany({
       data: transformedData,
     });
   } catch (error) {
