@@ -19,6 +19,7 @@ async function transactionFactExtractor(date = null) {
         amount: true,
         discount: true,
         date: true,
+        batchId: true,
         batchRelation: {
           select: {
             productId: true,
