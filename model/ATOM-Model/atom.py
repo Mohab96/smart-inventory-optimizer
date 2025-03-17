@@ -176,7 +176,7 @@ class DataHandler:
             logger.error(f"Preprocessing failed: {str(e)}")
             raise
 
-# ========== aPI endpoints ==========
+# ========== API endpoints ==========
 @app.route("/atom/train", methods=["POST"])
 def train_endpoint():
     try:
@@ -279,8 +279,8 @@ def predict_endpoint():
                 
                 roi_predictions.append({
                     "product_id": product.product_id,
-                    "total_forecast": round(total_forecast, 2),
-                    "price_ratio": round(price_ratio, 4),
+                    # "total_forecast": round(total_forecast, 2),
+                    # "price_ratio": round(price_ratio, 4),
                     "roi_score": round(total_forecast * price_ratio, 4)
                 })
                 
