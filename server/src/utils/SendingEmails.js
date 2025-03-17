@@ -1,5 +1,4 @@
 const nodemailer = require("nodemailer");
-const { generateToken } = require("../utils/auth");
 const winston = require("winston");
 
 const sendMail = (user, Subject, emailText) => {
@@ -25,7 +24,6 @@ const sendMail = (user, Subject, emailText) => {
     if (error) {
       winston.error(error);
     } else {
-      /// just for testing  -> we won't send token !!
       return;
     }
   });
