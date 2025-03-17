@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-const ForgotPassword = () => {
+const ResetPassword = () => {
   const {
     register,
     handleSubmit,
-    reset, // Add reset function from useForm
+    watch,
     formState: { errors, isSubmitting },
   } = useForm();
 
@@ -13,67 +13,91 @@ const ForgotPassword = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const onSubmit = async (data) => {
-    console.log("submit");
     try {
       setErrorMessage("");
+
+      // Call the reset password API
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/auth/forget-password`,
+        `${import.meta.env.VITE_BASE_URL}/api/auth/reset-password`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer`
           },
-          body: JSON.stringify({ email: data.email }),
+          body: JSON.stringify({ password: data.password }),
         }
       );
+
       if (!response.ok) {
-        throw new Error(response.errors);
+        throw new Error("Failed to reset password. Please try again.");
       }
-      const token = response.headers.get("Authorization").split(" ")[1];
-      console.log(token);
+
+      // Handle success
       setIsSubmitted(true);
     } catch (err) {
-      setErrorMessage(err.message || "Error Occurred");
+      setErrorMessage(err.message || "An error occurred. Please try again.");
     }
-  };
-
-  const handleTryAgain = () => {
-    setIsSubmitted(false); // Reset the submission state
-    reset(); // Reset the form fields
   };
 
   return (
     <div className="my-24 max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center text-orange-500">
-        Forgot Password
+        Reset Password
       </h2>
 
       {!isSubmitted ? (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label
-              htmlFor="email"
+              htmlFor="password"
               className="block text-sm font-medium text-orange-500"
             >
-              Email Address
+              New Password
             </label>
             <input
-              id="email"
-              type="email"
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /\S+@\S+\.\S+/,
-                  message: "Please enter a valid email address",
+              id="password"
+              type="password"
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 characters",
                 },
               })}
               className={`mt-1 block w-full rounded-md border ${
-                errors.email ? "border-red-500" : "border-gray-300"
+                errors.password ? "border-red-500" : "border-gray-300"
               } shadow-sm focus:border-orange-500 focus:outline-none focus:ring-orange-500 p-2`}
             />
-            {errors.email && (
+            {errors.password && (
               <p className="text-red-500 text-sm mt-1">
-                {errors.email.message}
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-orange-500"
+            >
+              Confirm New Password
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              {...register("confirmPassword", {
+                required: "Please confirm your password",
+                validate: (value) =>
+                  value === watch("password") || "Passwords do not match",
+              })}
+              className={`mt-1 block w-full rounded-md border ${
+                errors.confirmPassword ? "border-red-500" : "border-gray-300"
+              } shadow-sm focus:border-orange-500 focus:outline-none focus:ring-orange-500 p-2`}
+            />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.confirmPassword.message}
               </p>
             )}
           </div>
@@ -93,7 +117,7 @@ const ForgotPassword = () => {
                 : "bg-orange-500 hover:bg-orange-700"
             } transition-colors`}
           >
-            {isSubmitting ? "Sending..." : "Send Reset Instructions"}
+            {isSubmitting ? "Resetting..." : "Reset Password"}
           </button>
         </form>
       ) : (
@@ -113,21 +137,15 @@ const ForgotPassword = () => {
             />
           </svg>
           <p className="text-green-600 font-medium mb-2">
-            Password reset instructions sent!
+            Password reset successfully!
           </p>
-          <p className="text-gray-600 text-sm mb-4">
-            Check your email (including spam folder)
+          <p className="text-gray-600 text-sm">
+            You can now log in with your new password.
           </p>
-          <button
-            onClick={handleTryAgain}
-            className="w-full py-2 px-4 rounded-md text-white bg-orange-500 hover:bg-orange-700 transition-colors"
-          >
-            Try Again
-          </button>
         </div>
       )}
     </div>
   );
 };
 
-export default ForgotPassword;
+export default ResetPassword;

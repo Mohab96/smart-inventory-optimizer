@@ -19,12 +19,13 @@ import Header from "./components/common/Header";
 import YearRevenues from "./pages/dashboard/YearRevenues";
 import QuarterlyRevenues from "./pages/dashboard/QuarterlyRevenues";
 import Transactions from "./pages/dashboard/Transactions";
+import ResetPassword from "./pages/Auth/ResetPassword";
 
 function App() {
   return (
     <Router>
       <Routes>
-      <Route path="/register" element={<Register />} />
+        <Route path="/register" element={<Register />} />
         {/* Auth Routes */}
         <Route
           path="/"
@@ -47,6 +48,14 @@ function App() {
           element={
             <AuthRoute>
               <ForgotPassword />
+            </AuthRoute>
+          }
+        />
+        <Route
+          path="/resetpassword"
+          element={
+            <AuthRoute>
+              <ResetPassword />
             </AuthRoute>
           }
         />
