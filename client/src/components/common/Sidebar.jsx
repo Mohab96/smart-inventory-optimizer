@@ -11,9 +11,7 @@ const Sidebar = () => {
 
       <ul className="mt-4 space-y-2 font-medium">
         <li>
-          <button
-            className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
+          <button className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
             Dashboard
           </button>
         </li>
@@ -36,9 +34,9 @@ const Sidebar = () => {
         <li>
           <button
             className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-            onClick={() => navigate("*")}
+            onClick={() => navigate("/transactionsLog")}
           >
-            Trend Visualizer
+            Transactions Log
           </button>
         </li>
         <li>
