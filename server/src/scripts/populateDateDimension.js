@@ -41,8 +41,6 @@ async function populateDateDimension(startYear, endYear) {
     return dates;
   } catch (error) {
     console.error("Error populating DateDimension:", error.message);
-  } finally {
-    await prisma.$disconnect(); // Disconnect from the database
   }
 }
 

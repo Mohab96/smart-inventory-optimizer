@@ -46,6 +46,7 @@ async function transactionFactTransformer(rawData) {
         dateId: dateId,
         amount: Number(row.amount),
         discount: Number(row.discount),
+        batchId: Number(row.batchId),
       };
     });
 
