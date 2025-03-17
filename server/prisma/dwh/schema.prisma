@@ -42,7 +42,6 @@ model ProductDimension {
     transactions    TransactionFact[]
 }
 
-// done
 model ProductRevenueFact {
     productId      Int
     businessId     String
