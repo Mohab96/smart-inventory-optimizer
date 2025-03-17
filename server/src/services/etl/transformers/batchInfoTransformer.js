@@ -27,7 +27,6 @@ async function batchInfoTransformer(rawData, date = null) {
     return transformedData;
   } catch (error) {
     console.error("Transformation failed:", error);
-    throw error;
   }
 }
 
