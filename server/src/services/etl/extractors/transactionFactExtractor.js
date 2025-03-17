@@ -9,7 +9,7 @@ async function transactionFactExtractor(date = null) {
 
     const rawData = await prisma.transaction.findMany({
       where: {
-        date: {
+        createdAt: {
           gte: startDate,
           lte: endDate,
         },
@@ -18,6 +18,7 @@ async function transactionFactExtractor(date = null) {
         id: true,
         amount: true,
         discount: true,
+        date: true,
         batchRelation: {
           select: {
             productId: true,
