@@ -1,32 +1,64 @@
 const prisma = require("../../../../prisma/dwh/client");
 
-async function productRevenueFactTransformer(rawData, date = null) {
-  try {
-    date = date || new Date(new Date().setDate(new Date().getDate() - 1));
+function startOfDayUTC(date) {
+  const d = new Date(date);
+  return new Date(
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
+  );
+}
 
-    const dateRecord = await prisma.DateDimension.findFirst({
+async function productRevenueFactTransformer(rawData) {
+  try {
+    const uniqueDates = [
+      ...new Set(rawData.map((row) => startOfDayUTC(row.date).toISOString())),
+    ].map((str) => new Date(str));
+
+    const dateRecords = await prisma.DateDimension.findMany({
       where: {
-        fullDate: date,
+        fullDate: {
+          in: uniqueDates,
+        },
       },
-      select: { dateId: true },
+      select: {
+        dateId: true,
+        fullDate: true,
+      },
     });
 
-    if (!dateRecord) {
-      throw new Error(`No DateDimension entry for ${date}`);
+    const fetchedDateStrs = new Set(
+      dateRecords.map((record) => record.fullDate.toISOString())
+    );
+    const missingDates = uniqueDates.filter(
+      (date) => !fetchedDateStrs.has(date.toISOString())
+    );
+    if (missingDates.length > 0) {
+      throw new Error(
+        `No DateDimension entries for dates: ${missingDates
+          .map((d) => d.toISOString())
+          .join(", ")}`
+      );
     }
 
-    const transformedData = rawData.map((row) => ({
-      productId: Number(row.productId),
-      businessId: row.businessId,
-      dateId: dateRecord.dateId,
-      revenueAmount: Number(row.revenueAmount),
-      totalUnitsSold: Number(row.totalUnitsSold),
-    }));
+    const dateIdMap = {};
+    dateRecords.forEach((record) => {
+      dateIdMap[record.fullDate.toISOString()] = record.dateId;
+    });
+
+    const transformedData = rawData.map((row) => {
+      const dateStr = startOfDayUTC(row.date).toISOString();
+      const dateId = dateIdMap[dateStr];
+      return {
+        productId: Number(row.productId),
+        businessId: row.businessId,
+        dateId: dateId,
+        revenueAmount: Number(row.revenueAmount),
+        totalUnitsSold: Number(row.totalUnitsSold),
+      };
+    });
 
     return transformedData;
   } catch (error) {
     console.error("Transformation failed:", error);
-    throw error;
   }
 }
 module.exports = productRevenueFactTransformer;
