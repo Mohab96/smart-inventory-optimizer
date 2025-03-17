@@ -60,6 +60,7 @@ model Transaction {
   discount      Decimal  @default(0.0)
   batchRelation Batch    @relation(fields: [batchId], references: [generatedId])
   batchId       Int
+  createdAt     DateTime @default(now())
 }
 
 model Category {
