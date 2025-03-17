@@ -18,6 +18,7 @@ import ImageUpload from "./pages/ImageUpload";
 import Header from "./components/common/Header";
 import YearRevenues from "./pages/dashboard/YearRevenues";
 import QuarterlyRevenues from "./pages/dashboard/QuarterlyRevenues";
+import Transactions from "./pages/dashboard/Transactions";
 
 function App() {
   return (
@@ -105,6 +106,17 @@ function App() {
               <Header></Header>
               <div className="mt-24">
                 <TransactionsFeeding />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/transactionsLog"
+          element={
+            <ProtectedRoute>
+              <Header></Header>
+              <div className="mt-24">
+                <Transactions />
               </div>
             </ProtectedRoute>
           }
