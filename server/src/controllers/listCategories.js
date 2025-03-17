@@ -1,4 +1,4 @@
-const winston = require("winston/lib/winston/config");
+const winston = require("winston");
 const mainClient = require("../../prisma/main/client");
 
 const listCategories = async (req, res) => {

@@ -1,9 +1,9 @@
 const winston = require("winston");
 const prisma = require("../../../../prisma/dwh/client");
 
-async function productRevenueFactLoader(transformedData) {
+async function inventoryFactLoader(transformedData) {
   try {
-    await prisma.productRevenueFact.createMany({
+    await prisma.inventoryFact.createMany({
       data: transformedData,
     });
   } catch (error) {
@@ -11,4 +11,4 @@ async function productRevenueFactLoader(transformedData) {
   }
 }
 
-module.exports = productRevenueFactLoader;
+module.exports = inventoryFactLoader;

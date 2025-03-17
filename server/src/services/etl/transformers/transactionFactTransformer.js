@@ -1,26 +1,20 @@
 const prisma = require("../../../../prisma/dwh/client");
 const startOfDayUTC = require("../../../utils/startOfDayUTC");
 
-async function productRevenueFactTransformer(rawData) {
+async function transactionFactTransformer(rawData) {
   try {
     const uniqueDates = [
       ...new Set(rawData.map((row) => startOfDayUTC(row.date).toISOString())),
     ].map((str) => new Date(str));
-
     if (uniqueDates.length === 0) {
       return [];
     }
 
     const dateRecords = await prisma.DateDimension.findMany({
       where: {
-        fullDate: {
-          in: uniqueDates,
-        },
+        fullDate: { in: uniqueDates },
       },
-      select: {
-        dateId: true,
-        fullDate: true,
-      },
+      select: { dateId: true, fullDate: true },
     });
 
     const fetchedDateStrs = new Set(
@@ -46,11 +40,12 @@ async function productRevenueFactTransformer(rawData) {
       const dateStr = startOfDayUTC(row.date).toISOString();
       const dateId = dateIdMap[dateStr];
       return {
-        productId: Number(row.productId),
-        businessId: row.businessId,
+        transactionId: Number(row.id),
+        businessId: row.batchRelation.productRelation.businessId,
+        productId: Number(row.batchRelation.productId),
         dateId: dateId,
-        revenueAmount: Number(row.revenueAmount),
-        totalUnitsSold: Number(row.totalUnitsSold),
+        amount: Number(row.amount),
+        discount: Number(row.discount),
       };
     });
 
@@ -59,4 +54,5 @@ async function productRevenueFactTransformer(rawData) {
     console.error("Transformation failed:", error);
   }
 }
-module.exports = productRevenueFactTransformer;
+
+module.exports = transactionFactTransformer;

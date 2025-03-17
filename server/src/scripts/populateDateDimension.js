@@ -20,7 +20,7 @@ async function populateDateDimension(startYear, endYear) {
       const quarter = Math.ceil(month / 3); // Calculate quarter (1-4)
 
       records.push({
-        fullDate: currentDate.toISOString(), // Store as ISO string
+        fullDate: new Date(currentDate),
         day: day,
         week: week,
         month: month,
