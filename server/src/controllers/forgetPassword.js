@@ -13,7 +13,6 @@ async function forgetPassword(req, res, next) {
         .json({ message: "We could not find user with given email" });
     const token = generateToken(user, "10m");
     const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`; //frontend URL
-    // const resetLink = `https://www.youtube.com/watch?v=LHKt21NZKww&ab_channel=%D9%85%D9%8A%D9%85%D8%B2%D9%88%D8%AF%D8%A8%D9%84%D8%AC%D8%A9`; //frontend URL
     const subject = "Reset Your Password";
     const text = `
                     Dear ${user.name},
