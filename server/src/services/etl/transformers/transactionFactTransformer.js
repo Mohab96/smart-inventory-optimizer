@@ -1,15 +1,14 @@
 const prisma = require("../../../../prisma/dwh/client");
-const startOfDayUTC = (date) => {
-  const d = new Date(date);
-  return new Date(
-    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
-  );
-};
+const startOfDayUTC = require("../../../utils/startOfDayUTC");
+
 async function transactionFactTransformer(rawData) {
   try {
     const uniqueDates = [
       ...new Set(rawData.map((row) => startOfDayUTC(row.date).toISOString())),
     ].map((str) => new Date(str));
+    if (uniqueDates.length === 0) {
+      return [];
+    }
 
     const dateRecords = await prisma.DateDimension.findMany({
       where: {
