@@ -16,11 +16,14 @@ async function forgetPassword(req, res, next) {
 
     const token = generateToken(user, "10m");
 
-    let transporter = nodemailer.createTransport({
+let transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: process.env.EmailAddress,
         pass: process.env.EmailPassword,
+      },
+      tls: {
+        rejectUnauthorized: false,
       },
     });
 
