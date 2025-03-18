@@ -15,7 +15,6 @@ import LowStockProducts from "./pages/dashboard/lowStockProducts";
 import NewProductAddition from "./pages/newProductAddition/NewProductAddition";
 import TransactionsFeeding from "./pages/TransactionsFeeding/TransactionsFeeding";
 import ImageUpload from "./pages/ImageUpload";
-import Header from "./components/common/Header";
 import YearRevenues from "./pages/dashboard/YearRevenues";
 import QuarterlyRevenues from "./pages/dashboard/QuarterlyRevenues";
 import Transactions from "./pages/dashboard/Transactions";
@@ -112,7 +111,6 @@ function App() {
           path="/transactionsFeeding"
           element={
             <ProtectedRoute>
-              <Header></Header>
               <div className="mt-24">
                 <TransactionsFeeding />
               </div>
@@ -123,7 +121,6 @@ function App() {
           path="/transactionsLog"
           element={
             <ProtectedRoute>
-              <Header></Header>
               <div className="mt-24">
                 <Transactions />
               </div>

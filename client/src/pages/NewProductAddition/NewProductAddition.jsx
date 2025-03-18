@@ -40,24 +40,24 @@ const NewProductAddition = () => {
     setIsLoading(true);
     setErrorMessage("");
     setSuccessMessage("");
-    console.log(formData);
+    console.log("Data: ",formData);
     try {
-      // const response = await fetch(
-      //   `${import.meta.env.VITE_BASE_URL}/api/products`,
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       Authorization: `Bearer ${token}`,
-      //     },
-      //     body: JSON.stringify(formData),
-      //   }
-      // );
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/products`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.errors || "Failed to add product");
-      // }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.errors || "Failed to add product");
+      }
 
       selectRef?.current.clearValue();
       setFormData({ name: "", categoryId: null });
