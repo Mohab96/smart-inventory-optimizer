@@ -16,7 +16,9 @@ const validatePurchases = async (readableStream, options) => {
       const validatedData = purchasesSchema.validate(row, options);
 
       if (productsIds.get(row.productName) === undefined)
-        throw new Error(`Product ${row.productName} not found`);
+        throw new Error(
+          `Product ${row.productName} in row ${row.rowNumber} not found`
+        );
 
       ///the row is valid
       validatedData.value.productId = productsIds.get(
@@ -36,13 +38,8 @@ const validatePurchases = async (readableStream, options) => {
   }
   console.log("Finished validating rows");
 
-  await isPresent(options.businessId);
-  console.log("Finished checking if products are present");
-
-  // await checkUniqueness(options.businessId);
+  await checkUniqueness(options.businessId);
   console.log("Finished checking uniqueness, returning results");
-
-  console.log("First Good Row: ", goodRows[0]);
 
   return {
     goodRows,
@@ -51,53 +48,31 @@ const validatePurchases = async (readableStream, options) => {
 };
 
 const checkUniqueness = async (businessId) => {
-  // Map rows to keys with productId, batchId, and rowNumber.
-  const keys = rows.map((row) => ({
-    productId: productsIds.get(row.productName),
-    batchId: +row.batchId, // converting to number if needed
-    rowNumber: row.rowNumber,
-  }));
-
-  let existingBatches = [];
-  // Adjust batch size to avoid too many bind variables.
-  const BATCH_SIZE = Math.floor(32767 / 2); // 16383 keys max per batch
-
-  // Process keys in chunks.
-  for (let i = 0; i < keys.length; i += BATCH_SIZE) {
-    const chunk = keys.slice(i, i + BATCH_SIZE);
-
-    const chunkExistingBatches = await maindb.batch.findMany({
-      where: {
-        OR: chunk.map((key) => ({
-          productId: key.productId,
-          id: key.batchId,
-        })),
+  const batchIds = rows.map((row) => row.batchId);
+  const records = maindb.batch.findMany({
+    where: {
+      id: {
+        in: batchIds,
       },
-      select: {
-        productId: true,
-        id: true,
-      },
-    });
-
-    existingBatches = existingBatches.concat(chunkExistingBatches);
+    },
+    select: {
+      id: true,
+      productId: true,
+    },
+  });
+  const recordsMap = new Map();
+  records.map((record) => {
+    recordsMap.set(record.id, record.productId);
+  });
+  for (const row of rows) {
+    const productId = productsIds.get(row.productName);
+    if (recordsMap.get(row.batchId) === productId) {
+      badRows.push({
+        rowNumber: row.rowNumber,
+        error: `Batch ${row.batchId} and Product ${productId} combination already exists on row ${row.rowNumber}`,
+      });
+    }
   }
-
-  if (existingBatches.length === 0) return;
-
-  // Identify rows with non-unique key pairs.
-  const notUniqueRowNumbers = keys
-    .filter((key) =>
-      existingBatches.some(
-        (batch) => batch.productId === key.productId && batch.id === key.batchId
-      )
-    )
-    .map((key) => ({
-      rowNumber: key.rowNumber,
-      error: `Batch ${key.batchId} and Product ${key.productId} combination already exists`,
-    }));
-
-  // Append errors to badRows array.
-  badRows.push(...notUniqueRowNumbers);
 };
 
 const preProcess = async (readableStream, businessId) => {
