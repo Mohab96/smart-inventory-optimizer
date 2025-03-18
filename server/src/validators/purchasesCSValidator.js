@@ -9,26 +9,27 @@ const badRows = [];
 //This function reads a CSV file and validates each row against the purchasesSchema.
 const validatePurchases = async (readableStream, options) => {
   const goodRows = [];
-  let rowNumber = 0;
+  await preProcess(readableStream, options.businessId);
 
-  for await (const row of readableStream.pipe(csv())) {
-    rowNumber++;
-    rows.push({ rowNumber, ...row });
-  }
-  await preProcess(options.businessId);
-  rowNumber = 0;
   for (const row of rows) {
-    rowNumber++;
     try {
       const validatedData = purchasesSchema.validate(row, options);
+
+      if (productsIds.get(row.productName) === undefined)
+        throw new Error(`Product ${row.productName} not found`);
+
+      ///the row is valid
       validatedData.value.productId = productsIds.get(
         validatedData.value.productName
       );
-      goodRows.push({ rowNumber, data: { ...validatedData.value } });
+      goodRows.push({
+        rowNumber: row.rowNumber,
+        data: { ...validatedData.value },
+      });
     } catch (err) {
       badRows.push({
-        rowNumber: rowNumber,
-        error: err.details[0].message,
+        rowNumber: row.rowNumber,
+        error: err.details[0].message || err.message,
       });
       console.debug(err);
     }
@@ -47,23 +48,6 @@ const validatePurchases = async (readableStream, options) => {
     goodRows,
     badRows,
   };
-};
-
-const isPresent = async (businessId) => {
-  const formattedData = rows.map((row) => ({
-    name: row.productName,
-    rowNumber: row.rowNumber,
-    productId: productsIds.get(row.productName),
-  }));
-
-  for (const row of formattedData) {
-    if (row.productId === undefined) {
-      badRows.push({
-        rowNumber: row.rowNumber,
-        error: `Product ${row.name} not found`,
-      });
-    }
-  }
 };
 
 const checkUniqueness = async (businessId) => {
@@ -115,7 +99,14 @@ const checkUniqueness = async (businessId) => {
   // Append errors to badRows array.
   badRows.push(...notUniqueRowNumbers);
 };
-const preProcess = async (businessId) => {
+
+const preProcess = async (readableStream, businessId) => {
+  let rowNumber = 0;
+  for await (const row of readableStream.pipe(csv())) {
+    rowNumber++;
+    rows.push({ rowNumber, ...row });
+  }
+
   const uniqueProducts = [...new Set(rows.map((row) => row.productName))];
 
   const ret = await maindb.product.findMany({
