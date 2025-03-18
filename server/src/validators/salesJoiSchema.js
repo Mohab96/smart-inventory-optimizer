@@ -27,6 +27,6 @@ const salesSchema = Joi.object({
     "number.min": "Discount must be at least 0.",
     "number.max": "Discount must be at most 100.",
   }),
-}).external(salesTransactionValidator);
+});
 
 module.exports = salesSchema;
