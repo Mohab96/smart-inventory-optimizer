@@ -48,25 +48,33 @@ const validatePurchases = async (readableStream, options) => {
 };
 
 const checkUniqueness = async (businessId) => {
-  const batchIds = rows.map((row) => row.batchId);
-  const records = maindb.batch.findMany({
-    where: {
-      id: {
-        in: batchIds,
+  const batchIds = rows.map((row) => +row.batchId);
+  const chunkSize = 10000;
+  let records = [];
+  for (let i = 0; i < batchIds.length; i += chunkSize) {
+    const chunk = batchIds.slice(i, i + chunkSize);
+    const chunkRecords = await maindb.batch.findMany({
+      where: {
+        id: { in: chunk },
       },
-    },
-    select: {
-      id: true,
-      productId: true,
-    },
-  });
+      select: {
+        id: true,
+        productId: true,
+      },
+    });
+    records.push(...chunkRecords);
+  }
+
   const recordsMap = new Map();
-  records.map((record) => {
-    recordsMap.set(record.id, record.productId);
-  });
+  for (const record of records) {
+    const compositeKey = `${record.id}-${record.productId}`;
+    recordsMap.set(compositeKey, true);
+  }
+
   for (const row of rows) {
     const productId = productsIds.get(row.productName);
-    if (recordsMap.get(row.batchId) === productId) {
+    const compositeKey = `${row.batchId}-${productId}`;
+    if (recordsMap.has(compositeKey)) {
       badRows.push({
         rowNumber: row.rowNumber,
         error: `Batch ${row.batchId} and Product ${productId} combination already exists on row ${row.rowNumber}`,

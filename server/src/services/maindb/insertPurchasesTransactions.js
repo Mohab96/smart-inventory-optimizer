@@ -14,23 +14,25 @@ const insertPurchasesTransactions = async (data, businessId) => {
         remQuantity: row.data.quantity,
       }));
 
-      const values = batchesData
-        .map(
-          (b) =>
-            `(${b.id}, ${b.productId}, '${b.expiryDate}', '${b.dateOfReceipt}', ${b.costOfGoods}, ${b.sellingPrice}, ${b.soldQuantity}, ${b.remQuantity})`
-        )
-        .join(", ");
+      console.log("Inserting batches...");
+      const batchInsertResult = await prisma.batch.createMany({
+        data: batchesData,
+        skipDuplicates: true,
+      });
+      console.log("Batches inserted:", batchInsertResult.count);
 
-      const insertQuery = `
-        INSERT INTO "Batch"("id", "productId", "expiryDate", "dateOfReceipt", "costOfGoods", "sellingPrice", "soldQuantity", "remQuantity")
-        VALUES ${values}
-        ON CONFLICT DO NOTHING
-        RETURNING "generatedId", "id", "productId";
-      `;
-
-      const insertedBatches = await prisma.$queryRawUnsafe(insertQuery);
-
-      console.log("Batches inserted:", insertedBatches.length);
+      const insertedBatches = await prisma.batch.findMany({
+        where: {
+          productRelation: {
+            businessId: businessId,
+          },
+        },
+        select: {
+          id: true,
+          productId: true,
+          generatedId: true,
+        },
+      });
 
       const batchMap = new Map();
       for (const batch of insertedBatches) {
@@ -50,6 +52,7 @@ const insertPurchasesTransactions = async (data, businessId) => {
           discount: 0,
         };
       });
+      console.log("Inserting transactions...");
 
       const transactionsInsertResult = await prisma.transaction.createMany({
         data: transactionsData,
@@ -57,7 +60,7 @@ const insertPurchasesTransactions = async (data, businessId) => {
       });
       console.log("Transactions inserted:", transactionsInsertResult.count);
     },
-    { timeout: 960000 }
+    { timeout: 720000 }
   );
 };
 
