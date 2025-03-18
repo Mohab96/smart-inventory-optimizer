@@ -1,8 +1,4 @@
 const Joi = require("joi");
-const {
-  isPresent,
-  checkUniqueness,
-} = require("../utils/customPurchaseJoiValidator");
 
 const purchasesSchema = Joi.object({
   batchId: Joi.number().required().messages({
@@ -10,7 +6,7 @@ const purchasesSchema = Joi.object({
     "number.base": "Batch ID must be a number.",
   }),
 
-  productName: Joi.string().required().custom(isPresent).messages({
+  productName: Joi.string().required().messages({
     "any.required": "Product Name is required.",
     "number.base": "Product Name must be a number.",
     "any.custom": "Product not found.",
@@ -49,10 +45,6 @@ const purchasesSchema = Joi.object({
     "date.base": "Date of Receipt must be a valid date.",
     "date.max": "Date of Receipt cannot be in the future.",
   }),
-})
-  .external(checkUniqueness)
-  .messages({
-    "any.custom": "batchId and productId combination already exists.",
-  });
+});
 
 module.exports = purchasesSchema;

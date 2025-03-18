@@ -23,14 +23,18 @@ const purchasesConsumer = async () => {
             await updateCsvStatus(message.id, "Processing");
             ///parse the CSV file
             const stream = await readCSV(message.bucketName, message.fileName);
+            console.log("Finished reading CSV file");
+
             ///validate the CSV file
             const data = await validatePurchases(stream, {
               context: { businessId: message.businessId },
             });
+            console.log("Finished Validating CSV file");
             //check final state and push to database
             if (data.badRows.length > 0) {
               await updateCsvStatus(message.id, "Failed", data.badRows);
             } else {
+              console.log("Inserting into database....");
               await insertPurchasesTransactions(data);
               await updateCsvStatus(message.id, "Done");
             }
