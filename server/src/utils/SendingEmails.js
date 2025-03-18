@@ -17,7 +17,7 @@ const sendMail = (user, Subject, emailText) => {
     from: process.env.EmailAddress,
     to: user.email,
     subject: Subject,
-    text: emailText,
+    ["html"]: emailText,
   };
 
   transporter.sendMail(mailOptions, function (error) {
