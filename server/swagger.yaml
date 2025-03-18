@@ -992,6 +992,15 @@ paths:
                               type: string
                             businessName:
                               type: string
+                        batch:
+                          type: object
+                          description: The related batch dimension record.
+                          properties:
+                            sellingPrice:
+                              type: integer
+                            expiryDate:
+                              type: string
+                              format: date
         "401":
           description: Unauthorized - Authentication token is missing or invalid.
         "500":

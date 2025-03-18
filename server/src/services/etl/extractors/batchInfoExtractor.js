@@ -15,7 +15,7 @@ async function batchInfoExtractor(date = null) {
         },
       },
       select: {
-        generatedId: true, //TODO: where is the other id?
+        generatedId: true,
         productId: true,
         remQuantity: true,
         costOfGoods: true,

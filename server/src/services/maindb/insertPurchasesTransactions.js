@@ -1,36 +1,67 @@
 const client = require("../../../prisma/main/client");
 
-const insertPurchasesTransactions = async (data) => {
-  await client.$transaction(async (prisma) => {
-    // Insert batches one by one to get the generated IDs
-    const createdBatches = await Promise.all(
-      data.goodRows.map((row) =>
-        prisma.batch.create({
-          data: {
-            id: +row.data.batchId,
-            productId: +row.data.productId,
-            expiryDate: row.data.expiryDate,
-            dateOfReceipt: row.data.dateOfReceipt,
-            costOfGoods: row.data.costOfGoods,
-            sellingPrice: row.data.sellingPrice,
-            soldQuantity: 0,
-            remQuantity: row.data.quantity,
+const insertPurchasesTransactions = async (data, businessId) => {
+  await client.$transaction(
+    async (prisma) => {
+      const batchesData = data.goodRows.map((row) => ({
+        id: +row.data.batchId,
+        productId: +row.data.productId,
+        expiryDate: row.data.expiryDate,
+        dateOfReceipt: row.data.dateOfReceipt,
+        costOfGoods: row.data.costOfGoods,
+        sellingPrice: row.data.sellingPrice,
+        soldQuantity: 0,
+        remQuantity: row.data.quantity,
+      }));
+
+      console.log("Inserting batches...");
+      const batchInsertResult = await prisma.batch.createMany({
+        data: batchesData,
+        skipDuplicates: true,
+      });
+      console.log("Batches inserted:", batchInsertResult.count);
+
+      const insertedBatches = await prisma.batch.findMany({
+        where: {
+          productRelation: {
+            businessId: businessId,
           },
-          select: { generatedId: true }, // Get the generated batch ID
-        })
-      )
-    );
+        },
+        select: {
+          id: true,
+          productId: true,
+          generatedId: true,
+        },
+      });
 
-    // Map transactions using the newly created batch IDs
-    const transactions = createdBatches.map((batch, index) => ({
-      batchId: batch.generatedId, // Use the generated batch ID
-      date: data.goodRows[index].data.dateOfReceipt,
-      amount: +data.goodRows[index].data.quantity,
-      discount: 0,
-    }));
+      const batchMap = new Map();
+      for (const batch of insertedBatches) {
+        const compositeKey = `${batch.id}-${batch.productId}`;
+        batchMap.set(compositeKey, batch.generatedId);
+      }
 
-    // Insert transactions
-    await prisma.transaction.createMany({ data: transactions });
-  });
+      const transactionsData = data.goodRows.map((row) => {
+        const csvBatchId = +row.data.batchId;
+        const csvProductId = +row.data.productId;
+        const compositeKey = `${csvBatchId}-${csvProductId}`;
+        const autoBatchId = batchMap.get(compositeKey);
+        return {
+          batchId: autoBatchId,
+          date: row.data.dateOfReceipt,
+          amount: +row.data.quantity,
+          discount: 0,
+        };
+      });
+      console.log("Inserting transactions...");
+
+      const transactionsInsertResult = await prisma.transaction.createMany({
+        data: transactionsData,
+        skipDuplicates: true,
+      });
+      console.log("Transactions inserted:", transactionsInsertResult.count);
+    },
+    { timeout: 720000 }
+  );
 };
+
 module.exports = insertPurchasesTransactions;

@@ -31,10 +31,10 @@ model CategoryDimension {
 model ProductDimension {
     productId  Int    @id @default(autoincrement())
     name       String
-    categoryId Int
+    categoryId Int?
     businessId String
 
-    category        CategoryDimension    @relation(fields: [categoryId], references: [categoryId])
+    category        CategoryDimension?   @relation(fields: [categoryId], references: [categoryId])
     business        BusinessDimension    @relation(fields: [businessId], references: [businessId])
     productRevenues ProductRevenueFact[]
     batches         BatchInfo[]
@@ -71,14 +71,14 @@ model CategoryRevenueFact {
 }
 
 model BatchInfo {
-    batchId       Int      @id @default(autoincrement())
+    batchId       Int       @id @default(autoincrement())
     productId     Int
     businessId    String
     dateId        Int
     quantity      Int
     purchasePrice Decimal
     sellingPrice  Decimal
-    expiryDate    DateTime
+    expiryDate    DateTime?
 
     date         DateDimension     @relation(fields: [dateId], references: [dateId])
     business     BusinessDimension @relation(fields: [businessId], references: [businessId])
