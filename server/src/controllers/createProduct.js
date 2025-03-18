@@ -2,7 +2,7 @@ const mainClient = require("../../prisma/main/client");
 const createProductValidator = require("../validators/createProductValidator");
 
 const createProduct = async (req, res) => {
-  const { error } = createProductValidator.validate(userData);
+  const { error } = createProductValidator.validate(req.body);
   if (error) res.status(400).json({ message: error.details[0].message });
 
   const { name, categoryId } = req.body;
@@ -40,11 +40,8 @@ const createProduct = async (req, res) => {
     const product = await mainClient.product.create({
       data: {
         name,
-        category: {
-          connect: {
-            id: categoryId,
-          },
-        },
+        categoryId: categoryId,
+        businessId: req.user.business,
       },
     });
 
