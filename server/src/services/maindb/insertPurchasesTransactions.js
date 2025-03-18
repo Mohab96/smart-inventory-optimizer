@@ -1,13 +1,9 @@
 const client = require("../../../prisma/main/client");
 
-const insertPurchasesTransactions = async (data) => {
+const insertPurchasesTransactions = async (data, businessId) => {
   await client.$transaction(
     async (prisma) => {
-      // Prepare the batch data from the goodRows
       const batchesData = data.goodRows.map((row) => ({
-        // Note: `id` here is provided by your CSV data.
-        // If your DB generates the primary key (and you don't need the value in advance),
-        // you can omit it.
         id: +row.data.batchId,
         productId: +row.data.productId,
         expiryDate: row.data.expiryDate,
@@ -18,31 +14,50 @@ const insertPurchasesTransactions = async (data) => {
         remQuantity: row.data.quantity,
       }));
 
-      // Bulk insert batches using createMany.
-      // This returns a count of inserted rows.
-      const batchInsertResult = await prisma.batch.createMany({
-        data: batchesData,
-        skipDuplicates: true, // optional: skip if there are duplicates
+      const values = batchesData
+        .map(
+          (b) =>
+            `(${b.id}, ${b.productId}, '${b.expiryDate}', '${b.dateOfReceipt}', ${b.costOfGoods}, ${b.sellingPrice}, ${b.soldQuantity}, ${b.remQuantity})`
+        )
+        .join(", ");
+
+      const insertQuery = `
+        INSERT INTO "Batch"("id", "productId", "expiryDate", "dateOfReceipt", "costOfGoods", "sellingPrice", "soldQuantity", "remQuantity")
+        VALUES ${values}
+        ON CONFLICT DO NOTHING
+        RETURNING "generatedId", "id", "productId";
+      `;
+
+      const insertedBatches = await prisma.$queryRawUnsafe(insertQuery);
+
+      console.log("Batches inserted:", insertedBatches.length);
+
+      const batchMap = new Map();
+      for (const batch of insertedBatches) {
+        const compositeKey = `${batch.id}-${batch.productId}`;
+        batchMap.set(compositeKey, batch.generatedId);
+      }
+
+      const transactionsData = data.goodRows.map((row) => {
+        const csvBatchId = +row.data.batchId;
+        const csvProductId = +row.data.productId;
+        const compositeKey = `${csvBatchId}-${csvProductId}`;
+        const autoBatchId = batchMap.get(compositeKey);
+        return {
+          batchId: autoBatchId,
+          date: row.data.dateOfReceipt,
+          amount: +row.data.quantity,
+          discount: 0,
+        };
       });
-      console.log("Batches inserted:", batchInsertResult.count);
 
-      // Prepare the transactions data.
-      // Here, we assume that the batchId you supplied in the CSV can be used for linking.
-      // If you need the auto-generated IDs from the batch table, you'll have to adjust your strategy.
-      const transactionsData = data.goodRows.map((row) => ({
-        batchId: +row.data.batchId, // Use the same ID as inserted (if it's provided, not auto-generated)
-        date: row.data.dateOfReceipt,
-        amount: +row.data.quantity,
-        discount: 0,
-      }));
-
-      // Bulk insert transactions using createMany.
       const transactionsInsertResult = await prisma.transaction.createMany({
         data: transactionsData,
+        skipDuplicates: true,
       });
       console.log("Transactions inserted:", transactionsInsertResult.count);
     },
-    { timeout: 720000 }
+    { timeout: 960000 }
   );
 };
 
