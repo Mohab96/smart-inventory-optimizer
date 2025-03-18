@@ -115,7 +115,7 @@ export default function Login() {
                 to="/forgotpassword"
                 className="text-orange-500 font-medium hover:text-orange-600 px-1"
               >
-                Reset Password
+                Forgot Password
               </Link>
             </p>
           </div>

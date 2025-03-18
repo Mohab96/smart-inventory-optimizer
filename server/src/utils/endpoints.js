@@ -8,6 +8,7 @@ const ACKNOWLEDGEMENT = `${VERSION}/ack`;
 const PRODUCTS = `${VERSION}/products`;
 const CATEGORIES = `${VERSION}/categories`;
 const SUBMISSIONS = `${VERSION}/submission`;
+const INSIGHTS = `${VERSION}/insights`;
 
 module.exports = {
   AUTH,
@@ -19,4 +20,5 @@ module.exports = {
   PRODUCTS,
   CATEGORIES,
   SUBMISSIONS,
+  INSIGHTS,
 };

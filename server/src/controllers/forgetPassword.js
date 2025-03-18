@@ -1,8 +1,6 @@
 const prisma = require("../../prisma/main/client");
-const nodemailer = require("nodemailer");
-const winston = require("winston");
+const { sendMail } = require("../utils/SendingEmails");
 const { generateToken } = require("../utils/auth");
-
 async function forgetPassword(req, res, next) {
   try {
     const userData = req.body;
@@ -13,37 +11,30 @@ async function forgetPassword(req, res, next) {
       return res
         .status(404)
         .json({ message: "We could not find user with given email" });
-
     const token = generateToken(user, "10m");
+    const resetLink = `http://localhost:5173/resetpassword?token=${token}`; //frontend URL
+    const subject = "Reset Your Password";
+    const text = `
+                         <html>
+      <body style="font-family: Arial, sans-serif; color: #333;">
+        <p>Dear ${user.name},</p>
 
-let transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EmailAddress,
-        pass: process.env.EmailPassword,
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
+        <p>We received a request to reset your password. Click the link below to create a new password:</p>
 
-    let mailOptions = {
-      from: process.env.EmailAddress,
-      to: user.email,
-      subject: "Reset Your Password",
-      /// update after Reset Password page created
-      text: `frontend-page-forResetPassword${user.id}/${token}`,
-    };
+        <p><a href="${resetLink}" style="color: #007bff; text-decoration: none;">Reset Password</a></p>
 
-    transporter.sendMail(mailOptions, function (error) {
-      if (error) {
-        winston.error(error);
-      } else {
-        /// just for testing  -> we won't send token !!
-        return res.status(201).set("Authorization", `Bearer ${token}`).json({
-          message: "Success",
-        });
-      }
+        <p>If you did not request a password reset, please ignore this email. This link will expire in 10 minutes for security reasons.</p>
+
+
+        <p>If you need further assistance, feel free to contact our support team.</p>
+
+        <p>Best regards,<br>Smart Inventory Team </p>
+      </body>
+      </html>`;
+    sendMail(user, subject, text);
+    return res.status(201).set("Authorization", `Bearer ${token}`).json({
+      message: "Success",
+      token,
     });
   } catch (ex) {
     next(ex);

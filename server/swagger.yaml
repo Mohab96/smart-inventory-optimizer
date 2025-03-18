@@ -14,6 +14,109 @@ servers:
     description: SIO API
 
 paths:
+  /api/insights/get-insights:
+    get:
+      summary: "Get product demand predictions"
+      description: "Retrieves product demand predictions based on forecasting parameters"
+      tags:
+        - "Insights"
+      secutiry:
+        - bearerAuth: []
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Forecasting parameters"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              numberOfProducts:
+                type: "integer"
+                description: "Number of top products to retrieve"
+                example: 5
+              daysOfForecasting:
+                type: "integer"
+                description: "Number of days to forecast"
+                example: 7
+            required:
+              - "numberOfProducts"
+              - "daysOfForecasting"
+
+      responses:
+        "200":
+          description: "Successful response with product predictions"
+          schema:
+            type: "object"
+            properties:
+              data:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    product:
+                      type: "object"
+                      properties:
+                        id:
+                          type: "string"
+                          description: "Product ID"
+                        name:
+                          type: "string"
+                          description: "Product name"
+                        category:
+                          type: "string"
+                          description: "Product category"
+                        # Add other product fields from your database schema
+                    dailySales:
+                      type: "number"
+                      description: "Forecasted daily sales quantity"
+                    totalAmount:
+                      type: "number"
+                      description: "Total forecasted sales over the period"
+            example:
+              data:
+                [
+                  {
+                    product:
+                      { id: "123", name: "Product A", category: "Electronics" },
+                    dailySales: 15.5,
+                    totalAmount: 108.5,
+                  },
+                ]
+
+        "400":
+          description: "Invalid request parameters"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+            example:
+              error: "Invalid request"
+
+        "500":
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+            example:
+              error: "Internal server error"
+
+        "503":
+          description: "Prediction service unavailable"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+            example:
+              error: "Prediction service unavailable"
+
   # Revenue category statistics
   /api/statistics/monthly-category-revenues:
     get:
