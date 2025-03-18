@@ -1,4 +1,5 @@
 const client = require("../../../prisma/main/client");
+
 const insertPurchasesTransactions = async (data) => {
   await client.$transaction(async (prisma) => {
     // Insert batches one by one to get the generated IDs
