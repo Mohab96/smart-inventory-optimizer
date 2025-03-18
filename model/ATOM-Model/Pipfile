@@ -1,0 +1,29 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pandas = "*"
+numpy = "*"
+xgboost = "*"
+scikit-learn = "*"
+flask = "*"
+matplotlib = "*"
+supabase = "*"
+dotenv = "*"
+flask-sqlalchemy = "*"
+psycopg2 = "*"
+asyncpg = "*"
+seaborn = "*"
+python-dotenv = "*"
+hyperopt = "*"
+sqlalchemy = "*"
+psycopg2-binary = "*"
+plotly = "*"
+prisma = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"

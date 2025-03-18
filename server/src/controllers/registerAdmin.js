@@ -1,8 +1,23 @@
 const adminSchema = require("../validators/admin");
 const businessSchema = require("../validators/business");
 const prisma = require("../../prisma/main/client");
+const dwhprisma = require("../../prisma/dwh/client");
 const { hashPassword, generateToken } = require("../utils/auth");
-
+const winston = require("winston");
+async function deleteMainDbRecords(adminId, businessId) {
+  try {
+    await prisma.$transaction(async (prisma) => {
+      await prisma.User.delete({
+        where: { id: adminId },
+      });
+      await prisma.Business.delete({
+        where: { id: businessId },
+      });
+    });
+  } catch (error) {
+    winston.error("Failed to delete main DB records:", error);
+  }
+}
 async function createAdmin(req, res, next) {
   try {
     const { admin: adminData, business: businessData } = req.body;
@@ -73,6 +88,18 @@ async function createAdmin(req, res, next) {
     ///JWT
     const token = generateToken(admin);
 
+    try {
+      await dwhprisma.BusinessDimension.create({
+        data: {
+          businessId: business.id,
+          businessName: business.name,
+        },
+      });
+    } catch (dwhError) {
+      await deleteMainDbRecords(admin.id, business.id);
+      next(dwhError);
+      return;
+    }
     //Send the response with the JWT attached to the header
     res.status(201).json({
       message: "Admin and Business created successfully",

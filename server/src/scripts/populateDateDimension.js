@@ -20,7 +20,7 @@ async function populateDateDimension(startYear, endYear) {
       const quarter = Math.ceil(month / 3); // Calculate quarter (1-4)
 
       records.push({
-        fullDate: currentDate.toISOString(), // Store as ISO string
+        fullDate: new Date(currentDate),
         day: day,
         week: week,
         month: month,
@@ -41,8 +41,6 @@ async function populateDateDimension(startYear, endYear) {
     return dates;
   } catch (error) {
     console.error("Error populating DateDimension:", error.message);
-  } finally {
-    await prisma.$disconnect(); // Disconnect from the database
   }
 }
 

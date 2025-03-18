@@ -8,16 +8,8 @@ const getTransactionHistory = async (req, res) => {
     const dateObj = new Date(queryDate);
 
     // Build the start/end of the day (midnight to midnight)
+
     const startOfDay = new Date(
-      dateObj.getFullYear(),
-      dateObj.getMonth(),
-      dateObj.getDate(),
-      0,
-      0,
-      0,
-      0
-    );
-    const endOfDay = new Date(
       dateObj.getFullYear(),
       dateObj.getMonth(),
       dateObj.getDate() + 1,
@@ -26,14 +18,22 @@ const getTransactionHistory = async (req, res) => {
       0,
       0
     );
-
+    const endOfDay = new Date(
+      dateObj.getFullYear(),
+      dateObj.getMonth(),
+      dateObj.getDate() + 2,
+      0,
+      0,
+      0,
+      0
+    );
     const transactions = await dwhClient.transactionFact.findMany({
       where: {
         businessId: businessId,
         date: {
           fullDate: {
-            gte: startOfDay.toISOString(),
-            lt: endOfDay.toISOString(),
+            gte: startOfDay,
+            lt: endOfDay,
           },
         },
       },
