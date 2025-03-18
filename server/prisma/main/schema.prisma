@@ -81,6 +81,8 @@ model Product {
   Business         Business? @relation(fields: [businessId], references: [id])
   businessId       String?
   lastModified     DateTime  @default(now()) @updatedAt
+
+  @@index([businessId])
 }
 
 model Batch {
@@ -96,4 +98,7 @@ model Batch {
   productId       Int
   Transaction     Transaction[]
   lastModified    DateTime      @default(now()) @updatedAt
+
+  @@index([productId, id])
+  @@index([id])
 }
