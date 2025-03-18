@@ -8,16 +8,17 @@ const validateSales = async (readableStream, options) => {
   const badRows = [];
   const goodRows = [];
   await preProcess(readableStream, options.businessId);
+  console.log("finished preProcess");
   for (const row of rows) {
+    console.log("processing row: ", row.rowNumber);
     try {
-      const validatedData = await salesSchema.validate(row, options);
+      const validatedData = salesSchema.validate(row, options);
       if (productsIds.get(row.productName) === undefined)
         throw new Error(
           `Product ${row.productName} in row ${row.rowNumber} not found`
         );
 
       ///the row is valid
-      ///TODO: change how you insert to goodRows
       validatedData.value.productId = productsIds.get(
         validatedData.value.productName
       );
@@ -25,15 +26,16 @@ const validateSales = async (readableStream, options) => {
         rowNumber: row.rowNumber,
         data: { ...validatedData.value },
       });
-      goodRows.push({ rowNumber: row.rowNumber, data: validatedData });
     } catch (err) {
       badRows.push({
         rowNumber: row.rowNumber,
-        error: err.details[0].message,
+        error: err.details[0].message || err.message,
       });
     }
   }
+  console.log("first good row: ", goodRows[0]);
   await asyncValidate(options.businessId);
+  process.exit(0);
   return {
     goodRows,
     badRows,
@@ -43,27 +45,16 @@ const validateSales = async (readableStream, options) => {
 module.exports = validateSales;
 
 const asyncValidate = async (businessId) => {
-  // Find the product that has this name and is associated with a batch that has the given batchId
-  const batchs = await client.batch.findFirst({
-    where: {
-      productId: productID,
-      id: batchId,
-    },
-  });
-  if (!batchs)
-    return helpers.error("any.invalid", { message: "Batch not found." });
-
-  if (amount > batchs.remQuantity)
-    return helpers.error("any.invalid", {
-      message: "Sale amount exceeds batch remaining quantity.",
-    });
-
-  if (value.date < batchs.receiptDate)
-    return helpers.error("any.invalid", {
-      message: "Sale date must be after the receipt date.",
-    });
-
-  return { ...value, productId: productID, batchInfo: batchs };
+  const productIds = rows.map((row) => productsIds.get(row.productName));
+  const batchIds = rows.map((row) => row.batchId);
+  const batches = await maindb.$queryRaw`
+  SELECT *
+  FROM "Batch"
+  WHERE ("productId", "id") IN (
+    SELECT * FROM UNNEST(${productIds}::int[], ${batchIds}::int[]) AS t(productId, batchId)
+  )
+`;
+  console.log("batches: ", batches, "size: ", batches.length);
 };
 
 const preProcess = async (readableStream, businessId) => {
