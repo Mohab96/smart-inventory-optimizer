@@ -3,62 +3,49 @@ const dwhClient = require("../../prisma/dwh/client");
 
 const yearlyRevenuePerMonth = async (req, res) => {
   let { year } = req.query;
-
-  year = +year;
-
-  if (!year) {
-    year = new Date().getFullYear();
-  }
-
+  year = +year || new Date().getFullYear(); // Convert to number or default to current year
   const businessId = req.user.businessId;
 
   try {
-    const dateIds = await dwhClient.dateDimension.findMany({
-      where: { year: year },
-      select: { dateId: true },
-    });
+    // Predefined month names for efficient mapping
+    const monthNames = [
+      "january",
+      "february",
+      "march",
+      "april",
+      "may",
+      "june",
+      "july",
+      "august",
+      "september",
+      "october",
+      "november",
+      "december",
+    ];
 
-    const dateIdList = dateIds.map((d) => d.dateId);
+    // Raw SQL query to aggregate revenue by month
+    const revenueRecords = await dwhClient.$queryRaw`
+      SELECT 
+        dd.month,
+        SUM(prf."revenueAmount") AS total_revenue
+      FROM "ProductRevenueFact" prf
+      JOIN "DateDimension" dd ON prf."dateId" = dd."dateId"
+      WHERE prf."businessId" = ${businessId} AND dd.year = ${year}
+      GROUP BY dd.month
+      ORDER BY dd.month ASC
+    `;
 
-    const revenueRecords = await dwhClient.productRevenueFact.findMany({
-      where: {
-        AND: [{ dateId: { in: dateIdList } }, { businessId: businessId }],
-      },
-      include: { date: true },
-    });
+    // Initialize monthly revenue object with all months set to 0
+    const monthlyRevenue = Object.fromEntries(
+      monthNames.map((name) => [name, 0])
+    );
 
-    // Initialize an object to accumulate revenue per month
-    const monthlyRevenue = {
-      january: 0,
-      february: 0,
-      march: 0,
-      april: 0,
-      may: 0,
-      june: 0,
-      july: 0,
-      august: 0,
-      september: 0,
-      october: 0,
-      november: 0,
-      december: 0,
-    };
-
+    // Aggregate revenue into monthly buckets
     revenueRecords.forEach((record) => {
-      // The date relation gives us the month (1-12)
-      const monthNumber = record.date.month;
-      // Convert month number to a lowercase month name (e.g., 1 -> "january")
-      const monthName = new Date(0, monthNumber - 1)
-        .toLocaleString("en-US", { month: "long" })
-        .toLowerCase();
-      // Parse the revenueAmount (Decimal) into a number
-      const revenue = parseFloat(record.revenueAmount);
-
-      // Accumulate revenue per month
-      if (monthlyRevenue[monthName]) {
-        monthlyRevenue[monthName] += revenue;
-      } else {
-        monthlyRevenue[monthName] = revenue;
-      }
+      const monthNumber = record.month; // 1-12
+      const monthName = monthNames[monthNumber - 1]; // Map to name (0-based index)
+      const revenue = parseFloat(record.total_revenue || 0);
+      monthlyRevenue[monthName] = revenue; // Direct assignment since grouped by month
     });
 
     res.status(200).json({ year, data: monthlyRevenue });
