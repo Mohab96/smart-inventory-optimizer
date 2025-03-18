@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-
+import { Link, useSearchParams } from "react-router-dom";
 const ResetPassword = () => {
   const {
     register,
@@ -11,19 +11,20 @@ const ResetPassword = () => {
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+  console.log(token);
   const onSubmit = async (data) => {
     try {
       setErrorMessage("");
 
-      // Call the reset password API
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/auth/reset-password`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer`
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ password: data.password }),
         }
@@ -139,9 +140,15 @@ const ResetPassword = () => {
           <p className="text-green-600 font-medium mb-2">
             Password reset successfully!
           </p>
-          <p className="text-gray-600 text-sm">
+          <p className="text-gray-600 text-sm mb-4">
             You can now log in with your new password.
           </p>
+          <Link
+            to="/login"
+            className="inline-block w-full py-2 px-4 rounded-md text-white bg-orange-500 hover:bg-orange-700 transition-colors"
+          >
+            Log in with new password
+          </Link>
         </div>
       )}
     </div>
