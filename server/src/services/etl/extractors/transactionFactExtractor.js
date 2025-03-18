@@ -11,7 +11,7 @@ async function transactionFactExtractor(date = null) {
     let cursor = null;
     let hasMore = true;
     const batchSize = 25000;
-    var i = 0;
+    // var i = 0;
 
     while (hasMore) {
       const rawData = await prisma.transaction.findMany({
@@ -42,8 +42,8 @@ async function transactionFactExtractor(date = null) {
         ...(cursor && { cursor: { id: cursor }, skip: 1 }), // Skip the cursor row itself
         orderBy: { id: "asc" }, // Ensure consistent ordering
       });
-      console.log("allData.length: " + allData.length + "     loop: " + i);
-      i++;
+      // console.log("allData.length: " + allData.length + "     loop: " + i);
+      // i++;
       allData = allData.concat(rawData);
       hasMore = rawData.length === batchSize;
       cursor = rawData.length > 0 ? rawData[rawData.length - 1].id : null;
