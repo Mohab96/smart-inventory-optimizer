@@ -9,8 +9,6 @@ const productsIds = new Map();
 //This function reads a CSV file and validates each row against the salesSchema.
 const validateSales = async (readableStream, options) => {
   await preProcess(readableStream, options.businessId);
-  console.log("finished preProcess");
-  console.log("Validating rows...");
 
   for (const row of rows) {
     try {
@@ -35,10 +33,7 @@ const validateSales = async (readableStream, options) => {
       });
     }
   }
-  console.log("Finished validating rows");
-  console.log("Validating batches...");
   await asyncValidate(options.businessId);
-  console.log("Finished validating batches and returning results");
   return {
     goodRows,
     badRows,

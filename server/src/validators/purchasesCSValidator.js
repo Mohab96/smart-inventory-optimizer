@@ -36,10 +36,8 @@ const validatePurchases = async (readableStream, options) => {
       console.debug(err);
     }
   }
-  console.log("Finished validating rows");
 
   await checkUniqueness(options.businessId);
-  console.log("Finished checking uniqueness, returning results");
 
   return {
     goodRows,

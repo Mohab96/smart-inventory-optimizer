@@ -14,12 +14,10 @@ const insertPurchasesTransactions = async (data, businessId) => {
         remQuantity: row.data.quantity,
       }));
 
-      console.log("Inserting batches...");
       const batchInsertResult = await prisma.batch.createMany({
         data: batchesData,
         skipDuplicates: true,
       });
-      console.log("Batches inserted:", batchInsertResult.count);
 
       const insertedBatches = await prisma.batch.findMany({
         where: {
@@ -52,13 +50,11 @@ const insertPurchasesTransactions = async (data, businessId) => {
           discount: 0,
         };
       });
-      console.log("Inserting transactions...");
 
       const transactionsInsertResult = await prisma.transaction.createMany({
         data: transactionsData,
         skipDuplicates: true,
       });
-      console.log("Transactions inserted:", transactionsInsertResult.count);
     },
     { timeout: 720000 }
   );
