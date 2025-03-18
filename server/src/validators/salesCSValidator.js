@@ -1,16 +1,18 @@
 const csv = require("csv-parser");
 const salesSchema = require("./salesJoiSchema");
 const maindb = require("../../prisma/main/client");
-rows = [];
+const rows = [];
+const badRows = [];
+const goodRows = [];
+
 const productsIds = new Map();
 //This function reads a CSV file and validates each row against the salesSchema.
 const validateSales = async (readableStream, options) => {
-  const badRows = [];
-  const goodRows = [];
   await preProcess(readableStream, options.businessId);
   console.log("finished preProcess");
+  console.log("Validating rows...");
+
   for (const row of rows) {
-    console.log("processing row: ", row.rowNumber);
     try {
       const validatedData = salesSchema.validate(row, options);
       if (productsIds.get(row.productName) === undefined)
@@ -33,9 +35,10 @@ const validateSales = async (readableStream, options) => {
       });
     }
   }
-  console.log("first good row: ", goodRows[0]);
+  console.log("Finished validating rows");
+  console.log("Validating batches...");
   await asyncValidate(options.businessId);
-  process.exit(0);
+  console.log("Finished validating batches and returning results");
   return {
     goodRows,
     badRows,
@@ -54,7 +57,23 @@ const asyncValidate = async (businessId) => {
     SELECT * FROM UNNEST(${productIds}::int[], ${batchIds}::int[]) AS t(productId, batchId)
   )
 `;
-  console.log("batches: ", batches, "size: ", batches.length);
+  const recordsMap = new Map();
+  for (const record of batches) {
+    const compositeKey = `${record.id}-${record.productId}`;
+    recordsMap.set(compositeKey, record.generatedId);
+  }
+  let cnt = 0;
+  for (const row of rows) {
+    const productId = productsIds.get(row.productName);
+    const compositeKey = `${row.batchId}-${productId}`;
+    if (!recordsMap.has(compositeKey)) {
+      badRows.push({
+        rowNumber: row.rowNumber,
+        error: `Batch ${row.batchId} and Product ${productId} combination does not exists. on row ${row.rowNumber}`,
+      });
+    } else goodRows[cnt].data.generatedId = recordsMap.get(compositeKey);
+    cnt++;
+  }
 };
 
 const preProcess = async (readableStream, businessId) => {
