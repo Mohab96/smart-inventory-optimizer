@@ -41,7 +41,7 @@ const createProduct = async (req, res) => {
       data: {
         name,
         categoryId: categoryId,
-        businessId: req.user.business,
+        businessId: req.user.businessId,
       },
     });
 
