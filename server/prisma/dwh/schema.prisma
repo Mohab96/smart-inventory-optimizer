@@ -80,14 +80,15 @@ model BatchInfo {
     sellingPrice  Decimal
     expiryDate    DateTime
 
-    date     DateDimension     @relation(fields: [dateId], references: [dateId])
-    business BusinessDimension @relation(fields: [businessId], references: [businessId])
-    product  ProductDimension  @relation(fields: [productId], references: [productId])
+    date         DateDimension     @relation(fields: [dateId], references: [dateId])
+    business     BusinessDimension @relation(fields: [businessId], references: [businessId])
+    product      ProductDimension  @relation(fields: [productId], references: [productId])
+    transactions TransactionFact[]
 }
 
 model DateDimension {
     dateId   Int      @id @default(autoincrement())
-    fullDate DateTime
+    fullDate DateTime @db.Date
     day      Int
     week     Int
     month    Int
@@ -123,8 +124,10 @@ model TransactionFact {
     dateId        Int
     amount        Int
     discount      Decimal
+    batchId       Int
 
     business BusinessDimension @relation(fields: [businessId], references: [businessId])
     product  ProductDimension  @relation(fields: [productId], references: [productId])
     date     DateDimension     @relation(fields: [dateId], references: [dateId])
+    batch    BatchInfo         @relation(fields: [batchId], references: [batchId])
 }

@@ -1,7 +1,7 @@
 const prisma = require("../../../../prisma/dwh/client");
 const startOfDayUTC = require("../../../utils/startOfDayUTC");
 
-async function productRevenueFactTransformer(rawData) {
+async function categoryRevenueFactTransformer(rawData) {
   try {
     const uniqueDates = [
       ...new Set(rawData.map((row) => startOfDayUTC(row.date).toISOString())),
@@ -42,15 +42,15 @@ async function productRevenueFactTransformer(rawData) {
       dateIdMap[record.fullDate.toISOString()] = record.dateId;
     });
 
-    const transformedData = rawData.map((row) => {
-      const dateStr = startOfDayUTC(row.date).toISOString();
-      const dateId = dateIdMap[dateStr];
+    const transformedData = rawData.map((record) => {
+      const normalizedDateStr = startOfDayUTC(record.date).toISOString();
+      const dateId = dateIdMap[normalizedDateStr];
       return {
-        productId: Number(row.productId),
-        businessId: row.businessId,
+        businessId: record.businessId,
+        categoryId: Number(record.categoryId),
         dateId: dateId,
-        revenueAmount: Number(row.revenueAmount),
-        totalUnitsSold: Number(row.totalUnitsSold),
+        revenueAmount: Number(record.revenueAmount) || 0,
+        totalUnitsSold: Number(record.totalUnitsSold),
       };
     });
 
@@ -59,4 +59,5 @@ async function productRevenueFactTransformer(rawData) {
     console.error("Transformation failed:", error);
   }
 }
-module.exports = productRevenueFactTransformer;
+
+module.exports = categoryRevenueFactTransformer;

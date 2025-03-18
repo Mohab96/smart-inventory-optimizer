@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   token: localStorage.getItem("token") || null,
+  resetToken: localStorage.getItem("resetToken") || null,
   isAuthenticated: !!localStorage.getItem("token"),
   loading: false,
   error: null,
@@ -17,6 +18,10 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.error = null;
       localStorage.setItem("token", token);
+    },
+    setResetToken: (state, action) => {
+      state.resetToken = action.payload;
+      localStorage.setItem("resetToken", action.payload);
     },
     logout: (state) => {
       state.token = null;
@@ -35,11 +40,12 @@ const authSlice = createSlice({
 });
 
 // Export actions
-export const { setCredentials, logout, setLoading, setError } =
+export const { setCredentials, setResetToken, logout, setLoading, setError } =
   authSlice.actions;
 
 // Export selectors
 export const selectToken = (state) => state.auth.token;
+export const selectResetToken = (state) => state.auth.resetToken;
 export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
 export const selectAuthLoading = (state) => state.auth.loading;
 export const selectAuthError = (state) => state.auth.error;

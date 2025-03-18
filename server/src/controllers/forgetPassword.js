@@ -25,6 +25,7 @@ async function forgetPassword(req, res, next) {
 
         <p>If you did not request a password reset, please ignore this email. This link will expire in 10 minutes for security reasons.</p>
 
+
         <p>If you need further assistance, feel free to contact our support team.</p>
 
         <p>Best regards,<br>Smart Inventory Team </p>
