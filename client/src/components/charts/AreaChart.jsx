@@ -17,6 +17,13 @@ const AreaChart = () => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
 
+  // Generate dropdown options from current year to 2013
+  const currentYear = new Date().getFullYear();
+  const dropdownOptions = Array.from(
+    { length: currentYear - 2013 + 1 },
+    (_, i) => currentYear - i
+  );
+
   useEffect(() => {
     if (token) {
       dispatch(fetchRevenuesPerMonth({ year: selectedYear }));
@@ -53,10 +60,6 @@ const AreaChart = () => {
     setIsDropdownOpen(false);
   };
 
-  const currentYear = new Date().getFullYear();
-  const lastYear = currentYear - 1;
-  const dropdownOptions = [currentYear, lastYear];
-
   return (
     <div className="col-span-1 md:col-span-2 xl:col-span-2 w-full">
       <div className="w-full flex flex-col justify-between bg-white rounded-lg shadow-sm dark:bg-gray-800 p-4 md:p-6">
@@ -64,7 +67,7 @@ const AreaChart = () => {
         <div className="flex justify-between">
           <div className="flex w-full justify-between items-center">
             <p className="text-3xl font-bold text-gray-500 dark:text-gray-200">
-              Total Revenues
+              Total Revenues for {selectedYear}
             </p>
             {loading ? (
               <Loading /> // Show loading spinner in the top section
