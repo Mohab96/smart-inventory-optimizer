@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTransactions } from "../../store/features/transactionSlices/transactionSlice";
+import { data } from "react-router-dom";
 
 const TransactionList = () => {
   const dispatch = useDispatch();
@@ -17,6 +18,8 @@ const TransactionList = () => {
   useEffect(() => {
     dispatch(fetchTransactions(selectedDate)); // Fetch transactions for the selected date
   }, [dispatch, selectedDate]);
+
+  console.log(transactions.data);
 
   return (
     <div className="p-6">
@@ -56,7 +59,7 @@ const TransactionList = () => {
                 </td>
                 <td className="p-3 border">{transaction.amount}</td>
                 <td className="p-3 border">
-                  ${transaction.amount - transaction.discount}
+                  ${transaction.batch.sellingPrice}
                 </td>
                 <td className="p-3 border">
                   {new Date(transaction.date?.fullDate).toLocaleDateString()}
