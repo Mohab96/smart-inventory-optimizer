@@ -16,6 +16,8 @@ const ProfitGrid = () => {
   const quarterlyRevenue = useSelector((state) => state.revenue.quarterlyData);
   const categorySales = useSelector((state) => state.sales);
 
+  // console.log(categorySales.data.data);
+
   const fetchCalled = useRef(false); // Prevent unnecessary fetch calls
   const [page, setPage] = useState(1);
   const limit = 10; // You can also make this dynamic if needed
@@ -76,13 +78,13 @@ const ProfitGrid = () => {
         percentage={`${monthlyChange.toFixed(2)}%`}
         color={monthlyChange >= 0 ? "text-green-400" : "text-red-400"}
         path="/yearRevenues"
-        iconPath="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z"
+        // iconPath="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z"
       />
 
       <MonthCard
         value={currentQuarterRevenue.toLocaleString()}
         label="Revenues this Quarter"
-        // percentage={`${quarterlyChange.toFixed(2)}%`}
+        percentage={`${quarterlyChange.toFixed(2)}%`}
         color={quarterlyChange >= 0 ? "text-green-400" : "text-red-400"}
         path="/quarterRevenues"
         // iconPath="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z"
@@ -93,7 +95,7 @@ const ProfitGrid = () => {
         percentage={bestCategorySales}
         color="text-green-400"
         path="/sales"
-        iconPath="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z"
+        // iconPath="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z"
       />
     </div>
   );

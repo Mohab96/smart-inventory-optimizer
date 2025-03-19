@@ -53,7 +53,18 @@ const TransactionList = () => {
           </thead>
           <tbody>
             {transactions?.data?.map((transaction) => (
-              <tr key={transaction.transactionId} className="border">
+              <tr
+                key={transaction.transactionId}
+                className="border"
+                style={{
+                  backgroundColor:
+                    transaction.amount > 0
+                      ? "rgba(0, 255, 0, 0.1)" // Light green for positive
+                      : transaction.amount < 0
+                        ? "rgba(255, 0, 0, 0.1)" // Light red for negative
+                        : "transparent", // Default for zero or undefined
+                }}
+              >
                 <td className="p-3 border">
                   {transaction.product?.name || "N/A"}
                 </td>
