@@ -13,7 +13,7 @@ import Loading from "../common/Loading";
 
 const AreaChart = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState(2015);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
 
@@ -148,7 +148,8 @@ const AreaChart = () => {
 
             {/* Revenue Report Button */}
             <a
-              href="#"
+              href="/yearRevenues"
+              // path="/yearRevenues"
               className="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-blue-600 hover:text-blue-700 dark:hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 px-3 py-2"
             >
               Revenue Report

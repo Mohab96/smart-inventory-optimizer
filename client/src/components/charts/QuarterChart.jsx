@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   LineChart,
@@ -15,7 +15,8 @@ import {
 import Loading from "../common/Loading";
 
 const QuarterChart = () => {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  // const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState(2015);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const loading = useSelector((state) => state.revenue.loading);
@@ -32,13 +33,10 @@ const QuarterChart = () => {
     }));
   }, [quarterlyRevenue]);
 
-  const fetchCalled = useRef(false); // Prevent unnecessary fetch calls
-
   useEffect(() => {
-    if (token && !fetchCalled.current) {
+    if (token) {
       dispatch(fetchRevenuesPerMonth({ year: selectedYear }));
       dispatch(fetchRevenuesPerQuarter({ year: selectedYear }));
-      fetchCalled.current = true; // Mark as called
     }
   }, [selectedYear, token, dispatch]);
 
@@ -52,8 +50,6 @@ const QuarterChart = () => {
   const currentQuarter = Math.floor(new Date().getMonth() / 3);
 
   const currentMonthRevenue = monthlyRevenue?.data?.[currentMonth] ?? 0;
-  // console.log(currentQuarter);
-
   const previousMonthRevenue = monthlyRevenue?.data?.[previousMonth] ?? 0;
   const currentQuarterRevenue =
     quarterlyRevenue?.data?.quarterlyRevenue[currentQuarter].totalRevenue ?? 0;
@@ -84,14 +80,16 @@ const QuarterChart = () => {
   };
 
   const currentYear = new Date().getFullYear();
-  const lastYear = currentYear - 1;
-  const dropdownOptions = [currentYear, lastYear];
+  const dropdownOptions = Array.from(
+    { length: currentYear - 2013 + 1 },
+    (_, i) => currentYear - i
+  );
 
-  //   console.log(quarterlyRevenue);
   const totalRevenue = quarterlyRevenue?.data?.quarterlyRevenue?.reduce(
     (sum, quarter) => sum + Number(quarter.totalRevenue || 0),
     0
   );
+
   return (
     <div className="col-span-1 md:col-span-2 xl:col-span-2 w-full">
       <div className="w-full flex flex-col justify-between bg-white rounded-lg shadow-sm dark:bg-gray-800 p-4 md:p-6">
@@ -99,10 +97,10 @@ const QuarterChart = () => {
         <div className="flex justify-between">
           <div className="flex w-full justify-between items-center">
             <p className="text-3xl font-bold text-gray-500 dark:text-gray-200">
-              Total Revenues
+              Total Revenues for {selectedYear}
             </p>
             {loading ? (
-              <Loading /> // Show loading spinner in the top section
+              <Loading />
             ) : (
               <h5 className="text-3xl font-bold text-gray-900 dark:text-white pb-2">
                 ${Number(totalRevenue).toLocaleString()}
@@ -114,7 +112,7 @@ const QuarterChart = () => {
         {/* Chart Section */}
         <div id="area-chart" className="h-32 mt-4">
           {loading ? (
-            <Loading /> // Show loading spinner instead of the chart
+            <Loading />
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={quarterlyChartData}>
@@ -132,6 +130,7 @@ const QuarterChart = () => {
             </ResponsiveContainer>
           )}
         </div>
+
         {/* Bottom Section - Year Selection Dropdown */}
         <div className="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between">
           <div className="flex justify-between items-center pt-5">
@@ -180,7 +179,7 @@ const QuarterChart = () => {
 
             {/* Revenue Report Button */}
             <a
-              href="#"
+              href="/quarterRevenues"
               className="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-blue-600 hover:text-blue-700 dark:hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 px-3 py-2"
             >
               Revenue Report

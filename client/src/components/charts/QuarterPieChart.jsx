@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { fetchRevenuesPerQuarter } from "../../store/features/dashboardSlices/revenueSlice";
 
 export default function QuarterPieChart() {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState(2015);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
 

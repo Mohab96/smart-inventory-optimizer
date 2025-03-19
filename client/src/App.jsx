@@ -111,7 +111,7 @@ function App() {
           path="/transactionsFeeding"
           element={
             <ProtectedRoute>
-              <div className="mt-24">
+              <div className="">
                 <TransactionsFeeding />
               </div>
             </ProtectedRoute>
@@ -121,7 +121,7 @@ function App() {
           path="/transactionsLog"
           element={
             <ProtectedRoute>
-              <div className="mt-24">
+              <div className="">
                 <Transactions />
               </div>
             </ProtectedRoute>

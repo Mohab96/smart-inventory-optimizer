@@ -5,7 +5,7 @@ import TransactionList from "../../components/common/TransactionList";
 const Transactions = () => {
   return (
     <div className="h-screen flex flex-col">
-      <Header />    
+      <Header />
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <Sidebar />
