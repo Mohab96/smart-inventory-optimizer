@@ -2,6 +2,7 @@ const csv = require("csv-parser");
 const winston = require("winston");
 const purchasesSchema = require("./purchasesJoiSchema");
 const maindb = require("../../prisma/main/client");
+const toUTCDate = require("../utils/toUTCDate");
 const productsIds = new Map();
 const rows = [];
 const badRows = [];
@@ -14,11 +15,10 @@ const validatePurchases = async (readableStream, options) => {
   for (const row of rows) {
     try {
       const validatedData = purchasesSchema.validate(row, options);
+      if (validatedData.error) throw validatedData.error;
 
       if (productsIds.get(row.productName) === undefined)
-        throw new Error(
-          `Product ${row.productName} in row ${row.rowNumber} not found`
-        );
+        throw new Error(`Product ${row.productName} not found`);
 
       ///the row is valid
       validatedData.value.productId = productsIds.get(
@@ -31,13 +31,11 @@ const validatePurchases = async (readableStream, options) => {
     } catch (err) {
       badRows.push({
         rowNumber: row.rowNumber,
-        error: err.details[0].message || err.message,
+        error: err?.details?.[0]?.message || err?.message,
       });
-      console.debug(err);
     }
   }
-
-  await checkUniqueness(options.businessId);
+  if (badRows.length === 0) await checkUniqueness(options.businessId);
 
   return {
     goodRows,
@@ -75,7 +73,7 @@ const checkUniqueness = async (businessId) => {
     if (recordsMap.has(compositeKey)) {
       badRows.push({
         rowNumber: row.rowNumber,
-        error: `Batch ${row.batchId} and Product ${productId} combination already exists on row ${row.rowNumber}`,
+        error: `Batch ${row.batchId} and Product ${productId} combination already exists`,
       });
     }
   }
@@ -85,9 +83,18 @@ const preProcess = async (readableStream, businessId) => {
   let rowNumber = 0;
   for await (const row of readableStream.pipe(csv())) {
     rowNumber++;
-    rows.push({ rowNumber, ...row });
+    try {
+      row.expiryDate = toUTCDate(row.expiryDate);
+      row.dateOfReceipt = toUTCDate(row.dateOfReceipt);
+      rows.push({ rowNumber, ...row });
+    } catch {
+      badRows.push({
+        rowNumber: rowNumber,
+        error: `Invalid data format`,
+      });
+    }
   }
-
+  if (badRows.length > 0) return;
   const uniqueProducts = [...new Set(rows.map((row) => row.productName))];
 
   const ret = await maindb.product.findMany({
