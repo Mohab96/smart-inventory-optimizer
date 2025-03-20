@@ -1,6 +1,7 @@
 const csv = require("csv-parser");
 const salesSchema = require("./salesJoiSchema");
 const maindb = require("../../prisma/main/client");
+const toUTCDate = require("../utils/toUTCDate");
 const rows = [];
 const badRows = [];
 const goodRows = [];
@@ -33,7 +34,7 @@ const validateSales = async (readableStream, options) => {
       });
     }
   }
-  await asyncValidate(options.businessId);
+  if (badRows.length === 0) await asyncValidate(options.businessId);
   return {
     goodRows,
     badRows,
@@ -55,10 +56,11 @@ const asyncValidate = async (businessId) => {
   const recordsMap = new Map();
   for (const record of batches) {
     const compositeKey = `${record.id}-${record.productId}`;
-    recordsMap.set(compositeKey, record.generatedId);
+    recordsMap.set(compositeKey, record);
   }
-  let cnt = 0;
+  let cnt = -1;
   for (const row of rows) {
+    cnt++;
     const productId = productsIds.get(row.productName);
     const compositeKey = `${row.batchId}-${productId}`;
     if (!recordsMap.has(compositeKey)) {
@@ -66,8 +68,20 @@ const asyncValidate = async (businessId) => {
         rowNumber: row.rowNumber,
         error: `Batch ${row.batchId} and Product ${productId} combination does not exists. on row ${row.rowNumber}`,
       });
-    } else goodRows[cnt].data.generatedId = recordsMap.get(compositeKey);
-    cnt++;
+    } else
+      goodRows[cnt].data.generatedId = recordsMap.get(compositeKey).generatedId;
+    if (row.date < recordsMap.get(compositeKey).receiptDate) {
+      badRows.push({
+        rowNumber: row.rowNumber,
+        error: `Sale date must be after the receipt date. on row ${row.rowNumber}`,
+      });
+    }
+    if (row.amount > recordsMap.get(compositeKey).remQuantity) {
+      badRows.push({
+        rowNumber: row.rowNumber,
+        error: `Sale amount exceeds batch remaining quantity. on row ${row.rowNumber}`,
+      });
+    }
   }
 };
 
@@ -75,6 +89,10 @@ const preProcess = async (readableStream, businessId) => {
   let rowNumber = 0;
   for await (const row of readableStream.pipe(csv())) {
     rowNumber++;
+    row.date = toUTCDate(row.date);
+    row.batchId = parseInt(row.batchId);
+    row.amount = parseInt(row.amount);
+    row.discount = parseFloat(row.discount);
     rows.push({ rowNumber, ...row });
   }
 
