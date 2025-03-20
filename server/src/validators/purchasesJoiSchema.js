@@ -45,6 +45,11 @@ const purchasesSchema = Joi.object({
     "date.base": "Date of Receipt must be a valid date.",
     "date.max": "Date of Receipt cannot be in the future.",
   }),
+
+  rowNumber: Joi.number().required().messages({
+    "any.required": "Row Number is required.",
+    "number.base": "Row Number must be a number.",
+  }),
 });
 
 module.exports = purchasesSchema;

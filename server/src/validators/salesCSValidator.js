@@ -14,10 +14,10 @@ const validateSales = async (readableStream, options) => {
   for (const row of rows) {
     try {
       const validatedData = salesSchema.validate(row, options);
+      if (validatedData.error) throw validatedData.error;
+
       if (productsIds.get(row.productName) === undefined)
-        throw new Error(
-          `Product ${row.productName} in row ${row.rowNumber} not found`
-        );
+        throw new Error(`Product ${row.productName} not found`);
 
       ///the row is valid
       validatedData.value.productId = productsIds.get(
@@ -30,7 +30,7 @@ const validateSales = async (readableStream, options) => {
     } catch (err) {
       badRows.push({
         rowNumber: row.rowNumber,
-        error: err.details[0].message || err.message,
+        error: err?.details?.[0]?.message || err?.message,
       });
     }
   }
@@ -66,20 +66,20 @@ const asyncValidate = async (businessId) => {
     if (!recordsMap.has(compositeKey)) {
       badRows.push({
         rowNumber: row.rowNumber,
-        error: `Batch ${row.batchId} and Product ${productId} combination does not exists. on row ${row.rowNumber}`,
+        error: `Batch ${row.batchId} and Product ${productId} combination does not exists.`,
       });
     } else
       goodRows[cnt].data.generatedId = recordsMap.get(compositeKey).generatedId;
     if (row.date < recordsMap.get(compositeKey).receiptDate) {
       badRows.push({
         rowNumber: row.rowNumber,
-        error: `Sale date must be after the receipt date. on row ${row.rowNumber}`,
+        error: `Sale date must be after the receipt date.`,
       });
     }
     if (row.amount > recordsMap.get(compositeKey).remQuantity) {
       badRows.push({
         rowNumber: row.rowNumber,
-        error: `Sale amount exceeds batch remaining quantity. on row ${row.rowNumber}`,
+        error: `Sale amount exceeds batch remaining quantity.`,
       });
     }
   }
@@ -89,13 +89,20 @@ const preProcess = async (readableStream, businessId) => {
   let rowNumber = 0;
   for await (const row of readableStream.pipe(csv())) {
     rowNumber++;
-    row.date = toUTCDate(row.date);
-    row.batchId = parseInt(row.batchId);
-    row.amount = parseInt(row.amount);
-    row.discount = parseFloat(row.discount);
-    rows.push({ rowNumber, ...row });
+    try {
+      row.date = toUTCDate(row.date);
+      row.batchId = parseInt(row.batchId);
+      row.amount = parseInt(row.amount);
+      row.discount = parseFloat(row.discount);
+      rows.push({ rowNumber, ...row });
+    } catch {
+      badRows.push({
+        rowNumber: rowNumber,
+        error: `Invalid data format`,
+      });
+    }
   }
-
+  if (badRows.length > 0) return;
   const uniqueProducts = [...new Set(rows.map((row) => row.productName))];
 
   const ret = await maindb.product.findMany({
