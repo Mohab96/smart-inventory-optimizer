@@ -74,13 +74,11 @@ model BatchInfo {
     batchId       Int       @id @default(autoincrement())
     productId     Int
     businessId    String
-    dateId        Int
     quantity      Int
     purchasePrice Decimal
     sellingPrice  Decimal
     expiryDate    DateTime?
 
-    date         DateDimension     @relation(fields: [dateId], references: [dateId])
     business     BusinessDimension @relation(fields: [businessId], references: [businessId])
     product      ProductDimension  @relation(fields: [productId], references: [productId])
     transactions TransactionFact[]
@@ -97,7 +95,6 @@ model DateDimension {
 
     productRevenues  ProductRevenueFact[]
     categoryRevenues CategoryRevenueFact[]
-    batches          BatchInfo[]
     inventorylevels  InventoryFact[]
     transactions     TransactionFact[]
 

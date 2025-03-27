@@ -98,6 +98,7 @@ model Batch {
   productId       Int
   Transaction     Transaction[]
   lastModified    DateTime      @default(now()) @updatedAt
+  createdAt       DateTime      @default(now())
 
   @@index([productId, id])
   @@index([id])

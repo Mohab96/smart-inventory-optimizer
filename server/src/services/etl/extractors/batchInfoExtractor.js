@@ -26,9 +26,22 @@ async function batchInfoExtractor(date = null) {
             businessId: true,
           },
         },
+        createdAt: true,
       },
     });
-    return rawData;
+    const { createData, updateData } = rawData.reduce(
+      (acc, item) => {
+        const createdAtDate = new Date(item.createdAt);
+        if (createdAtDate >= startDate && createdAtDate <= endDate) {
+          acc.createData.push(item);
+        } else {
+          acc.updateData.push(item);
+        }
+        return acc;
+      },
+      { createData: [], updateData: [] }
+    );
+    return { createData, updateData };
   } catch (error) {
     console.error("Extraction failed:", error);
     throw error;
