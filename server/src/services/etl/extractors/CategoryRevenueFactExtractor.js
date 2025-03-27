@@ -11,7 +11,7 @@ async function categoryRevenueFactExtractor(date = null) {
           c."id" AS "categoryId",
           p."businessId",
           t."date",
-          COALESCE(SUM(-t."amount" * (b."sellingPrice" * (1 - t."discount" / 100.0))), 0) AS "revenueAmount",
+          COALESCE(SUM(-t."amount" * (b."sellingPrice" * (1 - t."discount" / 100.0))) - SUM(-t."amount" * b."costOfGoods"), 0) AS "revenueAmount",
           COALESCE(SUM(-t."amount"), 0) AS "totalUnitsSold"
         FROM "Category" c
         LEFT JOIN "Product" p ON c."id" = p."categoryId"
