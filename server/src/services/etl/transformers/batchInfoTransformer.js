@@ -1,30 +1,29 @@
 const prisma = require("../../../../prisma/dwh/client");
 
-async function batchInfoTransformer(rawData, date = null) {
+async function batchInfoTransformer(rawData) {
   try {
-    date = date || new Date(new Date().setDate(new Date().getDate() - 1));
+    const { createData, updateData } = rawData;
 
-    const dateRecord = await prisma.DateDimension.findFirst({
-      where: {
-        fullDate: date,
-      },
-      select: { dateId: true },
-    });
-    if (!dateRecord) {
-      throw new Error(`No DateDimension entry for ${date}`);
-    }
-
-    const transformedData = rawData.map((row) => ({
+    const transofrmedCreateData = createData.map((row) => ({
       batchId: Number(row.generatedId),
       productId: Number(row.productId),
       businessId: row.productRelation.businessId,
-      dateId: dateRecord.dateId,
       quantity: Number(row.remQuantity),
       purchasePrice: Number(row.costOfGoods),
       sellingPrice: Number(row.sellingPrice),
       expiryDate: row.expiryDate,
     }));
-    return transformedData;
+    const transformedUpdateData = updateData.map((row) => ({
+      batchId: Number(row.generatedId),
+      productId: Number(row.productId),
+      businessId: row.productRelation.businessId,
+      quantity: Number(row.remQuantity),
+      purchasePrice: Number(row.costOfGoods),
+      sellingPrice: Number(row.sellingPrice),
+      expiryDate: row.expiryDate,
+    }));
+
+    return { transofrmedCreateData, transformedUpdateData };
   } catch (error) {
     console.error("Transformation failed:", error);
   }
