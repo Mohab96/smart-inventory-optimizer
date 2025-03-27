@@ -4,7 +4,7 @@ async function batchInfoTransformer(rawData) {
   try {
     const { createData, updateData } = rawData;
 
-    const transofrmedCreateData = createData.map((row) => ({
+    const transformedCreateData = createData.map((row) => ({
       batchId: Number(row.generatedId),
       productId: Number(row.productId),
       businessId: row.productRelation.businessId,
@@ -23,7 +23,7 @@ async function batchInfoTransformer(rawData) {
       expiryDate: row.expiryDate,
     }));
 
-    return { transofrmedCreateData, transformedUpdateData };
+    return { transformedCreateData, transformedUpdateData };
   } catch (error) {
     console.error("Transformation failed:", error);
   }
