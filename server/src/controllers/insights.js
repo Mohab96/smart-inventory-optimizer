@@ -17,18 +17,19 @@ const getInsights = async (req, res) => {
       top_number_of_product: +numberOfProducts,
     };
 
-    const res = await axios.post(predictionsEndpoint, body);
+    const response = await axios.post(predictionsEndpoint, body);
 
-    if (res.status >= 400) {
-      return res.status(res.status).send({
-        error: res.data.error || "Prediction service error",
+    if (response.status >= 400) {
+      return res.status(response.status).send({
+        error: response.data.error || "Prediction service error",
       });
     }
 
-    const { highDemandProducts } = predictionsResponse.data.data;
+    const { high_demand_products } = response.data;
+    
     const finalProducts = [];
 
-    for (const product of highDemandProducts) {
+    for (const product of high_demand_products) {
       const productData = await mainClient.product.findUnique({
         where: { id: product.product_id },
         include: {
@@ -72,10 +73,10 @@ const getInsights = async (req, res) => {
   }
 };
 
-const trainModel = async (businessId) => {
+const trainModel = async (business_id) => {
   try {
     const trainingEndpoint = process.env.MODEL_BASE_URL + "/atom/train";
-    const body = { business_id: businessId };
+    const body = { business_id };
 
     // Make the POST request with proper error handling
     const response = await axios.post(trainingEndpoint, body);
@@ -84,9 +85,6 @@ const trainModel = async (businessId) => {
     if (response.status >= 400) {
       throw new Error(`Training failed with status ${response.status}`);
     }
-
-    // Optional: Process response data if needed
-    // const data = response.data;
 
     return; // Or return response data if required
   } catch (error) {
@@ -98,22 +96,17 @@ const trainModel = async (businessId) => {
           `Training endpoint error ${error.response.status}:`,
           error.response.data
         );
-        throw new Error(
-          `Training failed: ${error.response.data.error || "Unknown error"}`
-        );
+        
       } else if (error.request) {
         // No response received (network issue)
         winston.error("Training endpoint unreachable:", error.message);
-        throw new Error("Training service unavailable");
       } else {
         // Request setup error
         winston.error("Request error:", error.message);
-        throw new Error("Invalid training request");
       }
     } else {
       // General server error
       winston.error("Unexpected error during training:", error);
-      throw new Error("Internal server error");
     }
   }
 };

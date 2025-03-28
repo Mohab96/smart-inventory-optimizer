@@ -1,5 +1,6 @@
 const client = require("../../../prisma/main/client");
 const _ = require("lodash"); // For splitting arrays into smaller chunks
+const { trainModel } = require("../../controllers/insights");
 
 const insertSalesTransaction = async (data, message) => {
   const batchSize = 10000;
@@ -49,6 +50,8 @@ const insertSalesTransaction = async (data, message) => {
       { timeout: 720000 }
     );
   }
+
+  await trainModel(message.businessId);
 };
 
 module.exports = insertSalesTransaction;
