@@ -1,4 +1,5 @@
 const client = require("../../../prisma/main/client");
+const { trainModel } = require("../../controllers/insights");
 
 const insertPurchasesTransactions = async (data, businessId) => {
   await client.$transaction(
@@ -58,6 +59,8 @@ const insertPurchasesTransactions = async (data, businessId) => {
     },
     { timeout: 720000 }
   );
+
+  await trainModel(businessId);
 };
 
 module.exports = insertPurchasesTransactions;
