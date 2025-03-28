@@ -1,6 +1,7 @@
 import pickle
 from datetime import datetime, timedelta
 import pandas as pd
+import numpy as np
 import xgboost as xgb
 from flask import Flask, request, jsonify
 from sklearn.preprocessing import StandardScaler
@@ -8,22 +9,27 @@ from sklearn.metrics import mean_absolute_error, r2_score
 from sqlalchemy import text, exc
 from flask_sqlalchemy import SQLAlchemy
 import os
-import numpy as np
 import logging
 
-# ========== configuration ==========
+# ========== Configuration ==========
 app = Flask(__name__)
 app.config.update(
     SQLALCHEMY_DATABASE_URI=os.getenv('DWH_DIRECT_URL'),
-    SQLALCHEMY_TRACK_MODIFICATIONS=False
+    SQLALCHEMY_TRACK_MODIFICATIONS=False,
+    SQLALCHEMY_ENGINE_OPTIONS={
+        "pool_size": 5,
+        "max_overflow": 10,
+        "pool_timeout": 30,
+        "pool_recycle": 3600
+    }
 )
 db = SQLAlchemy(app)
 
-# ========== logging ==========
+# ========== Logging ==========
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# ========== database model ==========
+# ========== Database Model ==========
 class ModelStorage(db.Model):
     __tablename__ = 'model_storage'
     id = db.Column(db.Integer, primary_key=True)
@@ -35,20 +41,23 @@ class ModelStorage(db.Model):
 
 # ========== XGBoost Handler ==========
 class XGBoostPredictor:
-    def __init__(self, n_estimators=1000, learning_rate=0.05):
+    def __init__(self):
         self.model = xgb.XGBRegressor(
-            objective='reg:squarederror',
-            n_estimators=n_estimators,
-            learning_rate=learning_rate,
-            max_depth=6,
-            subsample=0.8
+            objective='count:poisson',
+            n_estimators=150,
+            max_depth=5,
+            reg_alpha=0.3,
+            reg_lambda=0.3,
+            learning_rate=0.05,
+            subsample=0.8,
+            colsample_bytree=0.8,
+            enable_categorical=True  # Added to enable categorical support
         )
         self.scaler = StandardScaler()
-    
+
     def train(self, X, y):
         try:
-            if X.empty or y.empty:
-                raise ValueError("Empty training data")
+            logger.info(f"Training model with {X.shape[0]} samples")
             X_scaled = self.scaler.fit_transform(X)
             self.model.fit(X_scaled, y)
             return self
@@ -58,34 +67,46 @@ class XGBoostPredictor:
 
     def predict(self, X):
         try:
-            if X.empty:
-                raise ValueError("Empty prediction data")
-            return self.model.predict(self.scaler.transform(X))
+            logger.info(f"Predicting on {X.shape[0]} samples")
+            X_scaled = self.scaler.transform(X)
+            preds = self.model.predict(X_scaled)
+            return np.round(preds).clip(0).astype(int)
         except Exception as e:
             logger.error(f"Prediction failed: {str(e)}")
             raise
-    
+
     def save(self, business_id, product_id):
         try:
-            db_record = ModelStorage(
+            logger.info(f"Saving model for {business_id}/{product_id}")
+            record = ModelStorage.query.filter_by(
                 business_id=business_id,
-                product_id=product_id,
-                model_data=pickle.dumps(self.model),
-                scaler_data=pickle.dumps(self.scaler)
-            )
-            db.session.add(db_record)
+                product_id=int(product_id)
+            ).first()
+            if record:
+                record.model_data = pickle.dumps(self.model)
+                record.scaler_data = pickle.dumps(self.scaler)
+                record.last_trained = datetime.utcnow()
+            else:
+                record = ModelStorage(
+                    business_id=business_id,
+                    product_id=int(product_id),
+                    model_data=pickle.dumps(self.model),
+                    scaler_data=pickle.dumps(self.scaler)
+                )
+                db.session.add(record)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
             logger.error(f"Model save failed: {str(e)}")
             raise
-    
+
     @staticmethod
     def load(business_id, product_id):
         try:
+            logger.info(f"Loading model for {business_id}/{product_id}")
             record = ModelStorage.query.filter_by(
                 business_id=business_id,
-                product_id=product_id
+                product_id=int(product_id)
             ).first()
             if record:
                 predictor = XGBoostPredictor()
@@ -97,279 +118,284 @@ class XGBoostPredictor:
             logger.error(f"Model load failed: {str(e)}")
             return None
 
-# ========== data handling ==========
+# ========== Data Handler ==========
 class DataHandler:
     @staticmethod
     def fetch_product_data(business_id, product_id=None):
         try:
-            query = text(f"""
+            logger.info(f"Fetching data for {business_id}/{product_id or 'all'}")
+            base_query = """
                 SELECT 
                     d."fullDate" AS date,
-                    p."productId" AS product_id,
-                    AVG(b."sellingPrice") AS selling_price,
-                    AVG(b."purchasePrice") AS purchase_price,
-                    COALESCE(SUM(t."amount"), 0) AS total_units_sold,
+                    prf."productId" AS product_id,
+                    prf."totalUnitsSold" AS total_units_sold,
                     EXTRACT(DOW FROM d."fullDate") AS day_of_week,
-                    CASE WHEN EXTRACT(DOW FROM d."fullDate") IN (0, 6) THEN 1 ELSE 0 END AS is_weekend,
-                    EXTRACT(MONTH FROM d."fullDate") AS month,
-                    EXTRACT(WEEK FROM d."fullDate") AS week_of_year,
-                    EXTRACT(QUARTER FROM d."fullDate") AS quarter
-                FROM "BatchInfo" b
-                JOIN "ProductDimension" p ON b."productId" = p."productId"
-                JOIN "DateDimension" d ON b."dateId" = d."dateId"
-                LEFT JOIN "TransactionFact" t 
-                    ON p."productId" = t."productId" 
-                    AND p."businessId" = t."businessId" 
-                    AND d."dateId" = t."dateId"
-                WHERE p."businessId" = :business_id
-                {'AND p."productId" = :product_id' if product_id else ''}
-                GROUP BY d."fullDate", p."productId"
-                ORDER BY d."fullDate" ASC
-            """)
-
-            params = {'business_id': business_id}
+                    EXTRACT(MONTH FROM d."fullDate") AS month
+                FROM "ProductRevenueFact" prf
+                JOIN "DateDimension" d ON prf."dateId" = d."dateId"
+                WHERE prf."businessId" = :business_id
+            """
             if product_id:
-                params['product_id'] = product_id
-            
-            result = db.session.execute(query, params)
-            df = pd.DataFrame(result.fetchall(), columns=result.keys())
-            
-            if df.empty:
-                logger.warning(f"No data found for business_id: {business_id}, product_id: {product_id}")
-            
+                base_query += " AND prf.\"productId\" = :product_id"
+            df = DataHandler._fetch_batched(
+                query=text(base_query),
+                params={'business_id': business_id, 'product_id': product_id},
+                batch_size=5000
+            )
             return df
-            
         except exc.SQLAlchemyError as e:
             logger.error(f"Database error: {str(e)}")
             return pd.DataFrame()
-        except Exception as e:
-            logger.error(f"Unexpected error in fetch_product_data: {str(e)}")
+
+    @staticmethod
+    def _fetch_batched(query, params, batch_size=5000):
+        results = []
+        last_date = None
+        while True:
+            batch_query = query.text + \
+                (" AND d.\"fullDate\" > :last_date" if last_date else "") + \
+                f" ORDER BY d.\"fullDate\" ASC LIMIT {batch_size}"
+            batch_params = params.copy()
+            if last_date:
+                batch_params['last_date'] = last_date
+            result = db.session.execute(text(batch_query), batch_params)
+            batch = result.fetchall()
+            if not batch:
+                break
+            results.extend(batch)
+            last_date = batch[-1].date
+        if not results:
             return pd.DataFrame()
+        df = pd.DataFrame(results, columns=result.keys())
+        return df.sort_values('date').reset_index(drop=True)
 
     @staticmethod
     def preprocess_data(df):
         try:
-            required_columns = {'date', 'product_id', 'selling_price', 'purchase_price', 'total_units_sold'}
-            missing = required_columns - set(df.columns)
-            if missing:
-                raise ValueError(f"Missing required columns: {missing}")
+            if df.empty:
+                return {'features': pd.DataFrame(), 'product_mapping': pd.DataFrame()}
             
-            processed = (df
-                .assign(
-                    date=lambda x: pd.to_datetime(x['date'], errors='coerce'),
-                    lag_7=lambda x: x.groupby('product_id')['total_units_sold'].shift(7),
-                    rolling_7d=lambda x: x.groupby('product_id')['total_units_sold']
-                                    .transform(lambda s: s.rolling(7, 1).mean()),
-                    price_ratio=lambda x: np.divide(
-                        (x['selling_price'] - x['purchase_price']),
-                        x['purchase_price'],
-                        out=np.zeros_like(x['purchase_price']),
-                        where=x['purchase_price'] != 0
-                    )
-                )
-                .dropna()
-                .pipe(lambda x: x[['lag_7', 'rolling_7d', 'price_ratio', 
-                                  'day_of_week', 'month', 'total_units_sold']])
-            )
-            return processed
+            processed_df = df.copy()
+            numeric_cols = ['total_units_sold', 'day_of_week', 'month']
+            for col in numeric_cols:
+                processed_df[col] = pd.to_numeric(processed_df[col], errors='coerce').fillna(0).astype(np.float64)
+            
+            processed_df['is_weekend'] = processed_df['day_of_week'].isin([5.0, 6.0]).astype(np.int8)
+            
+            # Create lag and rolling features
+            processed_df['lag_7'] = processed_df.groupby('product_id')['total_units_sold'].transform(lambda x: x.shift(7).fillna(0))
+            processed_df['rolling_7d'] = processed_df.groupby('product_id')['total_units_sold'].transform(lambda x: x.rolling(7, min_periods=1).mean()).fillna(0)
+            
+            # Cyclical features
+            processed_df['day_sin'] = np.sin(2 * np.pi * processed_df['day_of_week'] / 7)
+            processed_df['day_cos'] = np.cos(2 * np.pi * processed_df['day_of_week'] / 7)
+            processed_df['month_sin'] = np.sin(2 * np.pi * (processed_df['month'] - 1) / 12)
+            processed_df['month_cos'] = np.cos(2 * np.pi * (processed_df['month'] - 1) / 12)
+            
+            # Product-specific features
+            processed_df['product_popularity'] = processed_df.groupby('product_id')['total_units_sold'].transform('mean')
+            processed_df['product_volatility'] = processed_df.groupby('product_id')['total_units_sold'].transform('std').fillna(0)
+            processed_df['product_max_sales'] = processed_df.groupby('product_id')['total_units_sold'].transform('max')
+            processed_df['product_weekday_avg'] = processed_df.groupby(['product_id', 'day_of_week'])['total_units_sold'].transform('mean')
+            
+            # Trend features
+            processed_df['sales_diff'] = processed_df.groupby('product_id')['total_units_sold'].transform(lambda x: x.diff().fillna(0))
+            processed_df['sales_diff_7d'] = processed_df.groupby('product_id')['total_units_sold'].transform(lambda x: x.diff(7).fillna(0))
+            
+            # Convert product_id to categorical type for XGBoost
+            processed_df['product_id'] = processed_df['product_id'].astype('category')
+            
+            # Create product mapping before dropping product_id (if needed)
+            product_mapping = processed_df[['product_id', 'date']].copy()
+            
+            # Define feature columns with product_id as categorical
+            feature_columns = [
+                'lag_7', 'rolling_7d', 'is_weekend', 
+                'day_sin', 'day_cos', 'month_sin', 'month_cos', 
+                'product_id', 
+                'product_popularity', 'product_volatility', 'product_max_sales',
+                'product_weekday_avg', 'sales_diff', 'sales_diff_7d'
+            ]
+            
+            final_features = processed_df[feature_columns]
+            
+            return {
+                'features': final_features,
+                'product_mapping': product_mapping
+            }
         except Exception as e:
             logger.error(f"Preprocessing failed: {str(e)}")
-            raise
+            return {'features': pd.DataFrame(), 'product_mapping': pd.DataFrame()}
 
-# ========== API endpoints ==========
+# ========== API Endpoints ==========
 @app.route("/atom/train", methods=["POST"])
 def train_endpoint():
     try:
-        if not request.json or 'business_id' not in request.json:
-            return jsonify({"success": False, "error": "Missing business_id in request"}), 400
-            
-        business_id = request.json["business_id"]
+        logger.info("\n" + "="*50 + "\n TRAINING STARTED")
+        req = request.json
+        business_id = req.get("business_id")
+        
+        # Validate business_id
+        if not business_id:
+            logger.error(" Missing business_id")
+            return jsonify({
+                "success": False,
+                "error": "Missing business_id in request"
+            }), 400
+        
+        logger.info(f"ðŸ”„ Processing business: {business_id}")
+        
+        # Fetch all product data for training
         data = DataHandler.fetch_product_data(business_id)
-        
         if data.empty:
-            return jsonify({"success": False, "error": "No data available for training"}), 404
+            logger.error(" No training data found")
+            return jsonify({
+                "success": False,
+                "error": "No data available for training"
+            }), 404
         
-        trained = []
-        for product_id in data['product_id'].unique():
-            try:
-                product_data = data[data['product_id'] == product_id]
-                processed_data = DataHandler.preprocess_data(product_data)
-                
-                if processed_data.empty:
-                    logger.warning(f"Skipping product {product_id} - empty processed data")
-                    continue
-                    
-                X = processed_data.drop(columns=['total_units_sold'])
-                y = processed_data['total_units_sold']
-                
-                predictor = XGBoostPredictor().train(X, y)
-                predictor.save(business_id, product_id)
-                trained.append(int(product_id))
-                
-            except Exception as e:
-                logger.error(f"training failed for product {product_id}: {str(e)}")
-                continue
+        # Extract unique product IDs used in training
+        trained_products = data['product_id'].unique().tolist()
+        count = len(trained_products)
+        
+        # Preprocess the dataset
+        processed = DataHandler.preprocess_data(data)
+        if processed['features'].empty:
+            logger.warning(" Empty processed data")
+            return jsonify({
+                "success": False,
+                "error": "Empty processed data"
+            }), 400
+        
+        # Train the model using the entire dataset
+        X = processed['features']
+        y = data['total_units_sold'].iloc[-len(X):]
+        predictor = XGBoostPredictor().train(X, y)
+        
+        # Save the combined model with product_id=0
+        predictor.save(business_id, 0)
         
         return jsonify({
             "success": True,
-            "trained_products": trained,
-            "count": len(trained)
+            "trained_products": trained_products,
+            "count": count
         })
-        
+    
     except Exception as e:
-        logger.error(f"Train endpoint error: {str(e)}")
-        return jsonify({"success": False, "error": "Internal server error"}), 500
+        logger.error(f" Critical training error: {str(e)}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "error": "Internal server error"
+        }), 500
 
 @app.route("/atom/predict", methods=["POST"])
 def predict_endpoint():
     try:
-        if not request.json:
-            return jsonify({"success": False, "error": "Empty request body"}), 400
-            
         req = request.json
         business_id = req.get("business_id")
-        days = req.get("days_of_forcasting", 7)
-        top_x = req.get("top_number_of_product", 10)
-
+        days = min(req.get("days_of_forecasting", 7), 30)
+        top_x = min(req.get("top_number_of_product", 10), 50)
         if not business_id:
             return jsonify({"success": False, "error": "Missing business_id"}), 400
-            
-        if days <= 0 or top_x <= 0:
-            return jsonify({"success": False, "error": "Invalid parameter values"}), 400
-
-        products = ModelStorage.query.filter_by(business_id=business_id).all()
-        if not products:
-            return jsonify({"success": False, "error": "No trained models found"}), 404
-
-        demand_predictions = []
-        roi_predictions = []
-        
-        for product in products:
-            try:
-                predictor = XGBoostPredictor.load(business_id, product.product_id)
-                if not predictor:
-                    continue
-                
-                data = DataHandler.fetch_product_data(business_id, product.product_id)
-                processed_data = DataHandler.preprocess_data(data)
-                
-                if processed_data.empty:
-                    continue
-                    
-                X = processed_data.drop(columns=['total_units_sold'])
-                
-                if len(X) < days:
-                    logger.warning(f"insufficient data for product {product.product_id}")
-                    continue
-                    
-                forecast = predictor.predict(X[-days:]).tolist()
-                total_forecast = sum(forecast)
-                
-                try:
-                    last_row = processed_data.iloc[-1]
-                    price_ratio = last_row.get("price_ratio", 0)
-                except (IndexError, KeyError):
-                    price_ratio = 0
-                
-                demand_predictions.append({
-                    "product_id": product.product_id,
-                    "forecast": [round(num, 2) for num in forecast],
-                    "total_forecast": round(total_forecast, 2)
-                })
-                
-                roi_predictions.append({
-                    "product_id": product.product_id,
-                    # "total_forecast": round(total_forecast, 2),
-                    # "price_ratio": round(price_ratio, 4),
-                    "roi_score": round(total_forecast * price_ratio, 4)
-                })
-                
-            except Exception as e:
-                logger.error(f"prediction failed for product {product.product_id}: {str(e)}")
+        predictor = XGBoostPredictor.load(business_id, 0)
+        if not predictor:
+            return jsonify({"success": False, "error": "No model found"}), 404
+        data = DataHandler.fetch_product_data(business_id)
+        if data.empty:
+            return jsonify({"success": False, "error": "No data available"}), 404
+        processed_result = DataHandler.preprocess_data(data)
+        if processed_result['features'].empty:
+            return jsonify({"success": False, "error": "Empty processed data"}), 400
+        processed = processed_result['features']
+        product_mapping = processed_result['product_mapping']
+        product_ids = product_mapping['product_id'].unique()
+        high_demand_products = []
+        for product_id in product_ids:
+            product_indices = product_mapping[product_mapping['product_id'] == product_id].index
+            if len(product_indices) < 7:
                 continue
-
-
-        demand_predictions.sort(key=lambda x: x["total_forecast"], reverse=True)
-        roi_predictions.sort(key=lambda x: x["roi_score"], reverse=True)
-        top_x = min(top_x, len(demand_predictions))
-
+            X_product = processed.loc[product_indices[-days:]]
+            preds = predictor.predict(X_product)
+            forecast = np.round(preds[:days]).clip(0).astype(int).tolist()
+            total = sum(forecast)
+            high_demand_products.append({
+                "product_id": int(product_id),
+                "forecast": forecast,
+                "total_forecast": total
+            })
+        high_demand_products.sort(key=lambda x: x["total_forecast"], reverse=True)
         return jsonify({
             "success": True,
-            "high_demand_products": demand_predictions[:top_x],
-            "high_roi_products": roi_predictions[:top_x]
+            "high_demand_products": high_demand_products[:top_x]
         })
-        
     except Exception as e:
-        logger.error(f"predict endpoint error: {str(e)}")
-        return jsonify({"success": False, "error": "internal server error"}), 500
+        return jsonify({"success": False, "error": "Internal server error"}), 500
 
 @app.route("/test-predict", methods=["POST"])
 def test_predict_endpoint():
     try:
-        if not request.json or 'business_id' not in request.json:
-            return jsonify({"success": False, "error": "missing business_id"}), 400
-            
-        business_id = request.json["business_id"]
+        logger.info("\n" + "="*50 + "\n🧪 TEST PREDICTION STARTED")
+        req = request.json
+        business_id = req.get("business_id")
+        
+        if not business_id:
+            logger.error("🤷‍♂️ Missing business_id")
+            return jsonify({"success": False, "error": "Missing business_id"}), 400
+        
+        # Fetch all product data
         data = DataHandler.fetch_product_data(business_id)
+        if data.empty:
+            logger.error("🤷‍♂️ No data found")
+            return jsonify({"success": False, "error": "No data available"}), 404
         
-        if data.empty or 'product_id' not in data.columns:
-            return jsonify({"success": False, "error": "no valid data available"}), 404
-            
-        results = []
+        # Preprocess the entire dataset
+        processed_result = DataHandler.preprocess_data(data)
+        if processed_result['features'].empty:
+            logger.warning("🤷‍♂️ Empty processed data")
+            return jsonify({"success": False, "error": "Empty processed data"}), 400
         
-        for product_id in data['product_id'].unique():
-            try:
-                product_data = data[data['product_id'] == product_id]
-                processed_data = DataHandler.preprocess_data(product_data)
-                
-                if len(processed_data) < 30:
-                    results.append({
-                        "product_id": int(product_id),
-                        "error": "insufficient data (min 30 days required)"
-                    })
-                    continue
-                    
-                X = processed_data.drop(columns=['total_units_sold'])
-                y = processed_data['total_units_sold']
-                
-                split_idx = int(len(X) * 0.8)
-                X_train, X_test = X.iloc[:split_idx], X.iloc[split_idx:]
-                y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
-                
-                predictor = XGBoostPredictor().train(X_train, y_train)
-                preds = predictor.predict(X_test)
-                
-                metrics = {
-                    "training_r2": r2_score(y_train, predictor.predict(X_train)),
-                    "testing_r2": r2_score(y_test, preds),
-                    "mae": mean_absolute_error(y_test, preds),
-                    "accuracy_percent": max(0, r2_score(y_test, preds)) * 100
-                }
-                
-                results.append({
-                    "product_id": int(product_id),
-                    **{k: round(v, 4) if isinstance(v, float) else v for k, v in metrics.items()}
-                })
-                
-            except Exception as e:
-                results.append({
-                    "product_id": int(product_id),
-                    "error": str(e)
-                })
-                logger.error(f"test predict failed for product {product_id}: {str(e)}")
-
-        return jsonify({"success": True, "results": results})
+        processed = processed_result['features']
         
+        # Split the data for testing (80% train, 20% test)
+        split_idx = int(len(processed) * 0.8)
+        X_train = processed.iloc[:split_idx]
+        X_test = processed.iloc[split_idx:]
+        y_train = data['total_units_sold'].iloc[:split_idx]
+        y_test = data['total_units_sold'].iloc[split_idx:]
+        
+        logger.info(f"📊 Test data split - Train: {X_train.shape}, Test: {X_test.shape}")
+        
+        # Train a test model
+        test_predictor = XGBoostPredictor().train(X_train, y_train)
+        
+        # Make predictions
+        train_preds = test_predictor.predict(X_train)
+        test_preds = test_predictor.predict(X_test)
+        
+        # Calculate metrics
+        metrics = {
+            "training_r2": round(r2_score(y_train, train_preds), 4),
+            "testing_r2": round(r2_score(y_test, test_preds), 4),
+            "mae": round(mean_absolute_error(y_test, test_preds), 2),
+            "accuracy_percent": round(max(0, r2_score(y_test, test_preds)) * 100, 2)
+        }
+        
+        logger.info(f"📊 Test metrics: {metrics}")
+        
+        # Return test results
+        return jsonify({
+            "success": True,
+            "results": [{
+                "product_id": 0,  # Indicating combined model
+                **metrics
+            }],
+            "metrics": metrics
+        })
     except Exception as e:
-        logger.error(f"test predict endpoint error: {str(e)}")
-        return jsonify({"success": False, "error": "internal server error"}), 500
-
+        logger.error(f"💥 Critical test error: {str(e)}", exc_info=True)
+        return jsonify({"success": False, "error": "Internal server error"}), 500
 
 if __name__ == "__main__":
-    try:
-        with app.app_context():
-            db.create_all()
-        app.run(debug=False, host='0.0.0.0', port=5000)
-    except Exception as e:
-        logger.error(f"application startup failed: {str(e)}")
-        raise
+    with app.app_context():
+        db.create_all()
+    app.run(debug=False, host='0.0.0.0', port=5000)
