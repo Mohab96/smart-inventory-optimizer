@@ -2,8 +2,9 @@ const axios = require("axios");
 const winston = require("winston");
 const mainClient = require("../../prisma/main/client");
 
+const { fetchInsightsData } = require('../utils/insightUtils');
+
 const getInsights = async (req, res) => {
-  const predictionsEndpoint = process.env.MODEL_BASE_URL + "/atom/predict";
   const { numberOfProducts, daysOfForecasting } = req.body;
 
   if (!numberOfProducts || !daysOfForecasting) {
@@ -11,65 +12,35 @@ const getInsights = async (req, res) => {
   }
 
   try {
-    const body = {
-      business_id: req.user.businessId,
-      days_of_forcasting: +daysOfForecasting,
-      top_number_of_product: +numberOfProducts,
-    };
-
-    const response = await axios.post(predictionsEndpoint, body);
-
-    if (response.status >= 400) {
-      return res.status(response.status).send({
-        error: response.data.error || "Prediction service error",
-      });
-    }
-
-    const { high_demand_products } = response.data;
+    const finalProducts = await fetchInsightsData(
+      req.user.businessId,
+      Number(daysOfForecasting),
+      Number(numberOfProducts),
+      mainClient
+    );
     
-    const finalProducts = [];
-
-    for (const product of high_demand_products) {
-      const productData = await mainClient.product.findUnique({
-        where: { id: product.product_id },
-        include: {
-          categoryRelation: true,
-        },
-      });
-
-      finalProducts.push({
-        product: productData,
-        dailySales: product.forecast,
-        totalAmount: product.total_forecast,
-      });
-    }
-
-    res.status(200).send({ data: finalProducts });
+    return res.status(200).send({ data: finalProducts });
   } catch (error) {
+    if (error.status) {
+      return res.status(error.status).send({ error: error.message });
+    }
+    
     if (axios.isAxiosError(error)) {
       if (error.response) {
-        // Service returned error response
-        winston.error(
-          `Prediction service error ${error.response.status}:`,
-          error.response.data
-        );
-        res.status(error.response.status).send({
-          error: error.response.data.error || "Prediction service error",
+        winston.error(`Prediction service error ${error.response.status}:`, error.response.data);
+        return res.status(error.response.status).send({
+          error: error.response.data?.error || 'Prediction service error',
         });
-      } else if (error.request) {
-        // No response received
-        winston.error("Prediction service unavailable:", error.message);
-        res.status(503).send({ error: "Prediction service unavailable" });
-      } else {
-        // Request setup error
-        winston.error("Request setup error:", error.message);
-        res.status(500).send({ error: "Internal server error" });
       }
-    } else {
-      // General server error
-      winston.error("Server error:", error);
-      res.status(500).send({ error: "Internal server error" });
+      
+      if (error.request) {
+        winston.error('Prediction service unavailable:', error.message);
+        return res.status(503).send({ error: 'Prediction service unavailable' });
+      }
     }
+
+    winston.error('Server error:', error);
+    return res.status(500).send({ error: 'Internal server error' });
   }
 };
 

@@ -20,7 +20,7 @@ paths:
       description: "Retrieves product demand predictions based on forecasting parameters"
       tags:
         - "Insights"
-      secutiry:
+      security:
         - bearerAuth: []
       consumes:
         - "application/json"
