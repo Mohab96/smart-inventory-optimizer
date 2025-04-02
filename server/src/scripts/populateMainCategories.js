@@ -130,6 +130,11 @@ async function populateMainCategories() {
         description: "Small electronic devices like headphones and chargers",
         hasExpiryDate: false,
       },
+      {
+        name: "vehicle",
+        description: "cars and ridden objects",
+        hasExpiryDate: false,
+      },
     ];
 
     // Insert categories into the main database

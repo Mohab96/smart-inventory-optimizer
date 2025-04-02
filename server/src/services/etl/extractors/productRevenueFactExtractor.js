@@ -12,7 +12,7 @@ async function productRevenueFactExtractor(date = null) {
         p."id" AS "productId",
         p."businessId",
         t."date",
-        COALESCE(SUM(-t."amount" * (b."sellingPrice" * (1 - t."discount" / 100.0))), 0) AS "revenueAmount",
+        COALESCE(SUM(-t."amount" * (b."sellingPrice" * (1 - t."discount" / 100.0))) - SUM(-t."amount" * b."costOfGoods"), 0) AS "revenueAmount",
         COALESCE(SUM(ABS(t."amount")), 0) AS "totalUnitsSold"
       FROM "Product" p
       LEFT JOIN "Batch" b ON p."id" = b."productId"
