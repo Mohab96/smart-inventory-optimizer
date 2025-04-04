@@ -1005,6 +1005,216 @@ paths:
           description: Unauthorized - Authentication token is missing or invalid.
         "500":
           description: Internal Server Error.
+
+  /api/statistics/products-sale-trend/{year}:
+    get:
+      summary: Get Top 3 Products by Units Sold
+      description: Retrieves the top 3 products by total units sold for a given year, with monthly breakdowns.
+      operationId: getProductsSaleTrend
+      tags:
+        - Statistics:Trend
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 2025
+          description: The year for which to retrieve the sales trend
+      responses:
+        "200":
+          description: Successful response with monthly sales data for top 3 products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyTrend"
+        "400":
+          description: Invalid year parameter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized - Missing or invalid authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: No data found for the specified year
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoData"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/statistics/categories-sale-trend/{year}:
+    get:
+      summary: Get Top 3 Categories by Units Sold
+      description: Retrieves the top 3 categories by total units sold for a given year, with monthly breakdowns.
+      operationId: getCategoriesSaleTrend
+      tags:
+        - Statistics:Trend
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 2025
+          description: The year for which to retrieve the sales trend
+      responses:
+        "200":
+          description: Successful response with monthly sales data for top 3 categories
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyTrend"
+        "400":
+          description: Invalid year parameter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized - Missing or invalid authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: No data found for the specified year
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoData"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/statistics/products-revenue-trend/{year}:
+    get:
+      summary: Get Top 3 Products by Revenue
+      description: Retrieves the top 3 products by total revenue for a given year, with monthly breakdowns.
+      operationId: getProductsRevenueTrend
+      tags:
+        - Statistics:Trend
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 2025
+          description: The year for which to retrieve the revenue trend
+      responses:
+        "200":
+          description: Successful response with monthly revenue data for top 3 products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyTrend"
+              example:
+                "Product A":
+                  january: 1000.50
+                  february: 1500.75
+                  march: 1200.25
+                  april: 0.00
+                  may: 0.00
+                  june: 0.00
+                  july: 0.00
+                  august: 0.00
+                  september: 0.00
+                  october: 0.00
+                  november: 0.00
+                  december: 0.00
+        "400":
+          description: Invalid year parameter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized - Missing or invalid authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: No data found for the specified year
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoData"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/statistics/categories-revenue-trend/{year}:
+    get:
+      summary: Get Top 3 Categories by Revenue
+      description: Retrieves the top 3 categories by total revenue for a given year, with monthly breakdowns.
+      operationId: getCategoriesRevenueTrend
+      tags:
+        - Statistics:Trend
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 2025
+          description: The year for which to retrieve the revenue trend
+      responses:
+        "200":
+          description: Successful response with monthly revenue data for top 3 categories
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyTrend"
+        "400":
+          description: Invalid year parameter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized - Missing or invalid authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: No data found for the specified year
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoData"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /api/auth/login:
     post:
       summary: Authenticate user and return JWT token
@@ -1699,53 +1909,88 @@ paths:
                   error:
                     type: string
                     example: "An error occurred while fetching categories"
-  /api/submissions/csv:
-    get:
-      summary: List Submissions history
-      description: Retrieves all CSV submission records for the authenticated business. Each submission record includes its unique ID, current status, upload date, and any associated error messages.
-      operationId: listSubmissions
-      tags:
-        - Submissions
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Successfully retrieved CSV submissions
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: integer
-                          description: Unique identifier of the submission
-                          example: 123
-                        status:
-                          type: string
-                          description: Current processing status of the submission
-                          example: "processed"
-                        uploadedDate:
-                          type: string
-                          format: date-time
-                          description: Date and time when the submission was uploaded
-                          example: "2023-04-05T14:48:00.000Z"
-                        errors:
-                          type: string
-                          nullable: true
-                          description: Error details if any issues occurred during processing
-                          example: "No errors"
-        "401":
-          description: Unauthorized - Authentication token is missing or invalid
-        "500":
-          description: Internal server error - Could not retrieve submissions
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+  schemas:
+    MonthlyTrend:
+      type: object
+      additionalProperties:
+        type: object
+        properties:
+          january:
+            type: number
+          february:
+            type: number
+          march:
+            type: number
+          april:
+            type: number
+          may:
+            type: number
+          june:
+            type: number
+          july:
+            type: number
+          august:
+            type: number
+          september:
+            type: number
+          october:
+            type: number
+          november:
+            type: number
+          december:
+            type: number
+        required:
+          - january
+          - february
+          - march
+          - april
+          - may
+          - june
+          - july
+          - august
+          - september
+          - october
+          - november
+          - december
+      example:
+        "Product A":
+          january: 100
+          february: 150
+          march: 120
+          april: 0
+          may: 0
+          june: 0
+          july: 0
+          august: 0
+          september: 0
+          october: 0
+          november: 0
+          december: 0
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+      example:
+        message: "Valid year parameter is required"
+
+    NoData:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+      example:
+        message: "No product sales data found for the specified year"
