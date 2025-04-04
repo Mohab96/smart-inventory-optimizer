@@ -140,7 +140,7 @@ def predict_discount():
         }
 
         return jsonify(result)
-
+    # Handle the Exception
     except Exception as e:
         import traceback
         print(traceback.format_exc())
