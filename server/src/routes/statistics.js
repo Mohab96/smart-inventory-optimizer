@@ -14,6 +14,34 @@ const yearlyRevenuePerMonth = require("../controllers/yearlyRevenuePerMonth");
 const getTotalRevenueByYear = require("../controllers/totalRevenueByYear");
 const getTotalRevenueByQuarter = require("../controllers/totalRevenueByQuarter");
 const getTransactionHistory = require("../controllers/getTransactionHistory");
+const productSaleTrendController = require("../controllers/productsSaleTrend");
+const productRevenueTrendController = require("../controllers/productsRevenueTrend");
+const categorySaleTrendController = require("../controllers/categorySaleTrend");
+const categoryRevenueTrendController = require("../controllers/categoryRevenueTrend");
+
+statisticsRouter.get(
+  "/categories-revenue-trend/:year",
+  [authenticate, authorize],
+  categoryRevenueTrendController
+);
+
+statisticsRouter.get(
+  "/categories-sale-trend/:year",
+  [authenticate, authorize],
+  categorySaleTrendController
+);
+
+statisticsRouter.get(
+  "/products-revenue-trend/:year",
+  [authenticate, authorize],
+  productRevenueTrendController
+);
+
+statisticsRouter.get(
+  "/products-sale-trend/:year",
+  [authenticate, authorize],
+  productSaleTrendController
+);
 
 statisticsRouter.get(
   "/category-revenue",
