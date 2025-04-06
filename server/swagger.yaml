@@ -27,25 +27,20 @@ paths:
       produces:
         - "application/json"
       parameters:
-        - in: "body"
-          name: "body"
-          description: "Forecasting parameters"
+        - in: "query"
+          name: "numberOfProducts"
           required: true
           schema:
-            type: "object"
-            properties:
-              numberOfProducts:
-                type: "integer"
-                description: "Number of top products to retrieve"
-                example: 5
-              daysOfForecasting:
-                type: "integer"
-                description: "Number of days to forecast"
-                example: 7
-            required:
-              - "numberOfProducts"
-              - "daysOfForecasting"
-
+            type: "integer"
+          description: "Number of top products to retrieve"
+          example: 5
+        - in: "query"
+          name: "daysOfForecasting"
+          required: true
+          schema:
+            type: "integer"
+          description: "Number of days to forecast"
+          example: 7
       responses:
         "200":
           description: "Successful response with product predictions"
@@ -116,6 +111,58 @@ paths:
                 type: "string"
             example:
               error: "Prediction service unavailable"
+
+  /api/insights/get-discounts:
+    get:
+      summary: Retrieve discounts for the business
+      description: Fetches a list of discounts associated with the authenticated user's business, with an optional limit on the number of discounts returned.
+      tags:
+        - "Insights"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: The maximum number of discounts to return
+      responses:
+        "200":
+          description: Successfully retrieved discounts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Discount"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   # Revenue category statistics
   /api/statistics/monthly-category-revenues:
@@ -1994,3 +2041,28 @@ components:
         - message
       example:
         message: "No product sales data found for the specified year"
+
+    Discount:
+      type: object
+      properties:
+        productName:
+          type: string
+          example: "Product A"
+        suggestedDiscount:
+          type: number
+          example: 20.5
+        categoryName:
+          type: string
+          example: "Electronics"
+        batchId:
+          type: integer
+          example: 123
+        productPrice:
+          type: number
+          example: 18432.2155
+        productPriceAfterDiscount:
+          type: number
+          example: 14688.00
+        productId:
+          type: integer
+          example: 456

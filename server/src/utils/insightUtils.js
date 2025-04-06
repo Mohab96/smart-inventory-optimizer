@@ -1,8 +1,14 @@
-const axios = require('axios');
+const axios = require("axios");
+const winston = require("winston");
 
-async function fetchInsightsData(businessId, daysOfForecasting, numberOfProducts, mainClient) {
+async function fetchInsightsData(
+  businessId,
+  daysOfForecasting,
+  numberOfProducts,
+  mainClient
+) {
   const predictionsEndpoint = process.env.MODEL_BASE_URL + "/atom/predict";
-  
+
   const response = await axios.post(predictionsEndpoint, {
     business_id: businessId,
     days_of_forcasting: daysOfForecasting,
@@ -10,7 +16,7 @@ async function fetchInsightsData(businessId, daysOfForecasting, numberOfProducts
   });
 
   if (response.status >= 400) {
-    const error = new Error(response.data?.error || 'Prediction service error');
+    const error = new Error(response.data?.error || "Prediction service error");
     error.status = response.status;
     throw error;
   }
@@ -34,4 +40,40 @@ async function fetchInsightsData(businessId, daysOfForecasting, numberOfProducts
   return finalProducts;
 }
 
-module.exports = { fetchInsightsData };
+const fetchDiscounts = async (businessId, limit, mainClient) => {
+  const discountsEndpoint =
+    process.env.MODEL_BASE_URL + "/predict_discount?businessId=" + businessId;
+
+  const response = await axios.get(discountsEndpoint);
+  const { discounts } = await response.data;
+
+  const newDiscounts = discounts.slice(0, limit);
+  const finalDiscounts = [];
+
+  for (const discount of newDiscounts) {
+    const batch = await mainClient.batch.findUnique({
+      where: { generatedId: discount.batchId },
+      include: { productRelation: true },
+    });
+
+    const category = await mainClient.category.findUnique({
+      where: { id: batch.productRelation.categoryId },
+    });
+
+    finalDiscounts.push({
+      productName: discount.productName,
+      suggestedDiscount: discount.suggested_discount,
+      categoryName: category.name,
+      batchId: discount.batchId,
+      productPrice: batch.sellingPrice,
+      productPriceAfterDiscount:
+        +batch.sellingPrice -
+        (+batch.sellingPrice * +discount.suggested_discount) / 100,
+      productId: batch.productRelation.id,
+    });
+  }
+
+  return finalDiscounts;
+};
+
+module.exports = { fetchInsightsData, fetchDiscounts };
