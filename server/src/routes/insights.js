@@ -8,4 +8,10 @@ insightsRouter.get(
   insightsController.getInsights
 );
 
+insightsRouter.get(
+  "/get-discounts",
+  [authenticate],
+  insightsController.getDiscounts
+);
+
 module.exports = insightsRouter;
