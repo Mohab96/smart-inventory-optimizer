@@ -20,6 +20,7 @@ import QuarterlyRevenues from "./pages/dashboard/QuarterlyRevenues";
 import Transactions from "./pages/dashboard/Transactions";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import CsvSubmissions from "./pages/TransactionsFeeding/CsvSubmissions";
+import RecommendationPage from "./pages/recommendation/RecommendationPage";
 
 function App() {
   return (
@@ -115,6 +116,14 @@ function App() {
               <div className="">
                 <TransactionsFeeding />
               </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/recommendations"
+          element={
+            <ProtectedRoute>
+              <RecommendationPage />
             </ProtectedRoute>
           }
         />

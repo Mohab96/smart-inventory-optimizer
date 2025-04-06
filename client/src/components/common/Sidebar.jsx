@@ -11,8 +11,19 @@ const Sidebar = () => {
 
       <ul className="mt-4 space-y-2 font-medium">
         <li>
-          <button className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+          <button
+            className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+            onClick={() => navigate("/dashboard")}
+          >
             Dashboard
+          </button>
+        </li>
+        <li>
+          <button
+            className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+            onClick={() => navigate("/recommendations")}
+          >
+            Recommendations
           </button>
         </li>
         <li>
