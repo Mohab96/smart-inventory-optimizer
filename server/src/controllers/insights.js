@@ -2,6 +2,7 @@ const axios = require("axios");
 const winston = require("winston");
 const mainClient = require("../../prisma/main/client");
 
+
 const { fetchInsightsData, fetchDiscounts } = require("../utils/insightUtils");
 
 const getInsights = async (req, res) => {
