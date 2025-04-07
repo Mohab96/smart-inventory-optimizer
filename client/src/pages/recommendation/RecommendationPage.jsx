@@ -13,7 +13,7 @@ const RecommendationPage = () => {
 
   useEffect(() => {
     dispatch(fetchRecommendations({ numberOfProducts, daysOfForecasting }));
-  }, [dispatch, numberOfProducts, daysOfForecasting]); // Include them in dependency array
+  }, [dispatch, numberOfProducts, daysOfForecasting]); 
 
   return (
     <div className="h-screen flex flex-col">
