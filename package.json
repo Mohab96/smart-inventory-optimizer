@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "node-schedule": "^2.1.1",
+    "socket.io": "^4.8.1"
+  }
+}

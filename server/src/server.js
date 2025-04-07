@@ -1,7 +1,6 @@
 const express = require("express");
 const winston = require("winston");
 const app = express();
-
 async function run() {
   await require("./startup/logging")();
   await require("./startup/config")();

@@ -15,6 +15,7 @@ const storageRouter = require("../routes/storage");
 const productsRouter = require("../routes/products");
 const categoriesRouter = require("../routes/categories");
 const insightsRouter = require("../routes/insights");
+const notificationsRouter = require("../routes/notifications");
 
 const CSS_URL =
   "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
@@ -44,5 +45,7 @@ module.exports = function (app) {
   app.use(endpoints.CATEGORIES, categoriesRouter);
   app.use(endpoints.SUBMISSIONS, submissionsRouter);
   app.use(endpoints.INSIGHTS, insightsRouter);
+  app.use(endpoints.INSIGHTS, insightsRouter);
+  app.use(endpoints.NOTIFICATIONS, notificationsRouter);
   app.use(error); //make sure this is the last route always
 };
