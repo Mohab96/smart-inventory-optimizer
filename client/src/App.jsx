@@ -20,6 +20,7 @@ import QuarterlyRevenues from "./pages/dashboard/QuarterlyRevenues";
 import Transactions from "./pages/dashboard/Transactions";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import CsvSubmissions from "./pages/TransactionsFeeding/CsvSubmissions";
+import Header from "./components/common/Header";
 
 function App() {
   return (
@@ -122,7 +123,8 @@ function App() {
           path="/csvsubmissions"
           element={
             <ProtectedRoute>
-              <div className="mt-24">
+              <Header></Header>
+              <div className="mt-4">
                 <CsvSubmissions />
               </div>
             </ProtectedRoute>
