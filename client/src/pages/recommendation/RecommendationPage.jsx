@@ -6,14 +6,16 @@ import { fetchRecommendations } from "../../store/features/recommendationSices/r
 
 const RecommendationPage = () => {
   const dispatch = useDispatch();
-  const { loading, data, error } = useSelector((state) => state.recommendation);
+  const { loading, data = {}, error } = useSelector((state) => state.recommendation);
 
   const numberOfProducts = 2;
   const daysOfForecasting = 5;
 
   useEffect(() => {
     dispatch(fetchRecommendations({ numberOfProducts, daysOfForecasting }));
-  }, [dispatch, numberOfProducts, daysOfForecasting]); 
+  }, [dispatch, numberOfProducts, daysOfForecasting]);
+
+  const recommendations = data.data || [];
 
   return (
     <div className="h-screen flex flex-col">
@@ -28,9 +30,8 @@ const RecommendationPage = () => {
             <div>
               <h2 className="text-xl font-semibold mb-4">Recommendations</h2>
               <ul className="space-y-2">
-                {data.map((item, index) => (
+                {recommendations.map((item, index) => (
                   <li key={index} className="bg-gray-600 p-3 rounded-lg shadow">
-                    {/* Customize this based on your API response structure */}
                     {JSON.stringify(item)}
                   </li>
                 ))}
