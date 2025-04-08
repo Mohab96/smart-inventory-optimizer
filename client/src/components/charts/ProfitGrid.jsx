@@ -16,7 +16,7 @@ const ProfitGrid = () => {
   const quarterlyRevenue = useSelector((state) => state.revenue.quarterlyData);
   const categorySales = useSelector((state) => state.sales);
 
-  // console.log(categorySales.data.data);
+  console.log(categorySales.data.data);
 
   const fetchCalled = useRef(false); // Prevent unnecessary fetch calls
   const [page, setPage] = useState(1);

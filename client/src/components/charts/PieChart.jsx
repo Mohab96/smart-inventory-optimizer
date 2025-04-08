@@ -26,7 +26,7 @@ export default function PieChart({ data }) {
   };
 
   return (
-    <div className="p-4 w-full dark:bg-gray-800 rounded-lg text-gray-200">
+    <div className="p-4 w-full h-full dark:bg-gray-800 rounded-lg text-gray-200">
       <div className="h-full flex flex-col justify-center items-center">
         {data.length === 0 ? (
           <p>No data available</p>

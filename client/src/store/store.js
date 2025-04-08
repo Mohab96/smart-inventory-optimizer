@@ -5,7 +5,9 @@ import revenueReducer from "./features/dashboardSlices/revenueSlice";
 import expiryDateReducer from "./features/dashboardSlices/expiryDateSlice";
 import lowStockReducer from "./features/dashboardSlices/lowStockSlice";
 import salesReducer from "./features/dashboardSlices/salesSlice";
-import transactionSlice from "./features/transactionSlices/transactionSlice"
+import transactionSlice from "./features/transactionSlices/transactionSlice";
+import recommendationsSlice from "./features/recommendationSices/recommendationsSlice";
+import trendsSlice from "./features/trendSlices/trendSlice";
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +17,8 @@ export const store = configureStore({
     sales: salesReducer,
     expiryDate: expiryDateReducer,
     lowStock: lowStockReducer,
-    transaction : transactionSlice
+    transaction: transactionSlice,
+    recommendation: recommendationsSlice,
+    trend: trendsSlice,
   },
 });
