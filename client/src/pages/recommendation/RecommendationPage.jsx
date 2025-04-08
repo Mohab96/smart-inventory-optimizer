@@ -8,7 +8,6 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 const RecommendationPage = () => {
   const dispatch = useDispatch();
   const { loading, data = {}, error } = useSelector((state) => state.recommendation);
-
   const numberOfProducts = 2;
   const daysOfForecasting = 5;
 
@@ -17,6 +16,7 @@ const RecommendationPage = () => {
   }, [dispatch, numberOfProducts, daysOfForecasting]);
 
   const recommendations = data.data || [];
+
 
   const prepareChartData = (dailySales) => {
     return dailySales.map((sales, index) => ({
@@ -44,6 +44,7 @@ const RecommendationPage = () => {
           )}
           {!loading && !error && (
             <div>
+
               <h2 className="text-2xl font-bold mb-6">Product Recommendations</h2>
               
               {recommendations.length === 0 ? (

@@ -3,8 +3,11 @@ import axios from "axios";
 
 const initialState = {
   loading: false,
-  data: [],
   error: "",
+  categoriesSales: [],
+  productsSales: [],
+  categoriesRevenue: [],
+  productsRevenue: [],
 };
 
 // Fetch Categories Sales Trends
@@ -90,6 +93,7 @@ const trendSlice = createSlice({
       state.loading = false;
       state.data = action.payload;
       state.error = "";
+      // console.log("✅ Categories Sales Trends:", action.payload);
     });
     builder.addCase(fetchCategoriesSalesTrends.rejected, (state, action) => {
       state.loading = false;
@@ -104,6 +108,7 @@ const trendSlice = createSlice({
       state.loading = false;
       state.data = action.payload;
       state.error = "";
+      // console.log("✅ Products Sales Trends:", action.payload);
     });
     builder.addCase(fetchProductsSalesTrends.rejected, (state, action) => {
       state.loading = false;
@@ -118,6 +123,7 @@ const trendSlice = createSlice({
       state.loading = false;
       state.data = action.payload;
       state.error = "";
+      // console.log("✅ Products Revenues Trends:", action.payload);
     });
     builder.addCase(fetchProductsRevenuesTrends.rejected, (state, action) => {
       state.loading = false;
@@ -134,6 +140,7 @@ const trendSlice = createSlice({
         state.loading = false;
         state.data = action.payload;
         state.error = "";
+        // console.log("✅ Categories Revenues Trends:", action.payload);
       }
     );
     builder.addCase(fetchCategoriesRevenuesTrends.rejected, (state, action) => {
