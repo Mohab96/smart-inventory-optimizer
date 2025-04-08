@@ -1956,7 +1956,87 @@ paths:
                   error:
                     type: string
                     example: "An error occurred while fetching categories"
+  /api/notification/products-prediction:
+    get:
+      summary: "Get product demand predictions"
+      description: |
+        Retrieves top product demand predictions for the authenticated business.
+        Returns the top 5 products with their forecasted total sales amounts 
+        for the next 7 days.
+      tags:
+        - "Notification"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response with product predictions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productName:
+                          type: string
+                          description: Name of the product
+                        categoryName:
+                          type: string
+                          description: Category of the product
+                        totalAmount:
+                          type: number
+                          description: Forecasted total sales amount for next 7 days
+              example:
+                data:
+                  - productName: "BMW X5 2013"
+                    categoryName: "vehicle"
+                    totalAmount: 24
+                  - productName: "Lexus CT 200h 2012"
+                    categoryName: "vehicle"
+                    totalAmount: 24
+                  - productName: "Kia Sportage 2006"
+                    categoryName: "vehicle"
+                    totalAmount: 22
+                  - productName: "Lexus GX 470 2008"
+                    categoryName: "vehicle"
+                    totalAmount: 22
+                  - productName: "Dodge Ram Pickup 1500 2004"
+                    categoryName: "vehicle"
+                    totalAmount: 21
+          links: {}
 
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Invalid request parameters"
+          links: {}
+
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Internal server error"
+          links: {}
+
+        "503":
+          description: Prediction service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Prediction service unavailable"
+          links: {}
 components:
   securitySchemes:
     bearerAuth:
