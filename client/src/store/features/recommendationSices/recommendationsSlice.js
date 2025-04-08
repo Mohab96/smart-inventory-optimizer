@@ -6,6 +6,7 @@ const initialState = {
   data: [],
   error: "",
 };
+const baseURL = import.meta.env.DEV ? "/api" : import.meta.env.VITE_BASE_URL;
 
 // Fetch Transactions with Date Parameter
 export const fetchRecommendations = createAsyncThunk(
@@ -15,9 +16,12 @@ export const fetchRecommendations = createAsyncThunk(
     if (!token) throw new Error("Token is missing!");
 
     const response = await axios.get(
-      `http://localhost:2000/api/insights/get-insights?numberOfProducts=${numberOfProducts}&daysOfForecasting=${daysOfForecasting}`,
+      `${baseURL}/insights/get-insights?numberOfProducts=${numberOfProducts}&daysOfForecasting=${daysOfForecasting}`,
       {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
     );
 
@@ -25,7 +29,7 @@ export const fetchRecommendations = createAsyncThunk(
   }
 );
 
-const recommendationSlice = createSlice({
+const recommendationsSlice = createSlice({
   name: "recommendation",
   initialState,
   extraReducers: (builder) => {
@@ -45,4 +49,4 @@ const recommendationSlice = createSlice({
   },
 });
 
-export default recommendationSlice.reducer;
+export default recommendationsSlice.reducer;

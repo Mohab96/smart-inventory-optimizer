@@ -11,7 +11,7 @@ import NotFound from "./pages/NotFound";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
 import ExpiryDateProducts from "./pages/dashboard/ExpiryDateProducts";
 import CategoriesExpiringSoon from "./pages/dashboard/CategoriesExpiringSoon";
-import LowStockProducts from "./pages/dashboard/lowStockProducts";
+import LowStockProducts from "./pages/dashboard/LowStockProducts";
 import NewProductAddition from "./pages/newProductAddition/NewProductAddition";
 import TransactionsFeeding from "./pages/TransactionsFeeding/TransactionsFeeding";
 import ImageUpload from "./pages/ImageUpload";
