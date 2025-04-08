@@ -1,143 +1,184 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Header from "../../components/common/Header";
 import Sidebar from "../../components/common/Sidebar";
+import CategorySalesTrendCard from "../../components/cards/CategorySalesTrendCard";
+import CategoryRevenueTrendCard from "../../components/cards/CategoryRevenueTrendCard";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCategoriesSalesTrends,
-  fetchProductsSalesTrends,
   fetchCategoriesRevenuesTrends,
-  fetchProductsRevenuesTrends,
 } from "../../store/features/trendSlices/trendSlice";
-import ColChart from "../../components/charts/ColChart";
 
 const TrendVisualizer = () => {
   const dispatch = useDispatch();
   const [selectedYear, setSelectedYear] = useState(2015);
-  const { loading, data, error } = useSelector((state) => state.trend);
+  const [selectedCategory, setSelectedCategory] = useState("vehicle");
+  const [salesChartData, setSalesChartData] = useState([]);
+  const [revenueChartData, setRevenueChartData] = useState([]);
+  const { loading, salesData, revenueData, error } = useSelector(
+    (state) => state.trend
+  );
 
   const fetchedOnce = useRef(false);
 
   useEffect(() => {
-    if (fetchedOnce.current) return; // prevent double-fetch in dev
-
-    const fetchAllTrends = async () => {
+    const fetchTrendData = async () => {
       try {
-        const categoriesSalesRes = await dispatch(
+        const salesTrendData = await dispatch(
           fetchCategoriesSalesTrends(selectedYear)
         ).unwrap();
-        console.log("✅ Categories Sales Trends:", categoriesSalesRes);
+        console.log(`✅ Category Sales Trends:`, salesTrendData);
 
-        const productsSalesRes = await dispatch(
-          fetchProductsSalesTrends(selectedYear)
-        ).unwrap();
-        console.log("✅ Products Sales Trends:", productsSalesRes);
+        // Force the data processing after successful fetch
+        processTrendData(salesTrendData, selectedCategory, setSalesChartData);
 
-        const categoriesRevenueRes = await dispatch(
+        const revenueTrendData = await dispatch(
           fetchCategoriesRevenuesTrends(selectedYear)
         ).unwrap();
-        console.log("✅ Categories Revenues Trends:", categoriesRevenueRes);
+        console.log(`✅ Category Revenue Trends:`, revenueTrendData);
 
-        const productsRevenueRes = await dispatch(
-          fetchProductsRevenuesTrends(selectedYear)
-        ).unwrap();
-        console.log("✅ Products Revenues Trends:", productsRevenueRes);
+        // Force the data processing after successful fetch
+        processTrendData(
+          revenueTrendData,
+          selectedCategory,
+          setRevenueChartData
+        );
       } catch (err) {
-        console.error("❌ Error while fetching trends:", err);
+        console.error(`❌ Error while fetching category trends:`, err);
       }
     };
 
-    fetchAllTrends();
+    fetchTrendData();
     fetchedOnce.current = true;
-  }, [dispatch, selectedYear]);
+  }, [dispatch, selectedYear, selectedCategory]);
 
-  // Helpers to convert data to chart format
-  const formatTrendData = (source) =>
-    Object.entries(source || {}).map(([month, value]) => ({
-      month: month.charAt(0).toUpperCase() + month.slice(1),
-      value,
-    }));
+  // Also process data whenever Redux state changes
+  useEffect(() => {
+    if (salesData) {
+      processTrendData(salesData, selectedCategory, setSalesChartData);
+    }
+  }, [salesData, selectedCategory]);
 
-  const categoriesSalesData = formatTrendData(data?.categoriesSales?.vehicle);
-  const productsSalesData = formatTrendData(
-    data?.productsSales?.["Ford Escape 2014"]
-  );
-  const categoriesRevenueData = formatTrendData(
-    data?.categoriesRevenues?.vehicle
-  );
-  const productsRevenueData = formatTrendData(
-    data?.productsRevenues?.["Mercedes-Benz E-Class 2013"]
-  );
+  useEffect(() => {
+    if (revenueData) {
+      processTrendData(revenueData, selectedCategory, setRevenueChartData);
+    }
+  }, [revenueData, selectedCategory]);
+
+  // Extract this logic into a separate function for reuse
+  const processTrendData = (data, category, setData) => {
+    console.log(`Processing category sales data for ${category}:`, data);
+
+    // Extract the appropriate data from the response
+    const categoryData = data[category];
+
+    if (!categoryData) {
+      console.log("No data available for the selected category");
+      setData([]);
+      return;
+    }
+
+    // Create an array of months in order
+    const monthOrder = [
+      "january",
+      "february",
+      "march",
+      "april",
+      "may",
+      "june",
+      "july",
+      "august",
+      "september",
+      "october",
+      "november",
+      "december",
+    ];
+
+    const formattedData = monthOrder.map((month) => {
+      const monthValue =
+        categoryData[month] !== undefined
+          ? typeof categoryData[month] === "string"
+            ? parseInt(categoryData[month])
+            : categoryData[month]
+          : 0;
+
+      return {
+        month: month.charAt(0).toUpperCase() + month.slice(1),
+        value: monthValue,
+      };
+    });
+
+    console.log("Formatted data:", formattedData);
+    setData(formattedData);
+  };
 
   const years = Array.from(
     { length: new Date().getFullYear() - 2013 + 1 },
     (_, i) => 2013 + i
   ).reverse();
 
-  // Use the categoriesSalesData to map to chartData
-  const chartData = categoriesSalesData.map(({ month, value }) => ({
-    name: month,
-    value,
-  }));
+  const handleYearChange = (e) => {
+    const year = parseInt(e.target.value);
+    setSelectedYear(year);
+    fetchedOnce.current = false; // Reset to allow refetching with new year
+  };
+
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+  };
+
+  // Check if there's any non-zero data
+  const hasData = (chartData) =>
+    chartData &&
+    chartData.length > 0 &&
+    chartData.some((item) => item.value > 0);
+
+  // Custom debugger function
+  const debugDataValues = (chartData) => {
+    if (!chartData || chartData.length === 0) return "No data available";
+
+    return chartData.map((item) => `${item.month}: ${item.value}`).join(", ");
+  };
+
+  // Get chart title based on current selections
+  const getChartTitle = (category, year, type) => {
+    return `${category.charAt(0).toUpperCase() + category.slice(1)} ${type === "revenue" ? "Revenue" : "Sales"} Trends (${year})`;
+  };
 
   return (
     <div className="h-screen flex flex-col">
       <Header />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 ">
         <Sidebar />
-        <div className="flex-1 overflow-y-auto p-4 dark:bg-gray-900 text-white">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            {/* Year Dropdown */}
-            <div className="relative mb-4">
-              <button
-                className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white inline-flex items-center"
-                type="button"
-              >
-                Year: {selectedYear}
-                <svg
-                  className="w-2.5 m-2.5 ms-1.5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 10 6"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="m1 1 4 4 4-4"
-                  />
-                </svg>
-              </button>
-              <div className="absolute right-0 z-10 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
-                <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
-                  {years.map((year) => (
-                    <li key={year}>
-                      <button
-                        className="w-full text-left block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                        onClick={() => setSelectedYear(year)}
-                      >
-                        {year}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* ColChart Component */}
-            <ColChart
-              title="Categories Sales Trends"
-              value="3.4k"
-              subtitle="Sales Trends per Month"
-              percentage="42.5%"
-              stats={[
-                { label: "Money spent:", value: "$3,232" },
-                { label: "Conversion rate:", value: "1.2%" },
-              ]}
-              chartData={chartData}
-              selectedYear={selectedYear} // Pass selectedYear here
-              onYearChange={setSelectedYear} // Pass onYearChange function here
-              years={years} // Pass years here
+        <div className="flex flex-col w-full">
+          <div className="flex-1 w-full">
+            <CategorySalesTrendCard
+              loading={loading}
+              error={error}
+              chartData={salesChartData}
+              getChartTitle={() =>
+                getChartTitle(selectedCategory, selectedYear, "sales")
+              }
+              hasData={hasData(salesChartData)}
+              selectedYear={selectedYear}
+              handleYearChange={handleYearChange}
+              handleCategoryChange={handleCategoryChange}
+              years={years}
+            />
+          </div>
+          <div className="flex-1 w-full">
+            <CategoryRevenueTrendCard
+              loading={loading}
+              error={error}
+              chartData={revenueChartData}
+              getChartTitle={() =>
+                getChartTitle(selectedCategory, selectedYear, "revenue")
+              }
+              hasData={hasData(revenueChartData)}
+              selectedYear={selectedYear}
+              handleYearChange={handleYearChange}
+              handleCategoryChange={handleCategoryChange}
+              years={years}
             />
           </div>
         </div>
