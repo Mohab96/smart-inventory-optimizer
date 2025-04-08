@@ -68,7 +68,7 @@ const TransactionsFeeding = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-6 bg-white rounded-xl shadow-lg">
+    <div className="max-w-lg mx-auto p-6 bg-white rounded-xl shadow-lg mt-12 border">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">
           Upload Transactions
@@ -245,6 +245,12 @@ const TransactionsFeeding = () => {
           </p>
         </div>
       )}
+      <Link
+        to="/csvsubmissions"
+        className="mt-2 justify-center w-full inline-flex items-center px-6 py-3 border border-transparent text-md font-medium rounded-md text-white bg-orange-500 hover:bg-orange-700 transition-colors"
+      >
+        Submissions Status
+      </Link>
       <Link
         to="/dashboard"
         className="mt-2 justify-center w-full inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-700 transition-colors"

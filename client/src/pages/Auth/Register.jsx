@@ -7,7 +7,6 @@ import BgImg from "../../assets/images/signUpImg.jpg";
 import logo from "../../assets/images/logo.png";
 import { setCredentials } from "../../store/features/authSlice";
 import ImageUpload from "./ImageUpload";
-import CSVUpload from "./CSVUpload";
 
 const countryOptions = [
   { value: "+93", label: "Afghanistan (+93)" },
@@ -274,7 +273,7 @@ export default function Register() {
     formState: { errors: errorsBusiness },
   } = useForm();
 
-  const steps = [{ number: 1 }, { number: 2 }, { number: 3 }, { number: 4 }];
+  const steps = [{ number: 1 }, { number: 2 }, { number: 3 }];
 
   // Handle next step (manager form)
   const handleNextStep = async () => {
@@ -547,27 +546,6 @@ export default function Register() {
           {currentStep === 3 && (
             <div>
               {<ImageUpload></ImageUpload>}
-              <div className="flex justify-between mt-6">
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
-                  className="px-4 py-2 text-orange-500"
-                >
-                  ← Back
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep(currentStep + 1)}
-                  className="px-4 py-2 bg-orange-500 text-white rounded"
-                >
-                  Next Step →
-                </button>
-              </div>
-            </div>
-          )}
-          {currentStep === 4 && (
-            <div>
-              {<CSVUpload></CSVUpload>}
               <div className="flex justify-between mt-6">
                 <button
                   type="button"

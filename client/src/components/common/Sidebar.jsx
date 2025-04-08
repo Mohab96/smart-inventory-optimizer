@@ -39,7 +39,7 @@ const Sidebar = () => {
             className="block w-full p-2 text-left text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
             onClick={() => navigate("/transactionsFeeding")}
           >
-            Transactions
+            Upload Transactions
           </button>
         </li>
         <li>
