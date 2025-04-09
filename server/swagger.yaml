@@ -2125,6 +2125,80 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  api/notification/expiring-soon:
+    get:
+      summary: "Get products expiring soon"
+      description: |
+        Retrieves products with batches expiring within the next month.
+        Returns up to 5 products with their earliest expiry dates,
+        ordered by closest expiration date first.
+
+        Features:
+        - Only considers batches that haven't expired yet
+        - Shows earliest expiry date per product
+        - Includes product category information
+      tags:
+        - "Notification"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response with expiring products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productName:
+                          type: string
+                          description: Name of the expiring product
+                        categoryName:
+                          type: string
+                          description: Product category name
+                        expiryDate:
+                          type: string
+                          format: date-time
+                          description: Earliest expiration date for this product
+              example:
+                data:
+                  - productName: "Fresh Milk"
+                    categoryName: "Dairy"
+                    expiryDate: "2024-06-15T00:00:00Z"
+                  - productName: "Greek Yogurt"
+                    categoryName: "Dairy"
+                    expiryDate: "2024-06-18T00:00:00Z"
+                  - productName: "Cheddar Cheese"
+                    categoryName: "Dairy"
+                    expiryDate: "2024-06-20T00:00:00Z"
+
+        "400":
+          description: Invalid request or missing business context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Invalid request"
+
+        "401":
+          description: Unauthorized - Missing or invalid authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   securitySchemes:
     bearerAuth:

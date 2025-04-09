@@ -6,7 +6,6 @@ const dwhClient = require("../../prisma/dwh/client");
 
 const getLowStockPrediction = async (req, res) => {
   const businessId = req.user?.businessId;
-  console.log(req.user);
   if (!businessId) {
     return res.status(400).send({ error: "Invalid request" });
   }
