@@ -23,6 +23,7 @@ import CsvSubmissions from "./pages/TransactionsFeeding/CsvSubmissions";
 import Header from "./components/common/Header";
 import RecommendationPage from "./pages/recommendation/RecommendationPage";
 import TrendVisualizer from "./pages/trends/trendVisualizer";
+import BusinessAnalyticsDashboard from "./pages/report/Report";
 
 function App() {
   return (
@@ -183,6 +184,16 @@ function App() {
             <div className="pt-36 min-h-screen bg-gray-50 px-4">
               <ProtectedRoute>
                 <ImageUpload />
+              </ProtectedRoute>
+            </div>
+          }
+        ></Route>
+        <Route
+          path="/businessAnalytics"
+          element={
+            <div className="pt-36 min-h-screen bg-gray-50 px-4">
+              <ProtectedRoute>
+                <BusinessAnalyticsDashboard />
               </ProtectedRoute>
             </div>
           }
