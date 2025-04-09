@@ -9,6 +9,7 @@ const PRODUCTS = `${VERSION}/products`;
 const CATEGORIES = `${VERSION}/categories`;
 const SUBMISSIONS = `${VERSION}/submission`;
 const INSIGHTS = `${VERSION}/insights`;
+const NOTIFICATIONS = `${VERSION}/notifications`;
 
 module.exports = {
   AUTH,
@@ -21,4 +22,5 @@ module.exports = {
   CATEGORIES,
   SUBMISSIONS,
   INSIGHTS,
+  NOTIFICATIONS,
 };

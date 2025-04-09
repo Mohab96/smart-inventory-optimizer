@@ -1956,7 +1956,249 @@ paths:
                   error:
                     type: string
                     example: "An error occurred while fetching categories"
+  /api/notification/products-prediction:
+    get:
+      summary: "Get product demand predictions"
+      description: |
+        Retrieves top product demand predictions for the authenticated business.
+        Returns the top 5 products with their forecasted total sales amounts 
+        for the next 7 days.
+      tags:
+        - "Notification"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response with product predictions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productName:
+                          type: string
+                          description: Name of the product
+                        categoryName:
+                          type: string
+                          description: Category of the product
+                        totalAmount:
+                          type: number
+                          description: Forecasted total sales amount for next 7 days
+              example:
+                data:
+                  - productName: "BMW X5 2013"
+                    categoryName: "vehicle"
+                    totalAmount: 24
+                  - productName: "Lexus CT 200h 2012"
+                    categoryName: "vehicle"
+                    totalAmount: 24
+                  - productName: "Kia Sportage 2006"
+                    categoryName: "vehicle"
+                    totalAmount: 22
+                  - productName: "Lexus GX 470 2008"
+                    categoryName: "vehicle"
+                    totalAmount: 22
+                  - productName: "Dodge Ram Pickup 1500 2004"
+                    categoryName: "vehicle"
+                    totalAmount: 21
+          links: {}
 
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Invalid request parameters"
+          links: {}
+
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Internal server error"
+          links: {}
+
+        "503":
+          description: Prediction service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Prediction service unavailable"
+          links: {}
+
+  /api/notification/low-stock:
+    get:
+      summary: "Get low stock predictions"
+      description: |
+        Identifies products at risk of stockouts by comparing inventory levels with 
+        predicted demand. Returns products where predicted demand exceeds current stock.
+
+        Calculation:
+        - Predicted demand = Forecasted sales from insights
+        - Current stock = Latest inventory records
+        - Difference = Predicted demand - Current stock (positive values indicate risk)
+      tags:
+        - "Notification"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response with low stock predictions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productName:
+                          type: string
+                          description: Name of at-risk product
+                        predictedStock:
+                          type: number
+                          description: Forecasted sales demand (7-day prediction)
+                        inventoryStock:
+                          type: number
+                          description: Current available stock quantity
+                        difference:
+                          type: number
+                          description: "Stock deficit (positive values indicate needed restock)"
+                        categoryName:
+                          type: string
+                          description: Product category
+              example:
+                data:
+                  - productName: "BMW X5 2013"
+                    predictedStock: 24
+                    inventoryStock: 0
+                    difference: 24
+                    categoryName: "vehicle"
+                  - productName: "Lexus CT 200h 2012"
+                    predictedStock: 24
+                    inventoryStock: 0
+                    difference: 24
+                    categoryName: "vehicle"
+
+        "400":
+          description: Invalid request or missing business context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Invalid request"
+
+        "401":
+          description: Unauthorized - Missing or invalid authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "503":
+          description: Prediction service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Prediction service unavailable"
+
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  api/notification/expiring-soon:
+    get:
+      summary: "Get products expiring soon"
+      description: |
+        Retrieves products with batches expiring within the next month.
+        Returns up to 5 products with their earliest expiry dates,
+        ordered by closest expiration date first.
+
+        Features:
+        - Only considers batches that haven't expired yet
+        - Shows earliest expiry date per product
+        - Includes product category information
+      tags:
+        - "Notification"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response with expiring products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productName:
+                          type: string
+                          description: Name of the expiring product
+                        categoryName:
+                          type: string
+                          description: Product category name
+                        expiryDate:
+                          type: string
+                          format: date-time
+                          description: Earliest expiration date for this product
+              example:
+                data:
+                  - productName: "Fresh Milk"
+                    categoryName: "Dairy"
+                    expiryDate: "2024-06-15T00:00:00Z"
+                  - productName: "Greek Yogurt"
+                    categoryName: "Dairy"
+                    expiryDate: "2024-06-18T00:00:00Z"
+                  - productName: "Cheddar Cheese"
+                    categoryName: "Dairy"
+                    expiryDate: "2024-06-20T00:00:00Z"
+
+        "400":
+          description: Invalid request or missing business context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Invalid request"
+
+        "401":
+          description: Unauthorized - Missing or invalid authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   securitySchemes:
     bearerAuth:
