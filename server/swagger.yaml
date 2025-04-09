@@ -2037,6 +2037,94 @@ paths:
               example:
                 error: "Prediction service unavailable"
           links: {}
+
+  /api/notification/low-stock:
+    get:
+      summary: "Get low stock predictions"
+      description: |
+        Identifies products at risk of stockouts by comparing inventory levels with 
+        predicted demand. Returns products where predicted demand exceeds current stock.
+
+        Calculation:
+        - Predicted demand = Forecasted sales from insights
+        - Current stock = Latest inventory records
+        - Difference = Predicted demand - Current stock (positive values indicate risk)
+      tags:
+        - "Notification"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response with low stock predictions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productName:
+                          type: string
+                          description: Name of at-risk product
+                        predictedStock:
+                          type: number
+                          description: Forecasted sales demand (7-day prediction)
+                        inventoryStock:
+                          type: number
+                          description: Current available stock quantity
+                        difference:
+                          type: number
+                          description: "Stock deficit (positive values indicate needed restock)"
+                        categoryName:
+                          type: string
+                          description: Product category
+              example:
+                data:
+                  - productName: "BMW X5 2013"
+                    predictedStock: 24
+                    inventoryStock: 0
+                    difference: 24
+                    categoryName: "vehicle"
+                  - productName: "Lexus CT 200h 2012"
+                    predictedStock: 24
+                    inventoryStock: 0
+                    difference: 24
+                    categoryName: "vehicle"
+
+        "400":
+          description: Invalid request or missing business context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Invalid request"
+
+        "401":
+          description: Unauthorized - Missing or invalid authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "503":
+          description: Prediction service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Prediction service unavailable"
+
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   securitySchemes:
     bearerAuth:
