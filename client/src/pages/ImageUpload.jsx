@@ -4,6 +4,8 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { selectToken } from "../store/features/authSlice";
 import { Link } from "react-router-dom";
+import Header from "../components/common/Header";
+import Sidebar from "../components/common/Sidebar";
 
 const ImageUpload = () => {
   const [file, setFile] = useState(null);
@@ -72,71 +74,89 @@ const ImageUpload = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">
-        Upload business&apos;s image
-      </h2>
+    <div className="h-screen flex flex-col">
+      <Header />
+      <div className="flex flex-1">
+        <Sidebar />
+        <div className="flex flex-col w-full dark:bg-gray-900 p-6 overflow-y-auto">
+          <div className="max-w-2xl mx-auto w-full">
+            <div className="dark:bg-gray-800 rounded-xl shadow-lg p-6">
+              <h2 className="text-2xl font-bold dark:text-gray-200 mb-6">
+                Upload Business Image
+              </h2>
 
-      <div className="space-y-4">
-        <div
-          {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
-            ${isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"}
-            ${error ? "border-red-500 bg-red-50" : ""}`}
-        >
-          <input {...getInputProps()} />
+              <div className="space-y-4">
+                <div
+                  {...getRootProps()}
+                  className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
+                    ${
+                      isDragActive
+                        ? "dark:border-gray-500 dark:bg-gray-700"
+                        : "dark:border-gray-600"
+                    }
+                    ${error ? "dark:border-red-500 dark:bg-red-900/30" : ""}`}
+                >
+                  <input {...getInputProps()} />
 
-          {preview ? (
-            <img
-              src={preview}
-              alt="Preview"
-              className="max-h-40 mx-auto mb-4 rounded-lg object-cover"
-            />
-          ) : (
-            <div>
-              <p className="text-gray-600">
-                {isDragActive
-                  ? "Drop image here"
-                  : "Drag & drop image, or click to select"}
-              </p>
-              <p className="text-sm text-gray-500 mt-2">
-                Supported formats: JPEG, JPG, PNG, WEBP
-              </p>
+                  {preview ? (
+                    <img
+                      src={preview}
+                      alt="Preview"
+                      className="max-h-40 mx-auto mb-4 rounded-lg object-cover dark:border-gray-700"
+                    />
+                  ) : (
+                    <div>
+                      <p className="dark:text-gray-400">
+                        {isDragActive
+                          ? "Drop image here"
+                          : "Drag & drop image, or click to select"}
+                      </p>
+                      <p className="text-sm dark:text-gray-500 mt-2">
+                        Supported formats: JPEG, JPG, PNG, WEBP
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {error && (
+                  <p className="dark:text-red-400 text-sm text-center">
+                    {error}
+                  </p>
+                )}
+
+                {success && (
+                  <div className="flex flex-col items-center">
+                    <p className="dark:text-green-400 text-sm text-center">
+                      Image uploaded successfully!
+                    </p>
+                    <Link
+                      to="/dashboard"
+                      className="mt-4 w-full max-w-48 text-center py-2 px-4 rounded-md dark:text-white transition-colors dark:bg-gray-600 dark:hover:bg-gray-700"
+                    >
+                      Continue
+                    </Link>
+                  </div>
+                )}
+
+                {file && (
+                  <button
+                    type="button"
+                    onClick={handleUpload}
+                    disabled={loading}
+                    className={`w-full py-2 px-4 rounded-md transition-colors
+                      ${
+                        loading
+                          ? "dark:bg-cyan-700-400 dark:opacity-70 cursor-not-allowed"
+                          : "dark:bg-cyan-700 dark:hover:bg-cyan-800 dark:text-white"
+                      }`}
+                  >
+                    {loading ? "Uploading..." : "Upload Image"}
+                  </button>
+                )}
+              </div>
             </div>
-          )}
-        </div>
-
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-
-        {success && (
-          <div className="flex flex-col items-center">
-            <p className="text-green-500 text-sm text-center">
-              Image uploaded successfully!
-            </p>
-            <Link
-              to={"/dashboard"}
-              className="mt-4 max-w-48 text-center py-2 px-4 rounded-md text-white transition-colors bg-green-600 hover:bg-green-700"
-            >
-              Continue
-            </Link>
           </div>
-        )}
-
-        {file && (
-          <button
-            type="button"
-            onClick={handleUpload}
-            disabled={loading}
-            className={`w-full py-2 px-4 rounded-md text-white transition-colors
-              ${
-                loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              }`}
-          >
-            {loading ? "Uploading..." : "Upload Image"}
-          </button>
-        )}
+        </div>
       </div>
     </div>
   );
