@@ -141,10 +141,7 @@ function App() {
           path="/csvsubmissions"
           element={
             <ProtectedRoute>
-              <Header></Header>
-              <div className="mt-4">
-                <CsvSubmissions />
-              </div>
+              <CsvSubmissions />
             </ProtectedRoute>
           }
         />
@@ -170,21 +167,17 @@ function App() {
         <Route
           path="/newProductAddition"
           element={
-            <div className="pt-36 min-h-screen bg-gray-50 px-4">
-              <ProtectedRoute>
-                <NewProductAddition />
-              </ProtectedRoute>
-            </div>
+            <ProtectedRoute>
+              <NewProductAddition />
+            </ProtectedRoute>
           }
         ></Route>
         <Route
           path="/imageUpload"
           element={
-            <div className="pt-36 min-h-screen bg-gray-50 px-4">
-              <ProtectedRoute>
-                <ImageUpload />
-              </ProtectedRoute>
-            </div>
+            <ProtectedRoute>
+              <ImageUpload />
+            </ProtectedRoute>
           }
         ></Route>
         {/* Not Found */}
