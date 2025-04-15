@@ -7,20 +7,9 @@ const getTodayNotifications = async (req, res) => {
   }
 
   try {
-    const now = new Date();
-    const startOfTodayUTC = new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-    );
-    const startOfTomorrowUTC = new Date(startOfTodayUTC);
-    startOfTomorrowUTC.setUTCDate(startOfTomorrowUTC.getUTCDate() + 1);
-
     const notifications = await mainClient.notification.findMany({
       where: {
         businessId: businessId,
-        date: {
-          gte: startOfTodayUTC,
-          lt: startOfTomorrowUTC,
-        },
       },
       orderBy: {
         date: "desc",
@@ -30,7 +19,6 @@ const getTodayNotifications = async (req, res) => {
     if (!Array.isArray(notifications)) {
       throw new Error("Unexpected response format from database");
     }
-
     return res.status(200).send({ data: notifications });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {

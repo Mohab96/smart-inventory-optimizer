@@ -2204,9 +2204,8 @@ paths:
     get:
       summary: "Get today's notifications"
       description: |
-        Retrieves all notifications generated today (UTC time) for the authenticated business.
+        Retrieves all notifications for the authenticated business.
         Features:
-        - Returns notifications from the current UTC day
         - Ordered by most recent first
         - Supports rich JSON descriptions in notifications
       tags:
