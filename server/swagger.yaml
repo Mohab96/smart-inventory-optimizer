@@ -2199,6 +2199,157 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /api/notification/notifications-today:
+    get:
+      summary: "Get today's notifications"
+      description: |
+        Retrieves all notifications for the authenticated business.
+        Features:
+        - Ordered by most recent first
+        - Supports rich JSON descriptions in notifications
+      tags:
+        - "Notification"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response with today's notifications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Unique notification ID
+                        date:
+                          type: string
+                          format: date-time
+                          description: Notification creation timestamp in UTC
+                        description:
+                          type: object
+                          additionalProperties: true
+                          description: Structured notification details
+                        title:
+                          type: string
+                          description: Notification title
+                        businessId:
+                          type: string
+                          format: uuid
+                          description: Associated business ID
+              example:
+                data:
+                  - id: 41
+                    date: "2024-02-20T02:15:00.000Z"
+                    description:
+                      alertType: "LOW_STOCK"
+                      productId: 123
+                      currentStock: 8
+                      threshold: 10
+                    title: "Low Stock Alert"
+                    businessId: "b5e9d8f2-1a9b-4b1e-9c6f-7d3e4f5a6b7c"
+
+        "400":
+          description: Invalid request or missing business context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Invalid request"
+
+        "401":
+          description: Unauthorized - Missing or invalid authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/notification/delete-notification/{id}:
+    delete:
+      summary: "Delete a specific notification"
+      description: |
+        Permanently deletes a notification by ID that belongs to the authenticated business.
+        Security:
+        - Only allows deletion of notifications belonging to the requestor's business
+        - Notification ID must exist and be owned by the business
+      tags:
+        - "Notification"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID of the notification to delete
+      responses:
+        "200":
+          description: Successfully deleted notification
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Notification"
+              example:
+                data:
+                  id: 41
+                  date: "2024-02-20T02:15:00.000Z"
+                  description:
+                    alertType: "LOW_STOCK"
+                    productId: 123
+                    currentStock: 8
+                    threshold: 10
+                  title: "Low Stock Alert"
+                  businessId: "b5e9d8f2-1a9b-4b1e-9c6f-7d3e4f5a6b7c"
+        "400":
+          description: Invalid ID format or missing business context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                invalidId:
+                  value:
+                    error: "Invalid notification ID"
+                missingBusiness:
+                  value:
+                    error: "Invalid request"
+        "401":
+          description: Unauthorized - Missing or invalid authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Notification not found or not owned by business
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Notification not found"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   securitySchemes:
     bearerAuth:
