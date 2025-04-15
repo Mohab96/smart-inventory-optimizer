@@ -2200,9 +2200,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /api/notification/notifications-today:
+  /api/notification/get-notifications:
     get:
-      summary: "Get today's notifications"
+      summary: "Get business's notifications"
       description: |
         Retrieves all notifications for the authenticated business.
         Features:
