@@ -17,7 +17,7 @@ router.get(
   ProductsPredictionController.getPrediction
 );
 router.get(
-  "/notifications-today",
+  "/get-notifications",
   [authenticate],
   notificationController.getTodayNotifications
 );
