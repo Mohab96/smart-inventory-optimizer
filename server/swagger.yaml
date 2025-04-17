@@ -1956,7 +1956,7 @@ paths:
                   error:
                     type: string
                     example: "An error occurred while fetching categories"
-  /api/notification/products-prediction:
+  /api/notifications/products-prediction:
     get:
       summary: "Get product demand predictions"
       description: |
@@ -2038,7 +2038,7 @@ paths:
                 error: "Prediction service unavailable"
           links: {}
 
-  /api/notification/low-stock:
+  /api/notifications/low-stock:
     get:
       summary: "Get low stock predictions"
       description: |
@@ -2126,7 +2126,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  api/notification/expiring-soon:
+  api/notifications/expiring-soon:
     get:
       summary: "Get products expiring soon"
       description: |
@@ -2200,7 +2200,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /api/notification/get-notifications:
+  /api/notifications/get-notifications:
     get:
       summary: "Get business's notifications"
       description: |
@@ -2277,7 +2277,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /api/notification/delete-notification/{id}:
+  /api/notifications/delete-notification/{id}:
     delete:
       summary: "Delete a specific notification"
       description: |
