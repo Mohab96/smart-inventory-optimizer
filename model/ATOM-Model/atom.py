@@ -24,7 +24,7 @@ import random
 # ========== XGBoost Handler ==========
 
 # ========== Data Handler ==========
-class DataHandler:
+
     @staticmethod
     def fetch_product_data(business_id, product_id=None):
         try:
