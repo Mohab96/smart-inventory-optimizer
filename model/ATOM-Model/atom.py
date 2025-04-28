@@ -13,18 +13,7 @@ import logging
 import random
 
 # ========== Configuration ==========
-app = Flask(__name__)
-app.config.update(
-    SQLALCHEMY_DATABASE_URI=os.getenv('DWH_DIRECT_URL'),
-    SQLALCHEMY_TRACK_MODIFICATIONS=False,
-    SQLALCHEMY_ENGINE_OPTIONS={
-        "pool_size": 5,
-        "max_overflow": 10,
-        "pool_timeout": 30,
-        "pool_recycle": 3600
-    }
-)
-db = SQLAlchemy(app)
+
 
 # ========== Logging ==========
 logging.basicConfig(level=logging.INFO)
@@ -147,7 +136,6 @@ class DataHandler:
         except exc.SQLAlchemyError as e:
             logger.error(f"Database error: {str(e)}")
             return pd.DataFrame()
-
     @staticmethod
     def _fetch_batched(query, params, batch_size=5000):
         results = []
