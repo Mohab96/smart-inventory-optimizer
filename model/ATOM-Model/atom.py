@@ -16,8 +16,7 @@ import random
 
 
 # ========== Logging ==========
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+
 
 # ========== Database Model ==========
 class ModelStorage(db.Model):
