@@ -5,7 +5,6 @@ const getTodayNotifications = async (req, res) => {
   if (!businessId) {
     return res.status(400).send({ error: "Invalid request" });
   }
-
   try {
     const notifications = await mainClient.notification.findMany({
       where: {
@@ -19,7 +18,32 @@ const getTodayNotifications = async (req, res) => {
     if (!Array.isArray(notifications)) {
       throw new Error("Unexpected response format from database");
     }
-    return res.status(200).send({ data: notifications });
+    const requiredTitles = [
+      "Products Expiring Soon",
+      "Products Demand Prediction",
+      "Low Stock Prediction",
+    ];
+
+    const notificationsMap = new Map();
+    notifications.forEach((notif) => {
+      notificationsMap.set(notif.title, {
+        title: notif.title,
+        date: notif.date.toISOString(),
+        data: notif.description.data,
+      });
+    });
+
+    const result = requiredTitles.map((title) => {
+      return (
+        notificationsMap.get(title) || {
+          title,
+          date: null,
+          data: [],
+        }
+      );
+    });
+
+    return res.status(200).send({ data: result });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       winston.error("Database error:", {

@@ -21,6 +21,9 @@ async function expiringSoon({ businessId }) {
       _min: {
         expiryDate: true,
       },
+      _sum: {
+        quantity: true,
+      },
       orderBy: {
         _min: {
           expiryDate: "asc",
@@ -32,6 +35,7 @@ async function expiringSoon({ businessId }) {
     const productData = expiringProducts.map((group) => ({
       productId: group.productId,
       earliestExpiryDate: group._min.expiryDate,
+      quantity: group._sum.quantity,
     }));
     const productIds = productData.map((p) => p.productId);
 
@@ -59,6 +63,7 @@ async function expiringSoon({ businessId }) {
           productName: product.name,
           categoryName: product.category?.categoryName || "Uncategorized",
           expiryDate: pd.earliestExpiryDate,
+          quantity: pd.quantity,
         };
       })
       .filter((item) => item !== null);
