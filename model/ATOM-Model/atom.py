@@ -27,7 +27,8 @@ app.config.update(
 db = SQLAlchemy(app)
 
 # ========== Logging ==========
-
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # ========== Database Model ==========
 
