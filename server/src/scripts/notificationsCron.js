@@ -36,7 +36,7 @@ const tasks = [
     fn: getLowStockPrediction,
     title: "Low Stock Prediction",
     params: { days: 7, topProducts: 5 },
-    timeout: 300000, // 55 seconds
+    timeout: 300000,
   },
   {
     fn: getProductPredection,

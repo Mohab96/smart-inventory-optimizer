@@ -2170,12 +2170,7 @@ paths:
                   - productName: "Fresh Milk"
                     categoryName: "Dairy"
                     expiryDate: "2024-06-15T00:00:00Z"
-                  - productName: "Greek Yogurt"
-                    categoryName: "Dairy"
-                    expiryDate: "2024-06-18T00:00:00Z"
-                  - productName: "Cheddar Cheese"
-                    categoryName: "Dairy"
-                    expiryDate: "2024-06-20T00:00:00Z"
+                    quantity: 10
 
         "400":
           description: Invalid request or missing business context
@@ -2206,8 +2201,9 @@ paths:
       description: |
         Retrieves all notifications for the authenticated business.
         Features:
+        - Returns all 3 notification types (even with empty data)
         - Ordered by most recent first
-        - Supports rich JSON descriptions in notifications
+        - Structured product data in notifications
       tags:
         - "Notification"
       security:
@@ -2245,15 +2241,29 @@ paths:
                           description: Associated business ID
               example:
                 data:
-                  - id: 41
-                    date: "2024-02-20T02:15:00.000Z"
-                    description:
-                      alertType: "LOW_STOCK"
-                      productId: 123
-                      currentStock: 8
-                      threshold: 10
-                    title: "Low Stock Alert"
-                    businessId: "b5e9d8f2-1a9b-4b1e-9c6f-7d3e4f5a6b7c"
+                  - title: "Products Expiring Soon"
+                    date: "2024-03-15T09:30:00.000Z"
+                    data:
+                      - productName: "Organic Whole Milk"
+                        categoryName: "Dairy"
+                        expiryDate: "2024-03-25T00:00:00.000Z"
+                        quantity: 10
+
+                  - title: "Products Demand Prediction"
+                    date: "2024-03-15T14:45:00.000Z"
+                    data:
+                      - productName: "iPhone 15 Pro"
+                        totalAmount: 58
+                        categoryName: "Electronics"
+
+                  - title: "Low Stock Prediction"
+                    date: "2024-03-15T11:15:00.000Z"
+                    data:
+                      - productName: "Premium Coffee Beans"
+                        predictedStock: 120
+                        inventoryStock: 85
+                        difference: 35
+                        categoryName: "Beverages"
 
         "400":
           description: Invalid request or missing business context
