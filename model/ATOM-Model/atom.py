@@ -13,7 +13,18 @@ import logging
 import random
 
 # ========== Configuration ==========
-
+app = Flask(__name__)
+app.config.update(
+    SQLALCHEMY_DATABASE_URI=os.getenv('DWH_DIRECT_URL'),
+    SQLALCHEMY_TRACK_MODIFICATIONS=False,
+    SQLALCHEMY_ENGINE_OPTIONS={
+        "pool_size": 5,
+        "max_overflow": 10,
+        "pool_timeout": 30,
+        "pool_recycle": 3600
+    }
+)
+db = SQLAlchemy(app)
 
 # ========== Logging ==========
 
@@ -27,3 +38,11 @@ import random
 
 
 # ========== API Endpoints ==========
+@app.route("/", methods=["GET"])
+def index():
+    return jsonify({"message": "Welcome to ATOM Prediction API!"})
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
