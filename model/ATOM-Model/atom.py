@@ -406,7 +406,7 @@ def test_predict_endpoint():
             "accuracy_percent": round(max(0, r2_score(y_test, test_preds)) * 100, 2)-random.randint(10, 15),
         }
         
-        logger.info(f"📊 Test metrics: {metrics}")
+        logger.info(f"Test metrics: {metrics}")
         
         # Return test results
         return jsonify({
@@ -418,7 +418,7 @@ def test_predict_endpoint():
             "metrics": metrics
         })
     except Exception as e:
-        logger.error(f"💥 Critical test error: {str(e)}", exc_info=True)
+        logger.error(f" Critical test error: {str(e)}", exc_info=True)
         return jsonify({"success": False, "error": "Internal server error"}), 500
         
 @app.route("/", methods=["GET"])
