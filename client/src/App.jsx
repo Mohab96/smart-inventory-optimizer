@@ -20,14 +20,17 @@ import QuarterlyRevenues from "./pages/dashboard/QuarterlyRevenues";
 import Transactions from "./pages/dashboard/Transactions";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import CsvSubmissions from "./pages/TransactionsFeeding/CsvSubmissions";
-import Header from "./components/common/Header";
 import RecommendationPage from "./pages/recommendation/RecommendationPage";
 import TrendVisualizer from "./pages/trends/trendVisualizer";
 import BusinessAnalyticsDashboard from "./pages/report/Report";
+import NotificationsPage from "./pages/NotificationsPage";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
     <Router>
+      <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         <Route path="/register" element={<Register />} />
         {/* Auth Routes */}
@@ -69,6 +72,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <NotificationsPage />
             </ProtectedRoute>
           }
         />
