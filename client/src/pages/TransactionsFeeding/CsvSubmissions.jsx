@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
-import Spinner from "../../components/common/Spinner";
 import Header from "../../components/common/Header";
 import Sidebar from "../../components/common/Sidebar";
 
@@ -8,6 +7,7 @@ const CsvSubmissions = () => {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedError, setSelectedError] = useState(null);
 
   useEffect(() => {
     const fetchSubmissions = async () => {
@@ -45,21 +45,63 @@ const CsvSubmissions = () => {
     return (
       <span
         className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
-          ${statusColors[status.toLowerCase()] || "dark:bg-gray-700 dark:text-gray-300"}`}
+          ${
+            statusColors[status.toLowerCase()] ||
+            "dark:bg-gray-700 dark:text-gray-300"
+          }`}
       >
         {status}
       </span>
     );
   };
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="flex justify-center p-8 dark:bg-gray-900">
-        <Spinner size="lg" className="dark:text-white" />
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
-  if (error) return <div className="p-4 dark:text-red-400 text-center">{error}</div>;
-
+  }
+  if (error)
+    return (
+      <div className="h-screen flex flex-col">
+        <Header />
+        <div className="flex flex-1">
+          <Sidebar />
+          <div className="p-10 dark:text-red-400 text-center">{error}</div>;
+        </div>
+      </div>
+    );
+  const ErrorModal = ({ error, onClose }) => {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold dark:text-gray-200">
+              Processing Errors
+            </h3>
+            <button
+              onClick={onClose}
+              className="dark:text-gray-400 hover:dark:text-gray-200"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="dark:bg-gray-900 p-4 rounded-md overflow-y-auto max-h-96">
+            <pre className="whitespace-pre-wrap dark:text-red-300 text-sm">
+              {error}
+            </pre>
+          </div>
+          <button
+            onClick={onClose}
+            className="mt-4 px-4 py-2 dark:bg-gray-700 dark:text-gray-200 rounded-md hover:dark:bg-gray-600"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  };
   return (
     <div className="h-screen flex flex-col">
       <Header />
@@ -121,18 +163,22 @@ const CsvSubmissions = () => {
                               {getStatusBadge(submission.status)}
                             </td>
                             <td className="px-3 py-4 text-sm">
-                              {submission.errors ? (
-                                <div className="group relative">
-                                  <span className="dark:text-red-400 cursor-help border-b border-dashed dark:border-red-600">
+                              <td className="px-3 py-4 text-sm">
+                                {submission.errors ? (
+                                  <button
+                                    onClick={() =>
+                                      setSelectedError(submission.errors)
+                                    }
+                                    className="dark:text-red-400 hover:dark:text-red-300 underline cursor-pointer"
+                                  >
                                     View Errors
+                                  </button>
+                                ) : (
+                                  <span className="dark:text-gray-500">
+                                    No errors
                                   </span>
-                                  <div className="hidden group-hover:block absolute bottom-full left-0 w-64 p-2 text-sm dark:bg-gray-900 dark:text-red-300 shadow-lg rounded-lg dark:border dark:border-gray-700 z-10">
-                                    {submission.errors}
-                                  </div>
-                                </div>
-                              ) : (
-                                <span className="dark:text-gray-500">No errors</span>
-                              )}
+                                )}
+                              </td>
                             </td>
                           </tr>
                         ))}
@@ -141,7 +187,9 @@ const CsvSubmissions = () => {
 
                     {submissions.length === 0 && (
                       <div className="text-center py-8 dark:bg-gray-800">
-                        <p className="dark:text-gray-400">No submissions found</p>
+                        <p className="dark:text-gray-400">
+                          No submissions found
+                        </p>
                       </div>
                     )}
                   </div>
@@ -151,6 +199,12 @@ const CsvSubmissions = () => {
           </div>
         </div>
       </div>
+      {selectedError && (
+        <ErrorModal
+          error={selectedError}
+          onClose={() => setSelectedError(null)}
+        />
+      )}
     </div>
   );
 };
