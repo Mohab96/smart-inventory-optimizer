@@ -73,12 +73,24 @@ const CsvSubmissions = () => {
       </div>
     );
   const ErrorModal = ({ error, onClose }) => {
+    // Try to parse the error JSON
+    const parseErrors = () => {
+      try {
+        return JSON.parse(error);
+      } catch (e) {
+        return error;
+      }
+    };
+
+    const errors = parseErrors();
+    const isArray = Array.isArray(errors);
+
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
         <div className="dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold dark:text-gray-200">
-              Processing Errors
+              Processing Errors {isArray && `(${errors.length} found)`}
             </h3>
             <button
               onClick={onClose}
@@ -88,9 +100,31 @@ const CsvSubmissions = () => {
             </button>
           </div>
           <div className="dark:bg-gray-900 p-4 rounded-md overflow-y-auto max-h-96">
-            <pre className="whitespace-pre-wrap dark:text-red-300 text-sm">
-              {error}
-            </pre>
+            {isArray ? (
+              <div className="space-y-3">
+                {errors.map((err, index) => (
+                  <div
+                    key={index}
+                    className="flex items-start p-3 dark:bg-gray-800 rounded-md border dark:border-gray-700"
+                  >
+                    <div className="flex-shrink-0">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-800/30 text-red-800 dark:text-red-400">
+                        Row {err.rowNumber}
+                      </span>
+                    </div>
+                    <div className="ml-3 flex-1">
+                      <p className="text-sm dark:text-red-300 m-0">
+                        {err.error}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <pre className="whitespace-pre-wrap dark:text-red-300 text-sm">
+                {errors}
+              </pre>
+            )}
           </div>
           <button
             onClick={onClose}
