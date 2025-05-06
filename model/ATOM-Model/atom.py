@@ -9,7 +9,7 @@ from sklearn.metrics import mean_absolute_error, r2_score
 from sqlalchemy import text, exc
 from flask_sqlalchemy import SQLAlchemy
 import os
-import logging
+from app.utils.logger import logger
 import random
 
 # ========== Configuration ==========
@@ -27,8 +27,8 @@ app.config.update(
 db = SQLAlchemy(app)
 
 # ========== Logging ==========
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger(__name__)
 
 # ========== Database Model ==========
 class ModelStorage(db.Model):
