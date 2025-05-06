@@ -23,7 +23,6 @@ import CsvSubmissions from "./pages/TransactionsFeeding/CsvSubmissions";
 import RecommendationPage from "./pages/recommendation/RecommendationPage";
 import TrendVisualizer from "./pages/trends/trendVisualizer";
 import BusinessAnalyticsDashboard from "./pages/report/Report";
-import NotificationsPage from "./pages/NotificationsPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -72,14 +71,6 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/notifications"
-          element={
-            <ProtectedRoute>
-              <NotificationsPage />
             </ProtectedRoute>
           }
         />

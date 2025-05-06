@@ -24,7 +24,8 @@ const ImageUpload = ({ isRegistrationFlow = false }) => {
     multiple: false,
     onDrop: (acceptedFiles) => {
       const selectedFile = acceptedFiles[0];
-      if (selectedFile.size > 5 * 1024 * 1024) { // 5MB limit
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        // 5MB limit
         setError("File size should not exceed 5MB");
         return;
       }
@@ -53,7 +54,7 @@ const ImageUpload = ({ isRegistrationFlow = false }) => {
       setLoading(true);
       setError(null);
       setSuccess(false);
-      
+
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/storage/upload/image`,
         {
@@ -63,7 +64,7 @@ const ImageUpload = ({ isRegistrationFlow = false }) => {
         }
       );
       const { URL: presignedUrl, signedToken } = response.data;
-      
+
       await axios.put(presignedUrl, file, {
         headers: {
           "Content-Type": file.type,
@@ -83,7 +84,11 @@ const ImageUpload = ({ isRegistrationFlow = false }) => {
       <div
         {...getRootProps()}
         className={`relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200
-          ${isDragActive ? "border-indigo-500 bg-indigo-500/10" : "border-gray-600 hover:border-gray-500"}
+          ${
+            isDragActive
+              ? "border-indigo-500 bg-indigo-500/10"
+              : "border-gray-600 hover:border-gray-500"
+          }
           ${error ? "border-red-500 bg-red-900/10" : ""}
           ${preview ? "border-blue-500 bg-blue-900/10" : ""}`}
       >
@@ -97,19 +102,34 @@ const ImageUpload = ({ isRegistrationFlow = false }) => {
               className="max-h-48 mx-auto rounded-lg object-contain"
             />
             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
-              <p className="text-white text-sm">Click or drag to change image</p>
+              <p className="text-white text-sm">
+                Click or drag to change image
+              </p>
             </div>
           </div>
         ) : (
           <div className="space-y-2">
             <div className="flex justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-12 w-12 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
             </div>
             <div>
               <p className="text-gray-300">
-                {isDragActive ? "Drop image here" : "Drag & drop image, or click to select"}
+                {isDragActive
+                  ? "Drop image here"
+                  : "Drag & drop image, or click to select"}
               </p>
               <p className="text-sm text-gray-500 mt-1">
                 Maximum file size: 5MB
@@ -124,8 +144,19 @@ const ImageUpload = ({ isRegistrationFlow = false }) => {
 
       {error && (
         <div className="animate-shake bg-red-900/30 text-red-200 rounded-lg p-4 text-sm flex items-center border border-red-700/50">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           {error}
         </div>
@@ -133,8 +164,19 @@ const ImageUpload = ({ isRegistrationFlow = false }) => {
 
       {success && (
         <div className="bg-green-900/30 text-green-200 rounded-lg p-4 text-sm flex items-center border border-green-700/50">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
           </svg>
           Image uploaded successfully!
         </div>
@@ -151,9 +193,25 @@ const ImageUpload = ({ isRegistrationFlow = false }) => {
         >
           {loading ? (
             <div className="flex items-center">
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               Uploading...
             </div>
@@ -203,7 +261,7 @@ const ImageUpload = ({ isRegistrationFlow = false }) => {
 };
 
 ImageUpload.propTypes = {
-  isRegistrationFlow: PropTypes.bool
+  isRegistrationFlow: PropTypes.bool,
 };
 
 export default ImageUpload;
