@@ -122,7 +122,7 @@ const CsvSubmissions = () => {
               </div>
             ) : (
               <pre className="whitespace-pre-wrap dark:text-red-300 text-sm">
-                {errors}
+                {typeof errors === 'object' ? JSON.stringify(errors, null, 2) : errors}
               </pre>
             )}
           </div>
