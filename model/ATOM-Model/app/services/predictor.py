@@ -1,6 +1,14 @@
 import xgboost as xgb
+import numpy as np
+import pickle
 from sklearn.preprocessing import StandardScaler
-# ========== XGBoost Handler ==========
+from datetime import datetime
+
+from app.models.model_storage import ModelStorage
+from app.services.datahandler import DataHandler
+from app.utils.logger import logger
+from app import db
+
 class XGBoostPredictor:
     def __init__(self):
         self.model = xgb.XGBRegressor(
@@ -78,4 +86,3 @@ class XGBoostPredictor:
         except Exception as e:
             logger.error(f"Model load failed: {str(e)}")
             return None
-return XGBoostPredictor

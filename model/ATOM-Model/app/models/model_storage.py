@@ -1,6 +1,6 @@
-from ..models import db
+from app import db
 from datetime import datetime, timedelta
-# ========== Database Model ==========
+
 class ModelStorage(db.Model):
     __tablename__ = 'model_storage'
     id = db.Column(db.Integer, primary_key=True)
