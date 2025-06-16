@@ -15,7 +15,7 @@ async function populateDateDimension(startYear, endYear) {
     const records = [];
     let currentDate = toUTCDate(`1/1/${startYear}`); // January 1st of startYear
     let endDate = toUTCDate(`1/0/${endYear + 1}`); // January 1st of the year after endYear
-    console.log(currentDate, endDate);
+    // console.log(currentDate, endDate);
     while (currentDate <= endDate) {
       const year = currentDate.getUTCFullYear();
       const month = currentDate.getUTCMonth() + 1; // Months are 0-indexed in JavaScript
@@ -35,7 +35,7 @@ async function populateDateDimension(startYear, endYear) {
       currentDate = moveDayForwardUTC(currentDate);
     }
 
-    console.log(records);
+    // console.log(records);
     // Insert all records in bulk
     const dates = await prisma.dateDimension.createMany({
       data: records,

@@ -1,6 +1,8 @@
 const { faker } = require("@faker-js/faker");
 const dwhClient = require("../../prisma/dwh/client");
 const populateDateDimension = require("./populateDateDimension");
+const populateCategoryDimension = require("./populateCategoryDimension");
+const populateBusinessDimension = require("./populateBusinessDimension");
 
 async function seedDatabase(
   startYear,
@@ -19,9 +21,9 @@ async function seedDatabase(
 
   await dwhClient.productRevenueFact.deleteMany();
   await dwhClient.categoryRevenueFact.deleteMany();
+  await dwhClient.transactionFact.deleteMany();
   await dwhClient.batchInfo.deleteMany();
   await dwhClient.inventoryFact.deleteMany();
-  await dwhClient.transactionFact.deleteMany();
   await dwhClient.productDimension.deleteMany();
   await dwhClient.categoryDimension.deleteMany();
   await dwhClient.businessDimension.deleteMany();
@@ -30,45 +32,25 @@ async function seedDatabase(
   console.log("All data cleared.");
 
   // 1. DateDimension
-  let dates = await populateDateDimension(startYear, endYear);
+  await populateDateDimension(startYear, endYear);
 
-  console.log(`${dates.length} dates created.`);
+  // console.log(`${dates.length} dates created.`);
 
-  dates = await dwhClient.dateDimension.findMany();
+  let dates = await dwhClient.dateDimension.findMany();
 
   const dateIDs = dates.map((date) => date.dateId);
 
   // 2. BusinessDimension
-  let businesses = [];
-  for (let i = 0; i < businessCount; i++) {
-    businesses.push({ businessName: faker.company.name() });
-  }
+  // console.log(`${businesses.count} businesses created.`);
 
-  businesses = await dwhClient.businessDimension.createMany({
-    data: businesses,
-  });
+  await populateBusinessDimension();
 
-  console.log(`${businesses.count} businesses created.`);
-
-  businesses = await dwhClient.businessDimension.findMany();
+  let businesses = await dwhClient.businessDimension.findMany();
 
   // 3. CategoryDimension
-  let categories = [];
-
-  for (let i = 0; i < categoriesCount; i++) {
-    categories.push({
-      categoryName: faker.commerce.department(),
-      hasExpiryDate: false,
-    });
-  }
-
-  categories = await dwhClient.categoryDimension.createMany({
-    data: categories,
-  });
-
-  console.log(`${categories.count} categories created.`);
-
-  categories = await dwhClient.categoryDimension.findMany();
+  await populateCategoryDimension();
+  
+  let categories = await dwhClient.categoryDimension.findMany();
 
   // 4. ProductDimension
   let products = [];
@@ -105,6 +87,7 @@ async function seedDatabase(
 
   productRevenues = await dwhClient.productRevenueFact.createMany({
     data: productRevenues,
+    skipDuplicates: true,
   });
 
   console.log(`${productRevenues.count} product revenues created.`);
@@ -126,6 +109,7 @@ async function seedDatabase(
 
   categoryRevenues = await dwhClient.categoryRevenueFact.createMany({
     data: categoryRevenues,
+    skipDuplicates: true,
   });
 
   console.log(`${categoryRevenues.count} category revenues created.`);
@@ -138,12 +122,11 @@ async function seedDatabase(
   for (let i = 0; i < batchCount; i++) {
     batches.push({
       productId: faker.helpers.arrayElement(productIDs),
-      dateId: faker.helpers.arrayElement(dateIDs),
       businessId: faker.helpers.arrayElement(businessIDs),
       quantity: faker.number.int({ min: 10, max: 100 }),
       purchasePrice: faker.number.int({ min: 10, max: 100 }),
       sellingPrice: faker.number.int({ min: 10, max: 100 }),
-      expiryDate: faker.date.future(),
+      expiryDate: faker.date.between({ from: new Date('2020-01-01'), to: new Date('2025-12-31') }),
     });
   }
 
@@ -167,6 +150,7 @@ async function seedDatabase(
 
   inventoryLevels = await dwhClient.inventoryFact.createMany({
     data: inventoryLevels,
+    skipDuplicates: true,
   });
 
   console.log(`${inventoryLevels.count} inventory records created.`);
@@ -179,7 +163,8 @@ async function seedDatabase(
       productId: faker.helpers.arrayElement(productIDs),
       businessId: faker.helpers.arrayElement(businessIDs),
       dateId: faker.helpers.arrayElement(dateIDs),
-      amount: faker.number.int({ min: 10, max: 100 }),
+      batchId: faker.helpers.arrayElement(batches.map(batch => batch.batchId)),
+      amount: faker.number.int({ min: 10, max: 1000 }),
       discount: faker.number.int({ min: 0, max: 10 }),
     });
   }
@@ -191,4 +176,5 @@ async function seedDatabase(
   console.log(`${transactions.count} transactions created.`);
 }
 
-seedDatabase(2020, 2030, 100, 500, 50, 5000, 1500, 10000, 10000, 50000);
+// seedDatabase(2020, 2030, 100, 500, 50, 5000, 1500, 10000, 10000, 50000);
+seedDatabase(2021, 2025, 1, 15, 5, 1500, 500, 200, 1000, 50000)
