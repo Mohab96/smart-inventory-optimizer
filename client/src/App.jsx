@@ -23,6 +23,7 @@ import CsvSubmissions from "./pages/TransactionsFeeding/CsvSubmissions";
 import Header from "./components/common/Header";
 import RecommendationPage from "./pages/recommendation/RecommendationPage";
 import TrendVisualizer from "./pages/trends/trendVisualizer";
+import CategorySales from "./pages/dashboard/CategorySales";
 
 function App() {
   return (
@@ -170,21 +171,25 @@ function App() {
         <Route
           path="/newProductAddition"
           element={
-            <div className="pt-36 min-h-screen bg-gray-50 px-4">
-              <ProtectedRoute>
-                <NewProductAddition />
-              </ProtectedRoute>
-            </div>
+            <ProtectedRoute>
+              <NewProductAddition />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/categorySales"
+          element={
+            <ProtectedRoute>
+              <CategorySales />
+            </ProtectedRoute>
           }
         ></Route>
         <Route
           path="/imageUpload"
           element={
-            <div className="pt-36 min-h-screen bg-gray-50 px-4">
-              <ProtectedRoute>
-                <ImageUpload />
-              </ProtectedRoute>
-            </div>
+            <ProtectedRoute>
+              <ImageUpload />
+            </ProtectedRoute>
           }
         ></Route>
         {/* Not Found */}
