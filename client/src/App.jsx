@@ -20,14 +20,18 @@ import QuarterlyRevenues from "./pages/dashboard/QuarterlyRevenues";
 import Transactions from "./pages/dashboard/Transactions";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import CsvSubmissions from "./pages/TransactionsFeeding/CsvSubmissions";
-import Header from "./components/common/Header";
 import RecommendationPage from "./pages/recommendation/RecommendationPage";
 import TrendVisualizer from "./pages/trends/trendVisualizer";
 import CategorySales from "./pages/dashboard/CategorySales";
+import BusinessAnalyticsDashboard from "./pages/report/Report";
+import NotificationsPage from "./pages/NotificationsPage"
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
     <Router>
+      <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         <Route path="/register" element={<Register />} />
         {/* Auth Routes */}
@@ -142,10 +146,7 @@ function App() {
           path="/csvsubmissions"
           element={
             <ProtectedRoute>
-              <Header></Header>
-              <div className="mt-4">
-                <CsvSubmissions />
-              </div>
+              <CsvSubmissions />
             </ProtectedRoute>
           }
         />
@@ -171,17 +172,11 @@ function App() {
         <Route
           path="/newProductAddition"
           element={
-            <ProtectedRoute>
-              <NewProductAddition />
-            </ProtectedRoute>
-          }
-        ></Route>
-        <Route
-          path="/categorySales"
-          element={
-            <ProtectedRoute>
-              <CategorySales />
-            </ProtectedRoute>
+            <div className="pt-36 min-h-screen bg-gray-50 px-4">
+              <ProtectedRoute>
+                <NewProductAddition />
+              </ProtectedRoute>
+            </div>
           }
         ></Route>
         <Route
@@ -189,6 +184,24 @@ function App() {
           element={
             <ProtectedRoute>
               <ImageUpload />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/businessAnalytics"
+          element={
+            <div className="pt-36 min-h-screen bg-gray-50 px-4">
+              <ProtectedRoute>
+                <ImageUpload />
+              </ProtectedRoute>
+            </div>
+          }
+        ></Route>
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <NotificationsPage />
             </ProtectedRoute>
           }
         ></Route>

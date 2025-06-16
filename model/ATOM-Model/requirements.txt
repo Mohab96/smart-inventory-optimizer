@@ -1,0 +1,9 @@
+flask==3.1.0
+flask-sqlalchemy==3.1.1
+psycopg2-binary==2.9.10
+xgboost==3.0.0
+pandas==2.2.3
+numpy==2.2.4
+scikit-learn==1.6.1
+python-dotenv==1.1.0
+werkzeug==3.1.3

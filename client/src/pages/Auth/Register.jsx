@@ -3,8 +3,6 @@ import { useForm, Controller } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import Select from "react-select";
-import BgImg from "../../assets/images/signUpImg.jpg";
-import logo from "../../assets/images/logo.png";
 import { setCredentials } from "../../store/features/authSlice";
 import ImageUpload from "./ImageUpload";
 
@@ -282,9 +280,14 @@ export default function Register() {
       setErrorMessage("");
       handleSubmitManager((data) => {
         console.log(data);
-        const countryCode = data.countryCode?.value || "";
+        // Here's the fix: Make sure we're using the value from the select
+        const countryCode = data.countryCode?.value || "+20"; // Default to Egypt if not selected
         const combinedPhoneNumber = countryCode + data.phoneNumber;
-        setManagerData({ ...data, phoneNumber: combinedPhoneNumber });
+        console.log("Combined phone:", combinedPhoneNumber); // Debug line
+        setManagerData({
+          ...data,
+          phoneNumber: combinedPhoneNumber,
+        });
         setCurrentStep(currentStep + 1);
       })();
     }
@@ -297,17 +300,22 @@ export default function Register() {
     if (isValid && managerData) {
       // Combine manager and business data
       const { image, ...rest } = businessData;
-      const { countryCode, ...rest1 } = managerData;
-      countryCode;
-      image;
+      // Remove countryCode from being separately sent to the API
+      const { countryCode, ...managerDataWithoutCountryCode } = managerData;
+
       const combinedData = {
-        admin: { ...rest1 },
+        admin: {
+          ...managerDataWithoutCountryCode,
+          // Phone number should already be combined at this point
+        },
         business: {
           ...rest,
           establishmentDate: new Date().toISOString(),
         },
       };
-      console.log(combinedData.admin.phoneNumber);
+
+      console.log("Final phone number:", combinedData.admin.phoneNumber);
+
       try {
         const response = await fetch(
           `${import.meta.env.VITE_BASE_URL}/api/auth/register`,
@@ -333,259 +341,330 @@ export default function Register() {
     }
   };
 
+  // Rest of the component remains the same
   return (
-    <div className="grid max-w-full min-h-screen grid-cols-1 md:grid-cols-2 justify-center ">
-      {/* Register Form */}
-      <div className="home__data flex flex-col items-center justify-center mx-12 my-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <img
-            className="mx-auto h-32 xl:h-48 w-auto"
-            src={logo}
-            alt="Company Logo"
-          />
-          <h2 className="mt-10 text-center text-2xl xl:text-4xl font-bold text-orange-500">
-            Register
-          </h2>
-        </div>
-        <div className="container max-w-xl mx-auto p-6">
-          {errorMessage && (
-            <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
-              {errorMessage}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
+      <div className="max-w-2xl w-full space-y-8 bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl shadow-2xl border border-gray-700/50 transform transition-all duration-200">
+        {/* Rest of JSX remains the same */}
+        <div>
+          <div className="flex justify-center">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-12 w-12 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                />
+              </svg>
             </div>
-          )}
-          {/* Stepper */}
-          <div className="flex justify-center mb-8">
-            {steps.map((step) => (
-              <div key={step.number} className="flex items-center">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center transition ${
-                    currentStep >= step.number
-                      ? "bg-orange-500 text-white"
-                      : "bg-gray-200"
-                  }`}
-                >
-                  {step.number}
-                </div>
-                {step.number !== steps.length && (
-                  <div
-                    className={`w-[140px] h-1 transition ${
-                      currentStep > step.number
-                        ? "bg-orange-500"
-                        : "bg-gray-200"
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
           </div>
-          {/* Manager Form */}
-          {currentStep === 1 && (
-            <form className="space-y-4">
-              <h2 className="text-2xl font-bold mb-6">Manager Information</h2>
-              <div>
-                <label className="block mb-1">Name</label>
-                <input
-                  {...registerManager("name")}
-                  className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+            Create your account
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-400">
+            Register your business and start managing inventory
+          </p>
+        </div>
+
+        {/* Stepper */}
+        <div className="flex justify-center mb-8">
+          {steps.map((step) => (
+            <div key={step.number} className="flex items-center">
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
+                  currentStep >= step.number
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
+                    : "bg-gray-700 text-gray-400"
+                }`}
+              >
+                {step.number}
               </div>
-              <div>
-                <label className="block mb-1">Email *</label>
-                <input
-                  {...registerManager("email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Invalid email address",
-                    },
-                  })}
-                  className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+              {step.number !== steps.length && (
+                <div
+                  className={`w-[140px] h-1 transition-all duration-200 ${
+                    currentStep > step.number
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600"
+                      : "bg-gray-700"
+                  }`}
                 />
-                {errorsManager.email && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errorsManager.email.message}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="block mb-1">Phone Number *</label>
-                <div className="flex items-center">
-                  <div className="w-[30%]">
-                    <Controller
-                      name="countryCode"
-                      control={control}
-                      render={({ field }) => (
-                        <Select
-                          {...field}
-                          options={countryOptions}
-                          placeholder="Select country"
-                          isSearchable
-                          className="w-full text-sm"
-                          classNamePrefix="react-select"
-                          defaultValue={{ value: "+20", label: "Egypt (+20)" }}
-                        />
-                      )}
-                    />
-                  </div>
-                  <input
-                    {...registerManager("phoneNumber", {})}
-                    className="w-[70%] p-2 border rounded-r focus:outline-none focus:ring-2 focus:ring-orange-500"
+              )}
+            </div>
+          ))}
+        </div>
+
+        {errorMessage && (
+          <div className="animate-shake bg-red-900/30 text-red-200 rounded-lg p-4 text-sm flex items-center border border-red-700/50">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            {errorMessage}
+          </div>
+        )}
+
+        {/* Manager Form */}
+        {currentStep === 1 && (
+          <form className="space-y-4">
+            <h3 className="text-xl font-medium text-gray-200 mb-6">
+              Manager Information
+            </h3>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Name
+              </label>
+              <input
+                {...registerManager("name")}
+                className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Email *
+              </label>
+              <input
+                {...registerManager("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Invalid email address",
+                  },
+                })}
+                className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200"
+              />
+              {errorsManager.email && (
+                <p className="mt-1 text-sm text-red-400">
+                  {errorsManager.email.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Phone Number *
+              </label>
+              <div className="flex items-center space-x-2">
+                <div className="w-[30%]">
+                  <Controller
+                    name="countryCode"
+                    control={control}
+                    defaultValue={{ value: "+20", label: "Egypt (+20)" }}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        options={countryOptions}
+                        placeholder="Code"
+                        isSearchable
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            background: "rgba(17, 24, 39, 0.5)",
+                            borderColor: "rgb(55, 65, 81)",
+                            "&:hover": {
+                              borderColor: "rgb(55, 65, 81)",
+                            },
+                          }),
+                          menu: (base) => ({
+                            ...base,
+                            background: "rgb(17, 24, 39)",
+                            border: "1px solid rgb(55, 65, 81)",
+                          }),
+                          option: (base, state) => ({
+                            ...base,
+                            backgroundColor: state.isFocused
+                              ? "rgb(55, 65, 81)"
+                              : "transparent",
+                            color: "white",
+                            "&:hover": {
+                              backgroundColor: "rgb(55, 65, 81)",
+                            },
+                          }),
+                          singleValue: (base) => ({
+                            ...base,
+                            color: "white",
+                          }),
+                          input: (base) => ({
+                            ...base,
+                            color: "white",
+                          }),
+                        }}
+                      />
+                    )}
                   />
                 </div>
-                {errorsManager.phoneNumber && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errorsManager.phoneNumber.message}
-                  </p>
-                )}
-                {errorsManager.countryCode && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errorsManager.countryCode.message}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="block mb-1">Username *</label>
                 <input
-                  {...registerManager("username", {
-                    required: "Username is required",
-                  })}
-                  className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-                {errorsManager.username && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errorsManager.username.message}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="block mb-1">Password *</label>
-                <input
-                  {...registerManager("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 6,
-                      message: "Password must be at least 6 characters",
-                    },
-                  })}
-                  type="password"
-                  className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-                {errorsManager.password && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errorsManager.password.message}
-                  </p>
-                )}
-              </div>
-              {/* Navigation */}
-              <div className="flex justify-between mt-6">
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
-                  className="px-4 py-2 text-orange-500"
-                >
-                  ← Back
-                </button>
-                <button
-                  type="button"
-                  onClick={handleNextStep}
-                  className="px-4 py-2 bg-orange-500 text-white rounded"
-                >
-                  Next Step →
-                </button>
-              </div>
-            </form>
-          )}
-          {/* Business Form */}
-          {currentStep === 2 && (
-            <form
-              className="space-y-4"
-              onSubmit={handleSubmitBusiness(onSubmitBusiness)}
-            >
-              <h2 className="text-2xl font-bold mb-6">Business Information</h2>
-              <div>
-                <label className="block mb-1">Name</label>
-                <input
-                  {...registerBusiness("name", {
-                    required: "Business name is required",
-                  })}
-                  className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-                {errorsBusiness.name && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errorsBusiness.name.message}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="block mb-1">Business Description</label>
-                <textarea
-                  {...registerBusiness("description")}
-                  rows={3}
-                  placeholder="Write a brief description about your business"
-                  className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  {...registerManager("phoneNumber", {})}
+                  className="w-[70%] px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200"
                 />
               </div>
-              {/* Navigation */}
-              <div className="flex justify-between mt-6">
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
-                  className="px-4 py-2 text-purple-600"
-                >
-                  ← Back
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-orange-500 text-white rounded"
-                >
-                  Submit
-                </button>
-              </div>
-            </form>
-          )}
-          {currentStep === 3 && (
-            <div>
-              {<ImageUpload></ImageUpload>}
-              <div className="flex justify-between mt-6">
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
-                  className="px-4 py-2 text-orange-500"
-                >
-                  ← Back
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate("/dashboard")}
-                  className="px-4 py-2 bg-orange-500 text-white rounded"
-                >
-                  Finish
-                </button>
-              </div>
+              {errorsManager.phoneNumber && (
+                <p className="mt-1 text-sm text-red-400">
+                  {errorsManager.phoneNumber.message}
+                </p>
+              )}
             </div>
-          )}
-        </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Username *
+              </label>
+              <input
+                {...registerManager("username", {
+                  required: "Username is required",
+                })}
+                className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200"
+              />
+              {errorsManager.username && (
+                <p className="mt-1 text-sm text-red-400">
+                  {errorsManager.username.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Password *
+              </label>
+              <input
+                {...registerManager("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
+                type="password"
+                className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200"
+              />
+              {errorsManager.password && (
+                <p className="mt-1 text-sm text-red-400">
+                  {errorsManager.password.message}
+                </p>
+              )}
+            </div>
+
+            {/* Navigation */}
+            <div className="flex justify-end mt-6">
+              <button
+                type="button"
+                onClick={handleNextStep}
+                className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-900 transform transition-all duration-200 hover:scale-[1.02]"
+              >
+                Next Step →
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Business Form */}
+        {currentStep === 2 && (
+          <form
+            className="space-y-4"
+            onSubmit={handleSubmitBusiness(onSubmitBusiness)}
+          >
+            <h3 className="text-xl font-medium text-gray-200 mb-6">
+              Business Information
+            </h3>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Business Name *
+              </label>
+              <input
+                {...registerBusiness("name", {
+                  required: "Business name is required",
+                })}
+                className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200"
+              />
+              {errorsBusiness.name && (
+                <p className="mt-1 text-sm text-red-400">
+                  {errorsBusiness.name.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Business Description
+              </label>
+              <textarea
+                {...registerBusiness("description")}
+                rows={3}
+                placeholder="Write a brief description about your business"
+                className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200"
+              />
+            </div>
+
+            {/* Navigation */}
+            <div className="flex justify-between mt-6">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
+                className="text-sm font-medium text-gray-400 hover:text-gray-300 transition-colors duration-200"
+              >
+                ← Back
+              </button>
+              <button
+                type="submit"
+                className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-900 transform transition-all duration-200 hover:scale-[1.02]"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Image Upload Step */}
+        {currentStep === 3 && (
+          <div className="space-y-6">
+            <h3 className="text-xl font-medium text-gray-200 mb-6">
+              Upload Business Logo
+            </h3>
+            <ImageUpload isRegistrationFlow={true} />
+            <div className="flex justify-between mt-6">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
+                className="text-sm font-medium text-gray-400 hover:text-gray-300 transition-colors duration-200"
+              >
+                ← Back
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/dashboard")}
+                className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-900 transform transition-all duration-200 hover:scale-[1.02]"
+              >
+                Finish
+              </button>
+            </div>
+          </div>
+        )}
+
         {currentStep === 1 && (
-          <p className="mt-10 text-center text-sm text-gray-500">
-            Have an account?
+          <p className="mt-6 text-center text-sm text-gray-400">
+            Already have an account?{" "}
             <Link
               to="/login"
-              className="text-orange-500 font-medium hover:text-orange-600 px-1"
+              className="font-medium text-blue-400 hover:text-blue-300 transition-colors duration-200"
             >
-              Login
+              Sign in
             </Link>
           </p>
         )}
       </div>
-      {/* Background Image */}
-      <div
-        className="home__img hidden sm:flex max-h-full rounded-r-3xl shadow-2xl"
-        style={{
-          backgroundImage: `url(${BgImg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      ></div>
     </div>
   );
 }

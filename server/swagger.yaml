@@ -1956,7 +1956,7 @@ paths:
                   error:
                     type: string
                     example: "An error occurred while fetching categories"
-  /api/notification/products-prediction:
+  /api/notifications/products-prediction:
     get:
       summary: "Get product demand predictions"
       description: |
@@ -2038,7 +2038,7 @@ paths:
                 error: "Prediction service unavailable"
           links: {}
 
-  /api/notification/low-stock:
+  /api/notifications/low-stock:
     get:
       summary: "Get low stock predictions"
       description: |
@@ -2126,7 +2126,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  api/notification/expiring-soon:
+  api/notifications/expiring-soon:
     get:
       summary: "Get products expiring soon"
       description: |
@@ -2170,12 +2170,7 @@ paths:
                   - productName: "Fresh Milk"
                     categoryName: "Dairy"
                     expiryDate: "2024-06-15T00:00:00Z"
-                  - productName: "Greek Yogurt"
-                    categoryName: "Dairy"
-                    expiryDate: "2024-06-18T00:00:00Z"
-                  - productName: "Cheddar Cheese"
-                    categoryName: "Dairy"
-                    expiryDate: "2024-06-20T00:00:00Z"
+                    quantity: 10
 
         "400":
           description: Invalid request or missing business context
@@ -2193,6 +2188,172 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/notifications/get-notifications:
+    get:
+      summary: "Get business's notifications"
+      description: |
+        Retrieves all notifications for the authenticated business.
+        Features:
+        - Returns all 3 notification types (even with empty data)
+        - Ordered by most recent first
+        - Structured product data in notifications
+      tags:
+        - "Notification"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response with today's notifications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Unique notification ID
+                        date:
+                          type: string
+                          format: date-time
+                          description: Notification creation timestamp in UTC
+                        description:
+                          type: object
+                          additionalProperties: true
+                          description: Structured notification details
+                        title:
+                          type: string
+                          description: Notification title
+                        businessId:
+                          type: string
+                          format: uuid
+                          description: Associated business ID
+              example:
+                data:
+                  - title: "Products Expiring Soon"
+                    date: "2024-03-15T09:30:00.000Z"
+                    data:
+                      - productName: "Organic Whole Milk"
+                        categoryName: "Dairy"
+                        expiryDate: "2024-03-25T00:00:00.000Z"
+                        quantity: 10
+
+                  - title: "Products Demand Prediction"
+                    date: "2024-03-15T14:45:00.000Z"
+                    data:
+                      - productName: "iPhone 15 Pro"
+                        totalAmount: 58
+                        categoryName: "Electronics"
+
+                  - title: "Low Stock Prediction"
+                    date: "2024-03-15T11:15:00.000Z"
+                    data:
+                      - productName: "Premium Coffee Beans"
+                        predictedStock: 120
+                        inventoryStock: 85
+                        difference: 35
+                        categoryName: "Beverages"
+
+        "400":
+          description: Invalid request or missing business context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Invalid request"
+
+        "401":
+          description: Unauthorized - Missing or invalid authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/notifications/delete-notification/{id}:
+    delete:
+      summary: "Delete a specific notification"
+      description: |
+        Permanently deletes a notification by ID that belongs to the authenticated business.
+        Security:
+        - Only allows deletion of notifications belonging to the requestor's business
+        - Notification ID must exist and be owned by the business
+      tags:
+        - "Notification"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID of the notification to delete
+      responses:
+        "200":
+          description: Successfully deleted notification
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Notification"
+              example:
+                data:
+                  id: 41
+                  date: "2024-02-20T02:15:00.000Z"
+                  description:
+                    alertType: "LOW_STOCK"
+                    productId: 123
+                    currentStock: 8
+                    threshold: 10
+                  title: "Low Stock Alert"
+                  businessId: "b5e9d8f2-1a9b-4b1e-9c6f-7d3e4f5a6b7c"
+        "400":
+          description: Invalid ID format or missing business context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                invalidId:
+                  value:
+                    error: "Invalid notification ID"
+                missingBusiness:
+                  value:
+                    error: "Invalid request"
+        "401":
+          description: Unauthorized - Missing or invalid authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Notification not found or not owned by business
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Notification not found"
         "500":
           description: Internal server error
           content:
