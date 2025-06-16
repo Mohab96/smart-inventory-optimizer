@@ -25,7 +25,7 @@ const ProfitGrid = () => {
     if (token && !fetchCalled.current) {
       dispatch(fetchRevenuesPerMonth({ year: selectedYear }));
       dispatch(fetchRevenuesPerQuarter({ year: selectedYear }));
-      dispatch(fetchCategorySales({ page, limit, orderBy: "desc" }));
+      dispatch(fetchCategorySales({ page, limit, orderBy: "asc" }));
       fetchCalled.current = true; // Mark as called
     }
   }, [page, limit, selectedYear, token, dispatch]);
@@ -67,8 +67,8 @@ const ProfitGrid = () => {
     categorySales?.data?.data?.[0]?.category?.categoryName || "N/A";
   const bestCategorySales = categorySales?.data?.data?.[0]?.totalUnitsSold || 0;
 
-  console.log("Best Category:", bestCategory);
-  console.log(categorySales?.data?.data?.[0]?.totalUnitsSold);
+  // console.log("Best Category:", bestCategory);
+  // console.log(categorySales?.data?.data?.[0]?.totalUnitsSold);
 
   return (
     <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 py-5 bg-gray-100 dark:bg-gray-700">
@@ -94,7 +94,7 @@ const ProfitGrid = () => {
         label="Best Category Sales"
         percentage={bestCategorySales}
         color="text-green-400"
-        path="/categorySales"
+        path="/sales"
         // iconPath="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z"
       />
     </div>
