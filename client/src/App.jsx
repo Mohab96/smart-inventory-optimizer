@@ -22,7 +22,6 @@ import ResetPassword from "./pages/Auth/ResetPassword";
 import CsvSubmissions from "./pages/TransactionsFeeding/CsvSubmissions";
 import RecommendationPage from "./pages/recommendation/RecommendationPage";
 import TrendVisualizer from "./pages/trends/trendVisualizer";
-import CategorySales from "./pages/dashboard/CategorySales";
 import BusinessAnalyticsDashboard from "./pages/report/Report";
 import NotificationsPage from "./pages/NotificationsPage"
 import { ToastContainer } from "react-toastify";
@@ -172,11 +171,9 @@ function App() {
         <Route
           path="/newProductAddition"
           element={
-            <div className="pt-36 min-h-screen bg-gray-50 px-4">
-              <ProtectedRoute>
-                <NewProductAddition />
-              </ProtectedRoute>
-            </div>
+            <ProtectedRoute>
+              <NewProductAddition />
+            </ProtectedRoute>
           }
         ></Route>
         <Route
@@ -192,7 +189,7 @@ function App() {
           element={
             <div className="pt-36 min-h-screen bg-gray-50 px-4">
               <ProtectedRoute>
-                <ImageUpload />
+                <BusinessAnalyticsDashboard />
               </ProtectedRoute>
             </div>
           }
