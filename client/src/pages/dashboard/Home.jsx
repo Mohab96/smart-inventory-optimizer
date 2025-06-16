@@ -68,7 +68,8 @@ const Dashboard = () => {
             <div className="md:col-span-1 ">
               <PieChart data={nonZeroMonths} />
             </div>
-          </div>
+          </div> 
+          
 
           <LossGrid />
 
