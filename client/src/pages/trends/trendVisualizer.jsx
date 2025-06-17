@@ -7,14 +7,22 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCategoriesSalesTrends,
   fetchCategoriesRevenuesTrends,
+  fetchProductsSalesTrends,
+  fetchProductsRevenuesTrends,
 } from "../../store/features/trendSlices/trendSlice";
 
 const TrendVisualizer = () => {
   const dispatch = useDispatch();
-  const [selectedYear, setSelectedYear] = useState(2015);
-  const [selectedCategory, setSelectedCategory] = useState("vehicle");
+  // Separate year state for each chart group
+  const [categorySalesYear, setCategorySalesYear] = useState(2025);
+  const [categoryRevenueYear, setCategoryRevenueYear] = useState(2025);
+  const [productSalesYear, setProductSalesYear] = useState(2025);
+  const [productRevenueYear, setProductRevenueYear] = useState(2025);
+
   const [salesChartData, setSalesChartData] = useState([]);
   const [revenueChartData, setRevenueChartData] = useState([]);
+  const [productSalesChartData, setProductSalesChartData] = useState([]);
+  const [productRevenueChartData, setProductRevenueChartData] = useState([]);
   const { loading, salesData, revenueData, error } = useSelector(
     (state) => state.trend
   );
@@ -22,62 +30,76 @@ const TrendVisualizer = () => {
   const fetchedOnce = useRef(false);
 
   useEffect(() => {
-    const fetchTrendData = async () => {
+    const fetchData = async () => {
       try {
         const salesTrendData = await dispatch(
-          fetchCategoriesSalesTrends(selectedYear)
+          fetchCategoriesSalesTrends(categorySalesYear)
         ).unwrap();
-        console.log(`✅ Category Sales Trends:`, salesTrendData);
-
-        // Force the data processing after successful fetch
-        processTrendData(salesTrendData, selectedCategory, setSalesChartData);
-
-        const revenueTrendData = await dispatch(
-          fetchCategoriesRevenuesTrends(selectedYear)
-        ).unwrap();
-        console.log(`✅ Category Revenue Trends:`, revenueTrendData);
-
-        // Force the data processing after successful fetch
-        processTrendData(
-          revenueTrendData,
-          selectedCategory,
-          setRevenueChartData
-        );
+        processTrendData(salesTrendData, setSalesChartData);
       } catch (err) {
-        console.error(`❌ Error while fetching category trends:`, err);
+        console.error("❌ Error while fetching category sales trends:", err);
       }
     };
+    fetchData();
+  }, [dispatch, categorySalesYear]);
 
-    fetchTrendData();
-    fetchedOnce.current = true;
-  }, [dispatch, selectedYear, selectedCategory]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const revenueTrendData = await dispatch(
+          fetchCategoriesRevenuesTrends(categoryRevenueYear)
+        ).unwrap();
+        processTrendData(revenueTrendData, setRevenueChartData);
+      } catch (err) {
+        console.error("❌ Error while fetching category revenue trends:", err);
+      }
+    };
+    fetchData();
+  }, [dispatch, categoryRevenueYear]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const productSalesTrendData = await dispatch(
+          fetchProductsSalesTrends(productSalesYear)
+        ).unwrap();
+        processProductTrendData(productSalesTrendData, setProductSalesChartData);
+      } catch (err) {
+        console.error("❌ Error while fetching product sales trends:", err);
+      }
+    };
+    fetchData();
+  }, [dispatch, productSalesYear]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const productRevenueTrendData = await dispatch(
+          fetchProductsRevenuesTrends(productRevenueYear)
+        ).unwrap();
+        processProductTrendData(productRevenueTrendData, setProductRevenueChartData);
+      } catch (err) {
+        console.error("❌ Error while fetching product revenue trends:", err);
+      }
+    };
+    fetchData();
+  }, [dispatch, productRevenueYear]);
 
   // Also process data whenever Redux state changes
   useEffect(() => {
     if (salesData) {
-      processTrendData(salesData, selectedCategory, setSalesChartData);
+      processTrendData(salesData, setSalesChartData);
     }
-  }, [salesData, selectedCategory]);
+  }, [salesData]);
 
   useEffect(() => {
     if (revenueData) {
-      processTrendData(revenueData, selectedCategory, setRevenueChartData);
+      processTrendData(revenueData, setRevenueChartData);
     }
-  }, [revenueData, selectedCategory]);
+  }, [revenueData]);
 
-  // Extract this logic into a separate function for reuse
-  const processTrendData = (data, category, setData) => {
-    console.log(`Processing category sales data for ${category}:`, data);
-
-    // Extract the appropriate data from the response
-    const categoryData = data[category];
-
-    if (!categoryData) {
-      console.log("No data available for the selected category");
-      setData([]);
-      return;
-    }
-
+  // Process category trend data
+  const processTrendData = (data, setData) => {
     // Create an array of months in order
     const monthOrder = [
       "january",
@@ -94,56 +116,129 @@ const TrendVisualizer = () => {
       "december",
     ];
 
+    // Process data for each category
+    const categories = ["Groceries", "Sports Equipment", "Footwear"];
     const formattedData = monthOrder.map((month) => {
-      const monthValue =
-        categoryData[month] !== undefined
-          ? typeof categoryData[month] === "string"
-            ? parseInt(categoryData[month])
-            : categoryData[month]
-          : 0;
-
-      return {
+      const monthData = {
         month: month.charAt(0).toUpperCase() + month.slice(1),
-        value: monthValue,
       };
+
+      // Add data for each category
+      categories.forEach((category) => {
+        const categoryData = data[category];
+        if (categoryData) {
+          monthData[category] = categoryData[month] !== undefined
+            ? typeof categoryData[month] === "string"
+              ? parseInt(categoryData[month])
+              : categoryData[month]
+            : 0;
+        } else {
+          monthData[category] = 0;
+        }
+      });
+
+      return monthData;
     });
 
-    console.log("Formatted data:", formattedData);
     setData(formattedData);
   };
 
-  const years = Array.from(
-    { length: new Date().getFullYear() - 2013 + 1 },
-    (_, i) => 2013 + i
-  ).reverse();
+  // Process product trend data
+  const processProductTrendData = (data, setData) => {
+    // Create an array of months in order
+    const monthOrder = [
+      "january",
+      "february",
+      "march",
+      "april",
+      "may",
+      "june",
+      "july",
+      "august",
+      "september",
+      "october",
+      "november",
+      "december",
+    ];
 
-  const handleYearChange = (e) => {
-    const year = parseInt(e.target.value);
-    setSelectedYear(year);
-    fetchedOnce.current = false; // Reset to allow refetching with new year
+    // Get the top 3 products
+    const products = Object.keys(data)
+      .map(product => ({
+        name: product,
+        total: Object.values(data[product]).reduce((sum, v) => sum + Number(v), 0)
+      }))
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 3)
+      .map(p => p.name);
+    
+    const formattedData = monthOrder.map((month) => {
+      const monthData = {
+        month: month.charAt(0).toUpperCase() + month.slice(1),
+      };
+
+      // Add data for each product
+      products.forEach((product) => {
+        const productData = data[product];
+        if (productData) {
+          monthData[product] = productData[month] !== undefined
+            ? typeof productData[month] === "string"
+              ? parseInt(productData[month])
+              : productData[month]
+            : 0;
+        } else {
+          monthData[product] = 0;
+        }
+      });
+
+      return monthData;
+    });
+
+    setData(formattedData);
   };
 
-  const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);
-  };
+  // Years array with only 2023, 2024, and 2025
+  const years = [2025, 2024, 2023];
 
   // Check if there's any non-zero data
   const hasData = (chartData) =>
     chartData &&
     chartData.length > 0 &&
-    chartData.some((item) => item.value > 0);
-
-  // Custom debugger function
-  const debugDataValues = (chartData) => {
-    if (!chartData || chartData.length === 0) return "No data available";
-
-    return chartData.map((item) => `${item.month}: ${item.value}`).join(", ");
-  };
+    chartData.some((item) => 
+      Object.values(item).some(value => typeof value === 'number' && value > 0)
+    );
 
   // Get chart title based on current selections
-  const getChartTitle = (category, year, type) => {
-    return `${category.charAt(0).toUpperCase() + category.slice(1)} ${type === "revenue" ? "Revenue" : "Sales"} Trends (${year})`;
+  const getChartTitle = (type, isProduct = false) => {
+    return `${isProduct ? 'Product' : 'Category'} ${type === "revenue" ? "Revenue" : "Sales"} Trends`;
   };
+
+  // Colors for categories and products
+  const categoryColors = {
+    Groceries: "#4f46e5",
+    "Sports Equipment": "#38bdf8",
+    Footwear: "#34D399",
+  };
+  // For products, generate colors dynamically (fallback to default if not enough)
+  const productColors = [
+    "#eab308", // Amber
+    "#f472b6", // Pink
+    "#f87171", // Red
+    "#10b981", // Emerald
+    "#6366f1", // Indigo
+    "#06b6d4", // Cyan
+  ];
+
+  // Get top 3 product names for the current product data
+  const productLineKeys = productSalesChartData[0]
+    ? Object.keys(productSalesChartData[0]).filter((k) => k !== "month")
+    : [];
+  const productColorMap = productLineKeys.reduce((acc, key, idx) => {
+    acc[key] = productColors[idx % productColors.length];
+    return acc;
+  }, {});
+
+  // Category line keys
+  const categoryLineKeys = Object.keys(categoryColors);
 
   return (
     <div className="h-screen flex flex-col">
@@ -156,14 +251,13 @@ const TrendVisualizer = () => {
               loading={loading}
               error={error}
               chartData={salesChartData}
-              getChartTitle={() =>
-                getChartTitle(selectedCategory, selectedYear, "sales")
-              }
+              getChartTitle={() => getChartTitle("sales")}
               hasData={hasData(salesChartData)}
-              selectedYear={selectedYear}
-              handleYearChange={handleYearChange}
-              handleCategoryChange={handleCategoryChange}
+              selectedYear={categorySalesYear}
+              handleYearChange={e => setCategorySalesYear(Number(e.target.value))}
               years={years}
+              lineKeys={categoryLineKeys}
+              colors={categoryColors}
             />
           </div>
           <div className="flex-1 w-full">
@@ -171,14 +265,41 @@ const TrendVisualizer = () => {
               loading={loading}
               error={error}
               chartData={revenueChartData}
-              getChartTitle={() =>
-                getChartTitle(selectedCategory, selectedYear, "revenue")
-              }
+              getChartTitle={() => getChartTitle("revenue")}
               hasData={hasData(revenueChartData)}
-              selectedYear={selectedYear}
-              handleYearChange={handleYearChange}
-              handleCategoryChange={handleCategoryChange}
+              selectedYear={categoryRevenueYear}
+              handleYearChange={e => setCategoryRevenueYear(Number(e.target.value))}
               years={years}
+              lineKeys={categoryLineKeys}
+              colors={categoryColors}
+            />
+          </div>
+          <div className="flex-1 w-full">
+            <CategorySalesTrendCard
+              loading={loading}
+              error={error}
+              chartData={productSalesChartData}
+              getChartTitle={() => getChartTitle("sales", true)}
+              hasData={hasData(productSalesChartData)}
+              selectedYear={productSalesYear}
+              handleYearChange={e => setProductSalesYear(Number(e.target.value))}
+              years={years}
+              lineKeys={productLineKeys}
+              colors={productColorMap}
+            />
+          </div>
+          <div className="flex-1 w-full">
+            <CategoryRevenueTrendCard
+              loading={loading}
+              error={error}
+              chartData={productRevenueChartData}
+              getChartTitle={() => getChartTitle("revenue", true)}
+              hasData={hasData(productRevenueChartData)}
+              selectedYear={productRevenueYear}
+              handleYearChange={e => setProductRevenueYear(Number(e.target.value))}
+              years={years}
+              lineKeys={productLineKeys}
+              colors={productColorMap}
             />
           </div>
         </div>

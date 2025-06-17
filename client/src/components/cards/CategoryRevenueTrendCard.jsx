@@ -1,5 +1,6 @@
 import React from "react";
 import TrendChart from "../charts/TrendChart";
+import Loading from "../common/Loading";
 
 const CategoryRevenueTrendCard = ({
   loading,
@@ -11,6 +12,8 @@ const CategoryRevenueTrendCard = ({
   handleYearChange,
   years,
   handleCategoryChange,
+  lineKeys,
+  colors,
 }) => {
   return (
     <div className="flex-1 overflow-y-auto p-4 dark:bg-gray-900 text-white">
@@ -34,9 +37,7 @@ const CategoryRevenueTrendCard = ({
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <p className="text-xl">Loading trend data...</p>
-        </div>
+        <Loading />
       ) : error ? (
         <div className="bg-red-900 p-4 rounded">
           <p className="text-red-200">Error loading trend data: {error}</p>
@@ -48,6 +49,8 @@ const CategoryRevenueTrendCard = ({
             data={chartData}
             title={getChartTitle()}
             hasData={hasData}
+            lineKeys={lineKeys}
+            colors={colors}
           />
 
           {/* Debug output */}
