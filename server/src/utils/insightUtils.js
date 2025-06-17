@@ -1,5 +1,4 @@
 const axios = require("axios");
-const winston = require("winston");
 
 async function fetchInsightsData(
   businessId,
@@ -11,7 +10,7 @@ async function fetchInsightsData(
 
   const response = await axios.post(predictionsEndpoint, {
     business_id: businessId,
-    days_of_forcasting: daysOfForecasting,
+    days_of_forecasting: daysOfForecasting,
     top_number_of_product: numberOfProducts,
   });
 
@@ -21,12 +20,10 @@ async function fetchInsightsData(
     throw error;
   }
 
-  const { high_demand_products } = response.data;
+  const { high_demand_products } = response.data;  
   const finalProducts = [];
 
   for (const product of high_demand_products) {
-    console.log(product);
-
     const productData = await dbclient.productDimension.findUnique({
       where: { productId: product.product_id },
       include: { category: true },
