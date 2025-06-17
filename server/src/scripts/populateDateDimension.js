@@ -34,7 +34,14 @@ async function populateDateDimension(startYear, endYear) {
       // Move to the next day
       currentDate = moveDayForwardUTC(currentDate);
     }
-
+    records.push({
+      fullDate: toUTCDate("1/1/1970"),
+      day: 1,
+      week: 1,
+      month: 1,
+      quarter: 1,
+      year: 1970,
+    });
     // console.log(records);
     // Insert all records in bulk
     const dates = await prisma.dateDimension.createMany({
