@@ -1,7 +1,7 @@
 const axios = require("axios");
 const winston = require("winston");
 const mainClient = require("../../prisma/main/client");
-
+const dwhClient = require("../../prisma/dwh/client");
 
 const { fetchInsightsData, fetchDiscounts } = require("../utils/insightUtils");
 
@@ -17,7 +17,7 @@ const getInsights = async (req, res) => {
       req.user.businessId,
       Number(daysOfForecasting),
       Number(numberOfProducts),
-      mainClient
+      dwhClient
     );
 
     return res.status(200).send({ data: finalProducts });
