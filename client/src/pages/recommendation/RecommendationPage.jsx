@@ -120,12 +120,12 @@ const RecommendationPage = () => {
           {!loading && !error && (
             <div>
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Product Recommendations</h2>
+                <h2 className="text-2xl font-bold">Product Predictions</h2>
                 <div className="text-sm text-gray-400">
                   Showing {recommendations.length} products • {daysOfForecasting} days forecast
                 </div>
               </div>
-              
+            
               {recommendations.length === 0 ? (
                 <div className="bg-gray-600 p-8 rounded-lg shadow text-center">
                   <div className="text-gray-300 mb-2">

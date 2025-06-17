@@ -21,9 +21,17 @@ const Sidebar = () => {
         <li>
           <button
             className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-            onClick={() => navigate("/recommendations")}
+            onClick={() => navigate("/businessAnalytics")}
           >
-            Recommendations
+            Business Analytics
+          </button>
+        </li>
+        <li>
+          <button
+            className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+            onClick={() => navigate("/prediction")}
+          >
+            Predictions
           </button>
         </li>
         <li>

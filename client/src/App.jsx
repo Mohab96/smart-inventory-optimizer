@@ -26,6 +26,7 @@ import BusinessAnalyticsDashboard from "./pages/report/Report";
 import NotificationsPage from "./pages/NotificationsPage"
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CategoriesSales from "./pages/dashboard/CategoriesSales";
 
 function App() {
   return (
@@ -108,6 +109,14 @@ function App() {
           }
         />
         <Route
+          path="/bestCategories"
+          element={
+            <ProtectedRoute>
+              <CategoriesSales />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/lowStockProducts"
           element={
             <ProtectedRoute>
@@ -126,7 +135,7 @@ function App() {
           }
         />
         <Route
-          path="/recommendations"
+          path="/prediction"
           element={
             <ProtectedRoute>
               <RecommendationPage />
@@ -187,7 +196,7 @@ function App() {
         <Route
           path="/businessAnalytics"
           element={
-            <div className="pt-36 min-h-screen bg-gray-50 px-4">
+            <div className="min-h-screen bg-gray-50 ">
               <ProtectedRoute>
                 <BusinessAnalyticsDashboard />
               </ProtectedRoute>

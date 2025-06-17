@@ -1,11 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
 import MonthCard from "../cards/MonthCard";
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   fetchRevenuesPerMonth,
   fetchRevenuesPerQuarter,
 } from "../../store/features/dashboardSlices/revenueSlice";
 import { fetchCategorySales } from "../../store/features/dashboardSlices/salesSlice";
+import { fetchTotalProducts, fetchTotalCategories } from "../../store/features/dashboardSlices/overviewSlice";
+import { DollarSign, ShoppingBag, Package, LayoutGrid } from "lucide-react";
 
 const ProfitGrid = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -15,18 +17,17 @@ const ProfitGrid = () => {
   const monthlyRevenue = useSelector((state) => state.revenue.monthlyData);
   const quarterlyRevenue = useSelector((state) => state.revenue.quarterlyData);
   const categorySales = useSelector((state) => state.sales);
+  const { totalProducts, totalCategories } = useSelector((state) => state.overview);
 
-  console.log(categorySales.data.data);
-
-  const fetchCalled = useRef(false); // Prevent unnecessary fetch calls
   const [page, setPage] = useState(1);
-  const limit = 10; // You can also make this dynamic if needed
+  const limit = 10; 
   useEffect(() => {
-    if (token && !fetchCalled.current) {
+    if (token) {
       dispatch(fetchRevenuesPerMonth({ year: selectedYear }));
       dispatch(fetchRevenuesPerQuarter({ year: selectedYear }));
-      dispatch(fetchCategorySales({ page, limit, orderBy: "asc" }));
-      fetchCalled.current = true; // Mark as called
+      dispatch(fetchCategorySales({ page, limit, orderBy: "desc" }));
+      dispatch(fetchTotalProducts());
+      dispatch(fetchTotalCategories());
     }
   }, [page, limit, selectedYear, token, dispatch]);
 
@@ -50,7 +51,11 @@ const ProfitGrid = () => {
     quarterlyRevenue?.data?.[currentQuarter - 1] ?? 0;
 
   const calculatePercentageChange = (current, previous) => {
-    return previous > 0 ? ((current - previous) / previous) * 100 : 0;
+    // Handle division by zero for percentage change calculation
+    if (previous === 0) {
+        return current > 0 ? 100 : 0; 
+    }
+    return ((current - previous) / previous) * 100;
   };
 
   const monthlyChange = useMemo(
@@ -71,14 +76,14 @@ const ProfitGrid = () => {
   // console.log(categorySales?.data?.data?.[0]?.totalUnitsSold);
 
   return (
-    <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 py-5 bg-gray-100 dark:bg-gray-700">
+    <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 py-5 bg-transparent">
       <MonthCard
         value={currentMonthRevenue.toLocaleString()}
         label="Revenues this month"
         percentage={`${monthlyChange.toFixed(2)}%`}
         color={monthlyChange >= 0 ? "text-green-400" : "text-red-400"}
         path="/yearRevenues"
-        // iconPath="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z"
+        cardIcon={DollarSign}
       />
 
       <MonthCard
@@ -87,15 +92,15 @@ const ProfitGrid = () => {
         percentage={`${quarterlyChange.toFixed(2)}%`}
         color={quarterlyChange >= 0 ? "text-green-400" : "text-red-400"}
         path="/quarterRevenues"
-        // iconPath="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z"
+        cardIcon={DollarSign}
       />
       <MonthCard
         value={bestCategory}
         label="Best Category Sales"
-        percentage={bestCategorySales}
-        color="text-green-400"
-        path="/sales"
-        // iconPath="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z"
+        percentage={`${bestCategorySales} units`}
+        color="text-blue-400"
+        path="/bestCategories"
+        cardIcon={ShoppingBag}
       />
     </div>
   );

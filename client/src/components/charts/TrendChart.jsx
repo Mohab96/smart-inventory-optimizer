@@ -3,7 +3,6 @@ import {
   ResponsiveContainer,
   ComposedChart,
   Line,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -11,40 +10,17 @@ import {
   Legend,
 } from "recharts";
 
-// Custom bar component for styling
-const CustomAreaBar = ({ x, y, width, height, fill }) => {
-  return (
-    <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        fill={fill}
-        fillOpacity={0.6}
-      />
-      <rect
-        x={x}
-        y={y + height - 4}
-        width={width}
-        height={4}
-        fill={fill}
-        fillOpacity={0.9}
-      />
-    </g>
-  );
-};
-
 // Custom tooltip component
-const CustomTooltip = ({ active, payload, label, type }) => {
+const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-gray-800 p-3 border border-gray-600 rounded shadow-lg">
         <p className="font-bold text-gray-200">{label}</p>
-        <p className="text-blue-400">
-          {type === "revenue" ? "Revenue" : "Sales"}:{" "}
-          <span className="font-bold">{payload[0].value}</span>
-        </p>
+        {payload.map((entry, index) => (
+          <p key={index} style={{ color: entry.color }}>
+            {entry.name}: <span className="font-bold">{entry.value}</span>
+          </p>
+        ))}
       </div>
     );
   }
@@ -52,31 +28,32 @@ const CustomTooltip = ({ active, payload, label, type }) => {
 };
 
 /**
- * TrendChart Component specialized for Category Trends
+ * TrendChart Component specialized for Category/Product Trends
  *
  * @param {Object} props
  * @param {Array} props.data - The chart data array
  * @param {string} props.title - Chart title
  * @param {boolean} props.hasData - Whether real data is available
  * @param {Array} props.testData - Fallback test data
- * @param {string} props.type - The type of data ("sales" or "revenue")
+ * @param {Array} props.lineKeys - Array of keys to plot as lines
+ * @param {Object} props.colors - Object mapping key to color
  */
 const TrendChart = ({
   data,
   title,
   hasData = false,
   testData = [],
-  type = "sales",
+  lineKeys = [],
+  colors = {},
 }) => {
-  // Colors specific for Sales visualization
-  const colors = {
-    barFill: type === "revenue" ? "#34D399" : "#4f46e5", // Green for revenue, Indigo for sales
-    lineStroke: type === "revenue" ? "#059669" : "#38bdf8", // Darker green for revenue, Light blue for sales trend line
-  };
+  // Debug log
+  console.log('TrendChart data:', data);
+  console.log('TrendChart lineKeys:', lineKeys);
+  console.log('TrendChart colors:', colors);
 
   return (
     <div className="bg-gray-800 p-4 rounded-lg shadow">
-      <h2 className="text-xl mb-4"></h2>
+      <h2 className="text-xl mb-4">{title}</h2>
       <div className="h-96">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
@@ -102,35 +79,31 @@ const TrendChart = ({
               axisLine={{ stroke: "#4b5563" }}
               width={60}
             />
-            <Tooltip
-              content={(props) => <CustomTooltip {...props} type={type} />}
-            />
+            <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ paddingTop: 10 }} />
-            {/* <Bar
-              dataKey="value"
-              name={type === "revenue" ? "Revenue" : "Sales"}
-              fill={colors.barFill}
-              shape={<CustomAreaBar />}
-            /> */}
-            <Line
-              type="monotone"
-              dataKey="value"
-            //   name={type === "revenue" ? "Revenue Trend" : "Sales Trend"}
-              stroke={colors.lineStroke}
-              strokeWidth={3}
-              dot={{
-                stroke: colors.lineStroke,
-                strokeWidth: 2,
-                r: 4,
-                fill: "#1e293b",
-              }}
-              activeDot={{
-                stroke: colors.lineStroke,
-                strokeWidth: 3,
-                r: 6,
-                fill: "#1e293b",
-              }}
-            />
+            {/* Line for each key (category or product) */}
+            {lineKeys.map((key) => (
+              <Line
+                key={key}
+                type="monotone"
+                dataKey={key}
+                name={key}
+                stroke={colors[key] || "#8884d8"}
+                strokeWidth={3}
+                dot={{
+                  stroke: colors[key] || "#8884d8",
+                  strokeWidth: 2,
+                  r: 4,
+                  fill: "#1e293b",
+                }}
+                activeDot={{
+                  stroke: colors[key] || "#8884d8",
+                  strokeWidth: 3,
+                  r: 6,
+                  fill: "#1e293b",
+                }}
+              />
+            ))}
           </ComposedChart>
         </ResponsiveContainer>
       </div>
