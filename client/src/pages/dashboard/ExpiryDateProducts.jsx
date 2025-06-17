@@ -3,13 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import Header from "../../components/common/Header";
 import Sidebar from "../../components/common/Sidebar";
 import { selectToken } from "../../store/features/authSlice";
-import { fetchProductsExpiringSoon } from "../../store/features/dashboardSlices/expiryDateSlice";
+import { fetchProductsExpiringSoon } from "../../store/features/dashboardSlices/expiryProductsSlice";
 import ExpiryProductsTable from "../../components/tables/ProductsExpiringSoonTable";
+import { AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react";
 
 const ExpiryDateProducts = () => {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
-  const { loading, data, error } = useSelector((state) => state.expiryDate);
+  const { loading, data, error } = useSelector((state) => state.expiryProducts);
   const products = data?.data || [];
 
   const [page, setPage] = useState(1);
@@ -27,49 +28,62 @@ const ExpiryDateProducts = () => {
     }
   }, [dispatch, token, page, limit]);
 
-  console.log("Products Data:", products);
-
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col bg-gray-900">
       <Header />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <div className="flex-1 overflow-y-auto p-4 dark:bg-gray-700">
-          <h2 className="text-2xl font-semibold text-white mb-4">
-            Products Expiring soon
-          </h2>
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex items-center space-x-3 mb-6">
+            <AlertTriangle className="h-8 w-8 text-yellow-500" />
+            <h2 className="text-2xl font-bold text-white">
+              Products Expiring Soon
+            </h2>
+          </div>
+
           {loading ? (
-            <p className="text-white">Loading...</p>
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
           ) : error ? (
-            <p className="text-red-500">{error}</p>
+            <div className="bg-red-500/10 border border-red-500 rounded-lg p-4 text-red-500">
+              {error}
+            </div>
           ) : (
-            <>
-              <ul className="space-y-4 ">
+            <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.01] transition-all duration-300">
+              <div className="p-6 border-b border-gray-700">
+                <h3 className="text-xl font-semibold text-white">Expiry Details</h3>
+              </div>
+              <div className="overflow-x-auto">
                 {products.length > 0 ? (
                   <ExpiryProductsTable products={products} />
                 ) : (
-                  <p className="text-white">No products found.</p>
+                  <div className="p-8 text-center">
+                    <p className="text-gray-400 text-lg">No products found.</p>
+                  </div>
                 )}
-              </ul>
-              <div className="mt-4 flex justify-between items-center">
-                <button
-                  onClick={() =>
-                    setPage((prevPage) => Math.max(prevPage - 1, 1))
-                  }
-                  disabled={page === 1}
-                  className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-                >
-                  Previous
-                </button>
-                <span className="text-white">Page {page}</span>
-                <button
-                  onClick={() => setPage((prevPage) => prevPage + 1)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded"
-                >
-                  Next
-                </button>
               </div>
-            </>
+              <div className="px-6 py-4 border-t border-gray-700 bg-gray-800/50">
+                <div className="flex justify-between items-center">
+                  <button
+                    onClick={() => setPage((prevPage) => Math.max(prevPage - 1, 1))}
+                    disabled={page === 1}
+                    className="inline-flex items-center px-4 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 hover:bg-gray-600 transition-colors duration-200 disabled:hover:bg-gray-700"
+                  >
+                    <ChevronLeft className="h-5 w-5 mr-2" />
+                    Previous
+                  </button>
+                  <span className="text-gray-300 font-medium">Page {page}</span>
+                  <button
+                    onClick={() => setPage((prevPage) => prevPage + 1)}
+                    className="inline-flex items-center px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200"
+                  >
+                    Next
+                    <ChevronRight className="h-5 w-5 ml-2" />
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

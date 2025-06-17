@@ -18,6 +18,8 @@ const productSaleTrendController = require("../controllers/productsSaleTrend");
 const productRevenueTrendController = require("../controllers/productsRevenueTrend");
 const categorySaleTrendController = require("../controllers/categorySaleTrend");
 const categoryRevenueTrendController = require("../controllers/categoryRevenueTrend");
+const getTotalProductsCount = require("../controllers/totalProductsCount");
+const getTotalCategoriesCount = require("../controllers/totalCategoriesCount");
 
 statisticsRouter.get(
   "/categories-revenue-trend/:year",
@@ -117,6 +119,18 @@ statisticsRouter.get(
   "/transactions",
   [authenticate, authorize],
   getTransactionHistory
+);
+
+statisticsRouter.get(
+  "/total-products",
+  [authenticate, authorize],
+  getTotalProductsCount
+);
+
+statisticsRouter.get(
+  "/total-categories",
+  [authenticate, authorize],
+  getTotalCategoriesCount
 );
 
 module.exports = statisticsRouter;

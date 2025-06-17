@@ -1,33 +1,60 @@
 import MonthCard from "../cards/MonthCard";
+import { TrendingDown, AlertTriangle, CalendarDays } from "lucide-react";
 
-const LossGrid = () => {
+const LossGrid = ({ lowStockProduct, expiringCategory, expiringProduct }) => {
+  // Low stock product info
+  const lowStockProductName = lowStockProduct?.product?.name || "N/A";
+  const lowStockProductQty = lowStockProduct?.currentStock ?? "N/A";
+
+  // Expiring category info
+  const firstProductInCategory = expiringCategory?.products?.[0];
+  const getDaysUntilExpiry = (expiryDate) => {
+    if (!expiryDate) return "N/A";
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const diffTime = expiry - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : "Expired";
+  };
+  const expiringCategoryName = expiringCategory?.categoryName || "N/A";
+  const expiringProductName = firstProductInCategory?.productName || "N/A";
+  const daysUntilExpiryForCategoryProduct = getDaysUntilExpiry(firstProductInCategory?.batches?.[0]?.expiryDate);
+
+  // Expiring product info
+  const expiringProductNameCard = expiringProduct?.productName || "N/A";
+  const expiringProductDaysLeft = getDaysUntilExpiry(expiringProduct?.expiryDate);
+  const expiringProductQty = expiringProduct?.quantity ?? "N/A";
+
   return (
-    <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 py-5 bg-gray-100 dark:bg-gray-700">
+    <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 py-5 bg-transparent">
       <MonthCard
-        value="2,340"
-        label="Sales this month"
-        percentage="14.6%"
-        color="text-green-400"
+        value={lowStockProductName}
+        label={`Stock: ${lowStockProductQty}`}
+        percentage={typeof lowStockProductQty === 'number' ? `${lowStockProductQty} units` : "N/A"}
+        color={lowStockProductQty <= 5 ? "text-red-400" : lowStockProductQty <= 20 ? "text-yellow-400" : "text-green-400"}
         path="/lowStockProducts"
-        iconPath="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z"
+        cardIcon={AlertTriangle}
+        percentageIcon={TrendingDown}
       />
 
       <MonthCard
-        value="5,355"
-        label="Expiring categories"
-        percentage="-5.2%"
-        color="text-red-400"
+        value={expiringCategoryName}
+        label={expiringProductName}
+        percentage={`${daysUntilExpiryForCategoryProduct} days left`}
+        color={daysUntilExpiryForCategoryProduct <= 7 ? "text-red-400" : "text-yellow-400"}
         path="/categoriesExpiringSoon"
-        iconPath="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z"
+        cardIcon={AlertTriangle}
+        percentageIcon={CalendarDays}
       />
 
       <MonthCard
-        value="385"
-        label="Expiring Products"
-        percentage="-2.7%"
-        color="text-red-400"
+        value={expiringProductNameCard}
+        label={`Qty: ${expiringProductQty}`}
+        percentage={`${expiringProductDaysLeft} days left`}
+        color={expiringProductDaysLeft <= 7 ? "text-red-400" : "text-yellow-400"}
         path="/expiryDateProducts"
-        iconPath="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z"
+        cardIcon={AlertTriangle}
+        percentageIcon={CalendarDays}
       />
     </div>
   );

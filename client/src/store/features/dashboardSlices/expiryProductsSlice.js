@@ -7,8 +7,8 @@ const initialState = {
   error: "",
 };
 
-export const fetchCategoriesExpiringSoon = createAsyncThunk(
-  "expiryDate/fetchCategoriesExpiringSoon",
+export const fetchProductsExpiringSoon = createAsyncThunk(
+  "expiryProducts/fetchProductsExpiringSoon",
   async ({ page = 1, limit = 10, orderBy = "asc" }) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -16,7 +16,7 @@ export const fetchCategoriesExpiringSoon = createAsyncThunk(
     }
     return axios
       .get(
-        `${import.meta.env.VITE_BASE_URL}/api/statistics/categories-expiringsoon?page=${page}&limit=${limit}&orderBy=${orderBy}`,
+        `${import.meta.env.VITE_BASE_URL}/api/statistics/products-expiringsoon?page=${page}&limit=${limit}&orderBy=${orderBy}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -27,19 +27,19 @@ export const fetchCategoriesExpiringSoon = createAsyncThunk(
   }
 );
 
-const expiryDateSlice = createSlice({
-  name: "expiryDate",
+const expiryProductsSlice = createSlice({
+  name: "expiryProducts",
   initialState,
   extraReducers: (builder) => {
-    builder.addCase(fetchCategoriesExpiringSoon.pending, (state) => {
+    builder.addCase(fetchProductsExpiringSoon.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(fetchCategoriesExpiringSoon.fulfilled, (state, action) => {
+    builder.addCase(fetchProductsExpiringSoon.fulfilled, (state, action) => {
       state.loading = false;
       state.data = action.payload;
       state.error = "";
     });
-    builder.addCase(fetchCategoriesExpiringSoon.rejected, (state, action) => {
+    builder.addCase(fetchProductsExpiringSoon.rejected, (state, action) => {
       state.loading = false;
       state.data = [];
       state.error = action.error.message;
@@ -47,4 +47,4 @@ const expiryDateSlice = createSlice({
   },
 });
 
-export default expiryDateSlice.reducer;
+export default expiryProductsSlice.reducer; 

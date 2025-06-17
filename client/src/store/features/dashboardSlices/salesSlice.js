@@ -11,7 +11,7 @@ const initialState = {
 // Fetch Monthly Revenue
 export const fetchCategorySales = createAsyncThunk(
   "sales/fetchCategorySales",
-  async ({ page = 1, limit = 10, orderBy = "asc" }) => {
+  async ({ page = 1, limit = 5, orderBy = "asc" }) => {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Token is missing!");
 

@@ -23,22 +23,25 @@ import {
   Filter,
   Printer,
   RefreshCw,
+  ArrowLeft,
 } from "lucide-react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { useNavigate } from "react-router-dom";
 
 const COLORS = [
-  "#0088FE",
-  "#00C49F",
-  "#FFBB28",
-  "#FF8042",
-  "#8884d8",
-  "#82ca9d",
+  "#60A5FA", // blue-400
+  "#34D399", // green-400
+  "#FBBF24", // yellow-400
+  "#F87171", // red-400
+  "#A78BFA", // purple-400
+  "#2DD4BF", // teal-400
 ];
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const BusinessAnalyticsDashboard = () => {
+  const navigate = useNavigate();
   const [year, setYear] = useState(new Date().getFullYear());
   const [loading, setLoading] = useState(true);
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
@@ -49,6 +52,22 @@ const BusinessAnalyticsDashboard = () => {
   const [quarterlyRevenue, setQuarterlyRevenue] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const reportRef = useRef(null);
+
+  const calculateYAxisScale = (data) => {
+    if (!data || data.length === 0) return { min: 0, max: 1000 };
+    
+    const values = data.map(item => item.totalRevenue || item.revenue);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    
+    const padding = (max - min) * 0.1;
+    
+    return {
+      min: Math.max(0, min - padding),
+      max: max + padding,
+      stepSize: Math.ceil((max - min) / 5)
+    };
+  };
 
   useEffect(() => {
     fetchData();
@@ -207,10 +226,10 @@ const BusinessAnalyticsDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-gray-900">
         <div className="flex flex-col items-center">
           <RefreshCw className="w-12 h-12 text-blue-500 animate-spin" />
-          <p className="mt-4 text-lg font-medium text-gray-700">
+          <p className="mt-4 text-lg font-medium text-white">
             Loading report data...
           </p>
         </div>
@@ -227,31 +246,102 @@ const BusinessAnalyticsDashboard = () => {
     previousQuarterRevenue
   );
 
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          color: '#E5E7EB', // gray-200
+          font: {
+            size: 14,
+            weight: 'bold'
+          }
+        },
+      },
+      title: {
+        display: true,
+        text: 'Category Sales Performance',
+        color: '#F3F4F6', // gray-100
+        font: {
+          size: 18,
+          weight: 'bold'
+        },
+        padding: {
+          top: 20,
+          bottom: 20
+        }
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        min: calculateYAxisScale(monthlyRevenue).min,
+        max: calculateYAxisScale(monthlyRevenue).max,
+        ticks: {
+          color: '#D1D5DB', // gray-300
+          stepSize: calculateYAxisScale(monthlyRevenue).stepSize,
+          callback: function(value) {
+            return value.toLocaleString();
+          },
+          font: {
+            size: 12
+          }
+        },
+        grid: {
+          color: 'rgba(75, 85, 99, 0.2)', // gray-600 with opacity
+          drawBorder: false
+        },
+      },
+      x: {
+        ticks: {
+          color: '#D1D5DB', // gray-300
+          maxRotation: 45,
+          minRotation: 45,
+          font: {
+            size: 12
+          }
+        },
+        grid: {
+          color: 'rgba(75, 85, 99, 0.2)', // gray-600 with opacity
+          drawBorder: false
+        },
+      },
+    },
+    animation: {
+      duration: 2000,
+      easing: 'easeInOutQuart'
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-3xl font-bold text-white">
             Business Analytics Report
           </h1>
 
           <div className="flex items-center space-x-4">
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              Back to Dashboard
+            </button>
+
             <div className="relative">
               <select
                 value={year}
                 onChange={(e) => setYear(parseInt(e.target.value))}
-                className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-4 pr-10 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="appearance-none bg-gray-800 border border-gray-700 rounded-md py-2 pl-4 pr-10 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                {[
-                  2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023,
-                  2024, 2025,
-                ].map((y) => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
+                {[2025, 2024, 2023, 2022, 2021, 2020].map((y) => (
+                  <option key={y} value={y}>{y}</option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
                 <ChevronDown className="h-4 w-4" />
               </div>
             </div>
@@ -275,73 +365,68 @@ const BusinessAnalyticsDashboard = () => {
         </div>
 
         {/* PDF Report Content */}
-        <div ref={reportRef} className="bg-white rounded-lg shadow-lg p-8">
-          <div className="flex justify-between items-center mb-8 border-b border-gray-200 pb-4">
+        <div ref={reportRef} className="bg-gray-800 rounded-lg shadow-lg p-8">
+          <div className="flex justify-between items-center mb-8 border-b border-gray-700 pb-4">
             <div>
-              <h2 className="text-2xl font-bold text-gray-800">
+              <h2 className="text-2xl font-bold text-white">
                 Annual Business Review {year}
               </h2>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-400 mt-1">
                 Generated on {new Date().toLocaleDateString()}
               </p>
             </div>
             <div className="flex items-center">
-              <Calendar className="h-5 w-5 text-gray-500 mr-2" />
-              <span className="text-gray-600">{year}</span>
+              <Calendar className="h-5 w-5 text-gray-400 mr-2" />
+              <span className="text-gray-400">{year}</span>
             </div>
           </div>
 
           {/* Overview Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-blue-50 rounded-lg p-6 border border-blue-100">
+            <div className="bg-gray-700 rounded-lg p-6 border border-gray-600">
               <div className="flex justify-between">
-                <h3 className="text-lg font-semibold text-gray-700">
+                <h3 className="text-lg font-semibold text-white">
                   Total Annual Revenue
                 </h3>
-                <FileText className="h-6 w-6 text-blue-500" />
+                <FileText className="h-6 w-6 text-blue-400" />
               </div>
-              <p className="text-3xl font-bold text-blue-600 mt-2">
+              <p className="text-3xl font-bold text-blue-400 mt-2">
                 {formatCurrency(totalRevenue)}
               </p>
-              <p className="text-sm text-gray-600 mt-2">
+              <p className="text-sm text-gray-400 mt-2">
                 Across all product categories
               </p>
             </div>
 
-            <div className="bg-green-50 rounded-lg p-6 border border-green-100">
+            <div className="bg-gray-700 rounded-lg p-6 border border-gray-600">
               <div className="flex justify-between">
-                <h3 className="text-lg font-semibold text-gray-700">
+                <h3 className="text-lg font-semibold text-white">
                   Current Quarter
                 </h3>
-                <FileText className="h-6 w-6 text-green-500" />
+                <FileText className="h-6 w-6 text-green-400" />
               </div>
-              <p className="text-3xl font-bold text-green-600 mt-2">
+              <p className="text-3xl font-bold text-green-400 mt-2">
                 {formatCurrency(currentQuarterRevenue)}
               </p>
-              <div
-                className={`flex items-center text-sm mt-2 ${
-                  percentChange >= 0 ? "text-green-600" : "text-red-600"
-                }`}
-              >
+              <div className={`flex items-center text-sm mt-2 ${percentChange >= 0 ? "text-green-400" : "text-red-400"}`}>
                 <span>{percentChange}%</span>
                 <span className="ml-1">
-                  {percentChange >= 0 ? "increase" : "decrease"} from Q
-                  {previousQuarter}
+                  {percentChange >= 0 ? "increase" : "decrease"} from Q{previousQuarter}
                 </span>
               </div>
             </div>
 
-            <div className="bg-purple-50 rounded-lg p-6 border border-purple-100">
+            <div className="bg-gray-700 rounded-lg p-6 border border-gray-600">
               <div className="flex justify-between">
-                <h3 className="text-lg font-semibold text-gray-700">
+                <h3 className="text-lg font-semibold text-white">
                   Inventory Status
                 </h3>
-                <FileText className="h-6 w-6 text-purple-500" />
+                <FileText className="h-6 w-6 text-purple-400" />
               </div>
-              <p className="text-3xl font-bold text-purple-600 mt-2">
+              <p className="text-3xl font-bold text-purple-400 mt-2">
                 {lowStockProducts.length}
               </p>
-              <p className="text-sm text-gray-600 mt-2">
+              <p className="text-sm text-gray-400 mt-2">
                 Products with low stock levels
               </p>
             </div>
@@ -349,38 +434,42 @@ const BusinessAnalyticsDashboard = () => {
 
           {/* Monthly Revenue Chart */}
           <div className="mb-10">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+            <h3 className="text-xl font-semibold text-white mb-4">
               Monthly Revenue Trend
             </h3>
-            <div className="bg-white rounded-lg border border-gray-200 p-4 h-72">
+            <div className="bg-gray-700 rounded-lg border border-gray-600 p-4 h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={monthlyRevenue}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(75, 85, 99, 0.2)" />
                   <XAxis
                     dataKey="name"
                     tickFormatter={(value) => value.substring(0, 3)}
-                    tick={{ fill: "#6b7280", fontSize: 12 }}
+                    tick={{ fill: "#D1D5DB", fontSize: 12 }}
                   />
                   <YAxis
                     tickFormatter={(value) => `$${value / 1000}k`}
-                    tick={{ fill: "#6b7280", fontSize: 12 }}
+                    tick={{ fill: "#D1D5DB", fontSize: 12 }}
                   />
                   <Tooltip
-                    formatter={(value) => [
-                      `${formatCurrency(value)}`,
-                      "Revenue",
-                    ]}
+                    formatter={(value) => [`${formatCurrency(value)}`, "Revenue"]}
                     labelFormatter={(label) => `${label}`}
+                    contentStyle={{
+                      backgroundColor: '#1F2937', // gray-800
+                      border: '1px solid #374151', // gray-700
+                      color: '#F3F4F6', // gray-100
+                      borderRadius: '0.375rem',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                    }}
                   />
-                  <Legend />
+                  <Legend wrapperStyle={{ color: '#E5E7EB' }} />
                   <Line
                     type="monotone"
                     dataKey="revenue"
                     name="Monthly Revenue"
-                    stroke="#3b82f6"
+                    stroke="#60A5FA" // blue-400
                     strokeWidth={2}
-                    dot={{ r: 4 }}
-                    activeDot={{ r: 6, stroke: "#2563eb", strokeWidth: 2 }}
+                    dot={{ r: 4, fill: "#60A5FA" }}
+                    activeDot={{ r: 6, stroke: "#3B82F6", strokeWidth: 2 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -391,10 +480,10 @@ const BusinessAnalyticsDashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
             {/* Category Revenue Distribution */}
             <div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              <h3 className="text-xl font-semibold text-white mb-4">
                 Revenue by Category
               </h3>
-              <div className="bg-white rounded-lg border border-gray-200 p-4 h-80">
+              <div className="bg-gray-700 rounded-lg border border-gray-600 p-4 h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -406,22 +495,27 @@ const BusinessAnalyticsDashboard = () => {
                       fill="#8884d8"
                       dataKey="totalRevenue"
                       nameKey="categoryName"
-                      label={({ name, percent }) =>
-                        `${name}: ${(percent * 100).toFixed(0)}%`
-                      }
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                     >
                       {categoryRevenue.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => formatCurrency(value)} />
+                    <Tooltip
+                      formatter={(value) => formatCurrency(value)}
+                      contentStyle={{
+                        backgroundColor: '#1F2937', // gray-800
+                        border: '1px solid #374151', // gray-700
+                        color: '#F3F4F6', // gray-100
+                        borderRadius: '0.375rem',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                      }}
+                    />
                     <Legend
                       layout="horizontal"
                       verticalAlign="bottom"
                       align="center"
+                      wrapperStyle={{ color: '#E5E7EB' }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -430,10 +524,10 @@ const BusinessAnalyticsDashboard = () => {
 
             {/* Top Products by Revenue */}
             <div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              <h3 className="text-xl font-semibold text-white mb-4">
                 Top Products by Revenue
               </h3>
-              <div className="bg-white rounded-lg border border-gray-200 p-4 h-80">
+              <div className="bg-gray-700 rounded-lg border border-gray-600 p-4 h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={topProducts}
@@ -444,25 +538,32 @@ const BusinessAnalyticsDashboard = () => {
                       strokeDasharray="3 3"
                       horizontal={true}
                       vertical={false}
+                      stroke="rgba(75, 85, 99, 0.2)"
                     />
                     <XAxis
                       type="number"
                       tickFormatter={(value) => `$${value / 1000}k`}
-                      tick={{ fill: "#6b7280", fontSize: 12 }}
+                      tick={{ fill: "#D1D5DB", fontSize: 12 }}
                     />
                     <YAxis
                       type="category"
                       dataKey="name"
-                      tick={{ fill: "#6b7280", fontSize: 12 }}
+                      tick={{ fill: "#D1D5DB", fontSize: 12 }}
                       width={100}
                     />
-                    <Tooltip formatter={(value) => formatCurrency(value)} />
-                    <Bar dataKey="totalRevenue" name="Revenue" fill="#8884d8">
+                    <Tooltip
+                      formatter={(value) => formatCurrency(value)}
+                      contentStyle={{
+                        backgroundColor: '#1F2937', // gray-800
+                        border: '1px solid #374151', // gray-700
+                        color: '#F3F4F6', // gray-100
+                        borderRadius: '0.375rem',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                      }}
+                    />
+                    <Bar dataKey="totalRevenue" name="Revenue" fill="#60A5FA">
                       {topProducts.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Bar>
                   </BarChart>
@@ -473,10 +574,10 @@ const BusinessAnalyticsDashboard = () => {
 
           {/* Quarterly Revenue Chart */}
           <div className="mb-10">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+            <h3 className="text-xl font-semibold text-gray-100 mb-4">
               Quarterly Revenue Breakdown
             </h3>
-            <div className="bg-white rounded-lg border border-gray-200 p-4 h-72">
+            <div className="bg-gray-800  rounded-lg border border-gray-200 p-4 h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={quarterlyRevenue}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -511,47 +612,41 @@ const BusinessAnalyticsDashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
             {/* Expiring Products Table */}
             <div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              <h3 className="text-xl font-semibold text-white mb-4">
                 Products Expiring Soon
               </h3>
-              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+              <div className="bg-gray-700 rounded-lg border border-gray-600 overflow-hidden">
+                <table className="min-w-full divide-y divide-gray-600">
+                  <thead className="bg-gray-800">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Product
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Expiry Date
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Quantity
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-gray-700 divide-y divide-gray-600">
                     {expiringProducts.map((product, idx) => (
-                      <tr
-                        key={idx}
-                        className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <tr key={idx} className={idx % 2 === 0 ? "bg-gray-700" : "bg-gray-800"}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                           {product.productName}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           {formatDate(product.expiryDate)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           {product.quantity}
                         </td>
                       </tr>
                     ))}
                     {expiringProducts.length === 0 && (
                       <tr>
-                        <td
-                          colSpan="3"
-                          className="px-6 py-4 text-center text-sm text-gray-500"
-                        >
+                        <td colSpan="3" className="px-6 py-4 text-center text-sm text-gray-400">
                           No products expiring soon
                         </td>
                       </tr>
@@ -563,44 +658,39 @@ const BusinessAnalyticsDashboard = () => {
 
             {/* Low Stock Products Table */}
             <div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              <h3 className="text-xl font-semibold text-white mb-4">
                 Low Stock Products
               </h3>
-              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+              <div className="bg-gray-700 rounded-lg border border-gray-600 overflow-hidden">
+                <table className="min-w-full divide-y divide-gray-600">
+                  <thead className="bg-gray-800">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Product
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Current Stock
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Status
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-gray-700 divide-y divide-gray-600">
                     {lowStockProducts.map((product, idx) => (
-                      <tr
-                        key={idx}
-                        className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <tr key={idx} className={idx % 2 === 0 ? "bg-gray-700" : "bg-gray-800"}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                           {product.product.name}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           {product.currentStock}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              product.currentStock <= 10
-                                ? "bg-red-100 text-red-800"
-                                : "bg-yellow-100 text-yellow-800"
-                            }`}
-                          >
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            product.currentStock <= 10
+                              ? "bg-red-900 text-red-200"
+                              : "bg-yellow-900 text-yellow-200"
+                          }`}>
                             {product.currentStock <= 10 ? "Critical" : "Low"}
                           </span>
                         </td>
@@ -608,10 +698,7 @@ const BusinessAnalyticsDashboard = () => {
                     ))}
                     {lowStockProducts.length === 0 && (
                       <tr>
-                        <td
-                          colSpan="3"
-                          className="px-6 py-4 text-center text-sm text-gray-500"
-                        >
+                        <td colSpan="3" className="px-6 py-4 text-center text-sm text-gray-400">
                           No low stock products
                         </td>
                       </tr>
@@ -623,13 +710,12 @@ const BusinessAnalyticsDashboard = () => {
           </div>
 
           {/* Footer */}
-          <div className="mt-12 pt-6 border-t border-gray-200">
+          <div className="mt-12 pt-6 border-t border-gray-700">
             <div className="flex justify-between items-center">
-              <p className="text-sm text-gray-500">
-                This report was generated automatically based on your business
-                data.
+              <p className="text-sm text-gray-400">
+                This report was generated automatically based on your business data.
               </p>
-              <div className="flex items-center text-sm text-gray-500">
+              <div className="flex items-center text-sm text-gray-400">
                 <Printer className="h-4 w-4 mr-1" />
                 <span>Page 1 of 1</span>
               </div>

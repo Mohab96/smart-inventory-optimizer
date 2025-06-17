@@ -43,7 +43,7 @@ const RecommendationPage = () => {
           )}
           {!loading && !error && (
             <div>
-              <h2 className="text-2xl font-bold mb-6">Product Recommendations</h2>
+              <h2 className="text-2xl font-bold mb-6">Product Predictions</h2>
               
               {recommendations.length === 0 ? (
                 <div className="bg-gray-600 p-6 rounded-lg shadow text-center">
