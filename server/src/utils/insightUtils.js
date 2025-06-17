@@ -5,7 +5,7 @@ async function fetchInsightsData(
   businessId,
   daysOfForecasting,
   numberOfProducts,
-  mainClient
+  dbclient
 ) {
   const predictionsEndpoint = process.env.MODEL_BASE_URL + "/atom/predict";
 
@@ -25,9 +25,11 @@ async function fetchInsightsData(
   const finalProducts = [];
 
   for (const product of high_demand_products) {
-    const productData = await mainClient.product.findUnique({
-      where: { id: product.product_id },
-      include: { categoryRelation: true },
+    console.log(product);
+
+    const productData = await dbclient.productDimension.findUnique({
+      where: { productId: product.product_id },
+      include: { category: true },
     });
 
     finalProducts.push({
