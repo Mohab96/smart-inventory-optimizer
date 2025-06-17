@@ -17,7 +17,6 @@ const RecommendationPage = () => {
 
   const recommendations = data.data || [];
 
-
   const prepareChartData = (dailySales) => {
     return dailySales.map((sales, index) => ({
       day: `Day ${index + 1}`,
@@ -44,7 +43,6 @@ const RecommendationPage = () => {
           )}
           {!loading && !error && (
             <div>
-
               <h2 className="text-2xl font-bold mb-6">Product Recommendations</h2>
               
               {recommendations.length === 0 ? (
@@ -59,7 +57,7 @@ const RecommendationPage = () => {
                         <div className="flex justify-between items-center mb-2">
                           <h3 className="text-xl font-semibold">{item.product.name}</h3>
                           <span className="bg-blue-500 text-xs px-2 py-1 rounded-full">
-                            {item.product.categoryRelation.name}
+                            {item.product.category.name}
                           </span>
                         </div>
                         <div className="text-sm text-gray-400">
