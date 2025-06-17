@@ -22,7 +22,7 @@ export default function Header() {
             className="flex items-center"
           >
             <img
-              src="/src/assets/images/darklogo.png"
+              src="../../../src/assets/images/Darklogo.png"
               className="mr-3 h-6 sm:h-9"
               alt="Smart Inventory Logo"
             />
@@ -78,7 +78,9 @@ export default function Header() {
             </button>
           </div>
           <div
-            className={`${isMenuOpen ? "block" : "hidden"} lg:flex lg:w-auto lg:order-1`}
+            className={`${
+              isMenuOpen ? "block" : "hidden"
+            } lg:flex lg:w-auto lg:order-1`}
           >
             <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
               <li>
@@ -92,9 +94,9 @@ export default function Header() {
               <li>
                 <button
                   className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  onClick={() => navigate("/recommendations")}
+                  onClick={() => navigate("/prediction")}
                 >
-                  Recommendations
+                  Predictions
                 </button>
               </li>
               <li>

@@ -4,11 +4,7 @@ const getTotalCategoriesCount = async (req, res, next) => {
   const businessId = req.user.businessId;
 
   try {
-    const totalCategories = await dwhClient.categoryDimension.count({
-      where: {
-        businessId: businessId,
-      },
-    });
+    const totalCategories = await dwhClient.categoryDimension.count();
 
     return res.status(200).json({
       data: totalCategories,
@@ -18,4 +14,4 @@ const getTotalCategoriesCount = async (req, res, next) => {
   }
 };
 
-module.exports = getTotalCategoriesCount; 
+module.exports = getTotalCategoriesCount;
