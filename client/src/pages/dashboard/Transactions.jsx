@@ -11,7 +11,7 @@ const Transactions = () => {
         <Sidebar />
 
         {/* Main Content */}
-        <div className="flex-1 overflow-y-auto p-4 dark:bg-gray-700">
+        <div className="flex-1 overflow-y-auto dark:bg-gray-700">
           <TransactionList />
         </div>
       </div>
