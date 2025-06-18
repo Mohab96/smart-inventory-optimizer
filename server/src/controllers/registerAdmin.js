@@ -86,7 +86,7 @@ async function createAdmin(req, res, next) {
     });
 
     ///JWT
-    const token = generateToken(admin);
+    const token = await generateToken(admin);
 
     try {
       await dwhprisma.BusinessDimension.create({
