@@ -7,11 +7,9 @@ const hashPassword = async (password, saltRounds = 10) => {
 };
 
 const generateToken = async (user, expiration = "10h") => {
-  console.log(user);
   const business = await maindb.business.findUnique({
     where: { id: user.businessId },
   });
-  console.log("Business: ", business);
   return jwt.sign(
     {
       userId: user.id,
