@@ -55,17 +55,17 @@ const BusinessAnalyticsDashboard = () => {
 
   const calculateYAxisScale = (data) => {
     if (!data || data.length === 0) return { min: 0, max: 1000 };
-    
-    const values = data.map(item => item.totalRevenue || item.revenue);
+
+    const values = data.map((item) => item.totalRevenue || item.revenue);
     const min = Math.min(...values);
     const max = Math.max(...values);
-    
+
     const padding = (max - min) * 0.1;
-    
+
     return {
       min: Math.max(0, min - padding),
       max: max + padding,
-      stepSize: Math.ceil((max - min) / 5)
+      stepSize: Math.ceil((max - min) / 5),
     };
   };
 
@@ -141,8 +141,29 @@ const BusinessAnalyticsDashboard = () => {
 
       setMonthlyRevenue(processedMonthlyData);
 
-      // Process category revenue data
-      setCategoryRevenue(categoryData.data.data || []);
+      // Enhanced category data processing with validation
+      console.log("Raw category data:", categoryData.data); // Debug log
+
+      let processedCategoryData = [];
+      if (categoryData.data && categoryData.data.data) {
+        processedCategoryData = categoryData.data.data
+          .filter(
+            (item) =>
+              item &&
+              item.categoryName &&
+              item.totalRevenue &&
+              parseFloat(item.totalRevenue) > 0
+          )
+          .map((item) => ({
+            categoryName: item.categoryName,
+            totalRevenue: parseFloat(item.totalRevenue) || 0,
+          }))
+          .sort((a, b) => b.totalRevenue - a.totalRevenue)
+          .slice(0, 5);
+      }
+
+      console.log("Processed category data:", processedCategoryData); // Debug log
+      setCategoryRevenue(processedCategoryData);
 
       // Process top products by revenue
       setTopProducts(productsRevenueData.data.data || []);
@@ -158,7 +179,16 @@ const BusinessAnalyticsDashboard = () => {
       setTotalRevenue(parseFloat(quarterlyData.data.data.totalRevenue || 0));
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
-      // Handle errors appropriately - maybe set error state and display a message
+      console.error("Error details:", error.response?.data); // Additional error logging
+
+      // Set empty arrays to prevent undefined errors
+      setCategoryRevenue([]);
+      setMonthlyRevenue([]);
+      setTopProducts([]);
+      setExpiringProducts([]);
+      setLowStockProducts([]);
+      setQuarterlyRevenue([]);
+      setTotalRevenue(0);
     } finally {
       setLoading(false);
     }
@@ -250,27 +280,27 @@ const BusinessAnalyticsDashboard = () => {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
+        position: "top",
         labels: {
-          color: '#E5E7EB', // gray-200
+          color: "#E5E7EB", // gray-200
           font: {
             size: 14,
-            weight: 'bold'
-          }
+            weight: "bold",
+          },
         },
       },
       title: {
         display: true,
-        text: 'Category Sales Performance',
-        color: '#F3F4F6', // gray-100
+        text: "Category Sales Performance",
+        color: "#F3F4F6", // gray-100
         font: {
           size: 18,
-          weight: 'bold'
+          weight: "bold",
         },
         padding: {
           top: 20,
-          bottom: 20
-        }
+          bottom: 20,
+        },
       },
     },
     scales: {
@@ -279,39 +309,39 @@ const BusinessAnalyticsDashboard = () => {
         min: calculateYAxisScale(monthlyRevenue).min,
         max: calculateYAxisScale(monthlyRevenue).max,
         ticks: {
-          color: '#D1D5DB', // gray-300
+          color: "#D1D5DB", // gray-300
           stepSize: calculateYAxisScale(monthlyRevenue).stepSize,
-          callback: function(value) {
+          callback: function (value) {
             return value.toLocaleString();
           },
           font: {
-            size: 12
-          }
+            size: 12,
+          },
         },
         grid: {
-          color: 'rgba(75, 85, 99, 0.2)', // gray-600 with opacity
-          drawBorder: false
+          color: "rgba(75, 85, 99, 0.2)", // gray-600 with opacity
+          drawBorder: false,
         },
       },
       x: {
         ticks: {
-          color: '#D1D5DB', // gray-300
+          color: "#D1D5DB", // gray-300
           maxRotation: 45,
           minRotation: 45,
           font: {
-            size: 12
-          }
+            size: 12,
+          },
         },
         grid: {
-          color: 'rgba(75, 85, 99, 0.2)', // gray-600 with opacity
-          drawBorder: false
+          color: "rgba(75, 85, 99, 0.2)", // gray-600 with opacity
+          drawBorder: false,
         },
       },
     },
     animation: {
       duration: 2000,
-      easing: 'easeInOutQuart'
-    }
+      easing: "easeInOutQuart",
+    },
   };
 
   return (
@@ -324,7 +354,7 @@ const BusinessAnalyticsDashboard = () => {
 
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate("/dashboard")}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
             >
               <ArrowLeft className="h-5 w-5 mr-2" />
@@ -338,7 +368,9 @@ const BusinessAnalyticsDashboard = () => {
                 className="appearance-none bg-gray-800 border border-gray-700 rounded-md py-2 pl-4 pr-10 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 {[2025, 2024, 2023, 2022, 2021, 2020].map((y) => (
-                  <option key={y} value={y}>{y}</option>
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
                 ))}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
@@ -408,10 +440,15 @@ const BusinessAnalyticsDashboard = () => {
               <p className="text-3xl font-bold text-green-400 mt-2">
                 {formatCurrency(currentQuarterRevenue)}
               </p>
-              <div className={`flex items-center text-sm mt-2 ${percentChange >= 0 ? "text-green-400" : "text-red-400"}`}>
+              <div
+                className={`flex items-center text-sm mt-2 ${
+                  percentChange >= 0 ? "text-green-400" : "text-red-400"
+                }`}
+              >
                 <span>{percentChange}%</span>
                 <span className="ml-1">
-                  {percentChange >= 0 ? "increase" : "decrease"} from Q{previousQuarter}
+                  {percentChange >= 0 ? "increase" : "decrease"} from Q
+                  {previousQuarter}
                 </span>
               </div>
             </div>
@@ -440,7 +477,10 @@ const BusinessAnalyticsDashboard = () => {
             <div className="bg-gray-700 rounded-lg border border-gray-600 p-4 h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={monthlyRevenue}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(75, 85, 99, 0.2)" />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="rgba(75, 85, 99, 0.2)"
+                  />
                   <XAxis
                     dataKey="name"
                     tickFormatter={(value) => value.substring(0, 3)}
@@ -451,17 +491,21 @@ const BusinessAnalyticsDashboard = () => {
                     tick={{ fill: "#D1D5DB", fontSize: 12 }}
                   />
                   <Tooltip
-                    formatter={(value) => [`${formatCurrency(value)}`, "Revenue"]}
+                    formatter={(value) => [
+                      `${formatCurrency(value)}`,
+                      "Revenue",
+                    ]}
                     labelFormatter={(label) => `${label}`}
                     contentStyle={{
-                      backgroundColor: '#1F2937', // gray-800
-                      border: '1px solid #374151', // gray-700
-                      color: '#F3F4F6', // gray-100
-                      borderRadius: '0.375rem',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                      backgroundColor: "#1F2937", // gray-800
+                      border: "1px solid #374151", // gray-700
+                      color: "#F3F4F6", // gray-100
+                      borderRadius: "0.375rem",
+                      boxShadow:
+                        "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
                     }}
                   />
-                  <Legend wrapperStyle={{ color: '#E5E7EB' }} />
+                  <Legend wrapperStyle={{ color: "#E5E7EB" }} />
                   <Line
                     type="monotone"
                     dataKey="revenue"
@@ -478,47 +522,90 @@ const BusinessAnalyticsDashboard = () => {
 
           {/* Two Column Charts */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-            {/* Category Revenue Distribution */}
+            {/* Top Category By Revenue */}
             <div>
               <h3 className="text-xl font-semibold text-white mb-4">
-                Revenue by Category
+                Top Category By Revenue
               </h3>
               <div className="bg-gray-700 rounded-lg border border-gray-600 p-4 h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={categoryRevenue}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="totalRevenue"
-                      nameKey="categoryName"
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                {/* Add data validation and loading state */}
+                {categoryRevenue && categoryRevenue.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={categoryRevenue}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="totalRevenue"
+                        nameKey="categoryName"
+                        label={({ name, percent, value }) =>
+                          `${name}: ${(percent * 100).toFixed(1)}% ($${(
+                            value / 1000
+                          ).toFixed(0)}k)`
+                        }
+                      >
+                        {categoryRevenue.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(value, name) => [
+                          formatCurrency(value),
+                          name || "Category",
+                        ]}
+                        contentStyle={{
+                          backgroundColor: "#1F2937",
+                          border: "1px solid #374151",
+                          color: "#F3F4F6",
+                          borderRadius: "0.375rem",
+                          boxShadow:
+                            "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                        }}
+                      />
+                      <Legend
+                        layout="horizontal"
+                        verticalAlign="bottom"
+                        align="center"
+                        wrapperStyle={{ color: "#E5E7EB", paddingTop: "10px" }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  /* Empty State Display */
+                  <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                    <svg
+                      className="w-16 h-16 mb-4 opacity-50"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      {categoryRevenue.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={(value) => formatCurrency(value)}
-                      contentStyle={{
-                        backgroundColor: '#1F2937', // gray-800
-                        border: '1px solid #374151', // gray-700
-                        color: '#F3F4F6', // gray-100
-                        borderRadius: '0.375rem',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-                      }}
-                    />
-                    <Legend
-                      layout="horizontal"
-                      verticalAlign="bottom"
-                      align="center"
-                      wrapperStyle={{ color: '#E5E7EB' }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      />
+                    </svg>
+                    <p className="text-lg font-medium">
+                      No Category Data Available
+                    </p>
+                    <p className="text-sm mt-1">
+                      No revenue data found for {year}
+                    </p>
+                    <button
+                      onClick={fetchData}
+                      className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Retry Loading Data
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -554,16 +641,20 @@ const BusinessAnalyticsDashboard = () => {
                     <Tooltip
                       formatter={(value) => formatCurrency(value)}
                       contentStyle={{
-                        backgroundColor: '#1F2937', // gray-800
-                        border: '1px solid #374151', // gray-700
-                        color: '#F3F4F6', // gray-100
-                        borderRadius: '0.375rem',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                        backgroundColor: "#1F2937", // gray-800
+                        border: "1px solid #374151", // gray-700
+                        color: "#F3F4F6", // gray-100
+                        borderRadius: "0.375rem",
+                        boxShadow:
+                          "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
                       }}
                     />
                     <Bar dataKey="totalRevenue" name="Revenue" fill="#60A5FA">
                       {topProducts.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
                       ))}
                     </Bar>
                   </BarChart>
@@ -577,7 +668,7 @@ const BusinessAnalyticsDashboard = () => {
             <h3 className="text-xl font-semibold text-gray-100 mb-4">
               Quarterly Revenue Breakdown
             </h3>
-            <div className="bg-gray-800  rounded-lg border border-gray-200 p-4 h-72">
+            <div className="bg-gray-800 rounded-lg border border-gray-200 p-4 h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={quarterlyRevenue}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -632,7 +723,12 @@ const BusinessAnalyticsDashboard = () => {
                   </thead>
                   <tbody className="bg-gray-700 divide-y divide-gray-600">
                     {expiringProducts.map((product, idx) => (
-                      <tr key={idx} className={idx % 2 === 0 ? "bg-gray-700" : "bg-gray-800"}>
+                      <tr
+                        key={idx}
+                        className={
+                          idx % 2 === 0 ? "bg-gray-700" : "bg-gray-800"
+                        }
+                      >
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                           {product.productName}
                         </td>
@@ -646,7 +742,10 @@ const BusinessAnalyticsDashboard = () => {
                     ))}
                     {expiringProducts.length === 0 && (
                       <tr>
-                        <td colSpan="3" className="px-6 py-4 text-center text-sm text-gray-400">
+                        <td
+                          colSpan="3"
+                          className="px-6 py-4 text-center text-sm text-gray-400"
+                        >
                           No products expiring soon
                         </td>
                       </tr>
@@ -678,7 +777,12 @@ const BusinessAnalyticsDashboard = () => {
                   </thead>
                   <tbody className="bg-gray-700 divide-y divide-gray-600">
                     {lowStockProducts.map((product, idx) => (
-                      <tr key={idx} className={idx % 2 === 0 ? "bg-gray-700" : "bg-gray-800"}>
+                      <tr
+                        key={idx}
+                        className={
+                          idx % 2 === 0 ? "bg-gray-700" : "bg-gray-800"
+                        }
+                      >
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                           {product.product.name}
                         </td>
@@ -686,11 +790,13 @@ const BusinessAnalyticsDashboard = () => {
                           {product.currentStock}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            product.currentStock <= 10
-                              ? "bg-red-900 text-red-200"
-                              : "bg-yellow-900 text-yellow-200"
-                          }`}>
+                          <span
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              product.currentStock <= 10
+                                ? "bg-red-900 text-red-200"
+                                : "bg-yellow-900 text-yellow-200"
+                            }`}
+                          >
                             {product.currentStock <= 10 ? "Critical" : "Low"}
                           </span>
                         </td>
@@ -698,7 +804,10 @@ const BusinessAnalyticsDashboard = () => {
                     ))}
                     {lowStockProducts.length === 0 && (
                       <tr>
-                        <td colSpan="3" className="px-6 py-4 text-center text-sm text-gray-400">
+                        <td
+                          colSpan="3"
+                          className="px-6 py-4 text-center text-sm text-gray-400"
+                        >
                           No low stock products
                         </td>
                       </tr>
@@ -713,7 +822,8 @@ const BusinessAnalyticsDashboard = () => {
           <div className="mt-12 pt-6 border-t border-gray-700">
             <div className="flex justify-between items-center">
               <p className="text-sm text-gray-400">
-                This report was generated automatically based on your business data.
+                This report was generated automatically based on your business
+                data.
               </p>
               <div className="flex items-center text-sm text-gray-400">
                 <Printer className="h-4 w-4 mr-1" />
