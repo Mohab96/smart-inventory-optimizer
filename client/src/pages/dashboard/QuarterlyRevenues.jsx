@@ -1,8 +1,6 @@
 /* eslint-disable */
 import { useDispatch, useSelector } from "react-redux";
-import Header from "../../components/common/Header";
 import { useEffect, useState } from "react";
-import Sidebar from "../../components/common/Sidebar";
 import {
   fetchRevenuesPerMonth,
   fetchRevenuesPerQuarter,
@@ -15,11 +13,7 @@ import QuarterPieChart from "../../components/charts/QuarterPieChart";
 const QuarterlyRevenues = () => {
   return (
     <div className="h-screen flex flex-col">
-      <Header />
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar />
-
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto p-4 dark:bg-gray-700">
           <h2 className="text-2xl font-semibold text-white mb-4">

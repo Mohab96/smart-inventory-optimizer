@@ -1,10 +1,8 @@
 /* eslint-disable */
 import { useDispatch, useSelector } from "react-redux";
-import Header from "../../components/common/Header";
 import { selectToken } from "../../store/features/authSlice";
 import { useEffect, useState } from "react";
 import { fetchLowStock } from "../../store/features/dashboardSlices/lowStockSlice";
-import Sidebar from "../../components/common/Sidebar";
 import { AlertTriangle, Package } from "lucide-react";
 import QuantityIndicator from "../../components/common/QuantityIndicator";
 
@@ -57,9 +55,7 @@ const LowStockProducts = () => {
 
   return (
     <div className="h-screen flex flex-col bg-gray-900">
-      <Header />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
         <div className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center space-x-3 mb-6">
             <AlertTriangle className="h-8 w-8 text-yellow-500" />

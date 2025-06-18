@@ -1,8 +1,6 @@
 /* eslint-disable */
 import { useDispatch, useSelector } from "react-redux";
-import Header from "../../components/common/Header";
 import { useEffect, useState } from "react";
-import Sidebar from "../../components/common/Sidebar";
 import { fetchRevenuesPerMonth } from "../../store/features/dashboardSlices/revenueSlice";
 import PieChart from "../../components/charts/PieChart";
 import AreaChart from "../../components/charts/AreaChart";
@@ -40,10 +38,7 @@ const YearRevenues = () => {
 
   return (
     <div className="h-screen flex flex-col">
-      <Header />
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar />
 
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto p-4 dark:bg-gray-700">

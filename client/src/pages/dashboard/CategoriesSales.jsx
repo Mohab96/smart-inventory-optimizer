@@ -1,7 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Header from "../../components/common/Header";
-import Sidebar from "../../components/common/Sidebar";
 import { selectToken } from "../../store/features/authSlice";
 import { fetchCategorySales } from "../../store/features/dashboardSlices/salesSlice";
 import {
@@ -140,9 +138,7 @@ const CategoriesSales = () => {
 
   return (
     <div className="h-screen flex flex-col bg-gray-900">
-      <Header />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           <h2 className="text-3xl font-bold text-white">
             Best Selling Categories

@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Header from "../../components/common/Header";
 import { selectToken } from "../../store/features/authSlice";
 import { fetchCategoriesExpiringSoon } from "../../store/features/dashboardSlices/expiryDateSlice";
-import Sidebar from "../../components/common/Sidebar";
 import CategoriesExpiringSoonTable from "../../components/tables/CategoriesExpiringSoonTable";
 import { AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -30,9 +28,7 @@ const CategoriesExpiringSoon = () => {
 
   return (
     <div className="h-screen flex flex-col bg-gray-900">
-      <Header />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
         <div className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center space-x-3 mb-6">
             <AlertTriangle className="h-8 w-8 text-yellow-500" />

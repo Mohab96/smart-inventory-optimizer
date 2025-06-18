@@ -136,9 +136,7 @@ const CsvSubmissions = () => {
   };
   return (
     <div className="h-screen flex flex-col">
-      <Header />
       <div className="flex flex-1">
-        <Sidebar />
         <div className="flex flex-col w-full dark:bg-gray-900 p-6 overflow-y-auto">
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="sm:flex sm:items-center">
