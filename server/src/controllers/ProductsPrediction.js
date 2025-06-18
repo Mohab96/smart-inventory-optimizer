@@ -1,8 +1,7 @@
 const axios = require("axios");
 const winston = require("winston");
-const mainClient = require("../../prisma/main/client");
+const dwhClient = require("../../prisma/dwh/client");
 const { fetchInsightsData } = require("../utils/insightUtils");
-
 const getPrediction = async (req, res) => {
   const businessId = req.user?.businessId;
   if (!businessId) {
@@ -10,21 +9,21 @@ const getPrediction = async (req, res) => {
   }
 
   try {
-    const insights = await fetchInsightsData(businessId, 7, 5, mainClient);
+    const insights = await fetchInsightsData(businessId, 7, 5, dwhClient);
     if (!Array.isArray(insights)) {
       throw new Error("Expected insights to be an array");
     }
 
     const filteredData = insights
       .map((item) => {
+        if (!item.product || !item.product.category.categoryName) return null;
         return {
           productName: item.product.name,
-          categoryName: item.product.categoryRelation.name,
+          categoryName: item.product.category.categoryName,
           totalAmount: item.totalAmount,
         };
       })
       .filter((item) => item !== null);
-
     return res.status(200).send({ data: filteredData });
   } catch (error) {
     if (error.status) {
