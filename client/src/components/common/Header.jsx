@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "../../store/features/authSlice";
+import { LogOut, Menu, X } from "lucide-react";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -9,83 +10,68 @@ export default function Header() {
   const dispatch = useDispatch();
 
   const handleLogout = () => {
-    dispatch(logout()); // Dispatch logout action
-    navigate("/"); // Redirect to login page
+    dispatch(logout());
+    navigate("/");
   };
 
   return (
-    <header>
-      <nav className="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
+    <header className="bg-gray-900 border-b border-gray-700 shadow-lg">
+      <nav className="px-4 lg:px-6 py-3">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+          {/* Logo and Brand */}
           <button
             onClick={() => navigate("/dashboard")}
-            className="flex items-center"
+            className="flex items-center space-x-3 hover:opacity-80 transition-opacity duration-200"
           >
             <img
               src="../../../src/assets/images/Darklogo.png"
-              className="mr-3 h-6 sm:h-9"
+              className="h-8 sm:h-10"
               alt="Smart Inventory Logo"
             />
-            <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-              Smart Inventory
-            </span>
+            <div className="flex flex-col">
+              <span className="text-xl font-bold text-white">
+                Smart Inventory
+              </span>
+              <span className="text-xs text-gray-400 -mt-1">
+                Management System
+              </span>
+            </div>
           </button>
-          <div className="flex items-center lg:order-2">
+
+          {/* Right Side Actions */}
+          <div className="flex items-center space-x-3 lg:order-2">
             <button
-              className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-red-800 bg-red-600 focus:outline-none dark:focus:ring-gray-800"
-              onClick={handleLogout} // Call the logout function here
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-800 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+              onClick={handleLogout}
             >
+              <LogOut className="h-4 w-4 mr-2" />
               Log out
             </button>
-            {/* <button
-              className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
-              onClick={() => navigate("*")}
-            >
-              Get started
-            </button> */}
+            
+            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+              className="inline-flex items-center p-2 text-sm text-gray-400 rounded-lg lg:hidden hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-200"
               aria-expanded={isMenuOpen}
             >
               {isMenuOpen ? (
-                <svg
-                  className="w-6 h-6"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
+                <X className="w-6 h-6" />
               ) : (
-                <svg
-                  className="w-6 h-6"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
+                <Menu className="w-6 h-6" />
               )}
             </button>
           </div>
+
+          {/* Navigation Menu */}
           <div
             className={`${
               isMenuOpen ? "block" : "hidden"
-            } lg:flex lg:w-auto lg:order-1`}
+            } lg:flex lg:w-auto lg:order-1 w-full lg:w-auto`}
           >
-            <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
+            <ul className="flex flex-col mt-4 lg:flex-row lg:space-x-1 lg:mt-0 bg-gray-800 lg:bg-transparent rounded-lg lg:rounded-none p-2 lg:p-0">
               <li>
                 <button
-                  className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="block w-full p-3 text-left rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 font-medium"
                   onClick={() => navigate("/dashboard")}
                 >
                   Dashboard
@@ -93,7 +79,7 @@ export default function Header() {
               </li>
               <li>
                 <button
-                  className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="block w-full p-3 text-left rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 font-medium"
                   onClick={() => navigate("/prediction")}
                 >
                   Predictions
@@ -101,7 +87,7 @@ export default function Header() {
               </li>
               <li>
                 <button
-                  className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="block w-full p-3 text-left rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 font-medium"
                   onClick={() => navigate("/trends")}
                 >
                   Trends
@@ -109,7 +95,7 @@ export default function Header() {
               </li>
               <li>
                 <button
-                  className="block w-full p-2 text-left text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="block w-full p-3 text-left rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 font-medium"
                   onClick={() => navigate("/transactionsFeeding")}
                 >
                   Upload Transactions
@@ -117,15 +103,15 @@ export default function Header() {
               </li>
               <li>
                 <button
-                  className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="block w-full p-3 text-left rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 font-medium"
                   onClick={() => navigate("/transactionsLog")}
                 >
-                  Transactions log
+                  Transactions Log
                 </button>
               </li>
               <li>
                 <button
-                  className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="block w-full p-3 text-left rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 font-medium"
                   onClick={() => navigate("/newproductaddition")}
                 >
                   Add Product
@@ -133,7 +119,7 @@ export default function Header() {
               </li>
               <li>
                 <button
-                  className="block w-full p-2 text-left rounded-lg text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="block w-full p-3 text-left rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 font-medium"
                   onClick={() => navigate("*")}
                 >
                   About

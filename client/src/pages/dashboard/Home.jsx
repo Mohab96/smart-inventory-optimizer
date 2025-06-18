@@ -9,7 +9,7 @@ import QuarterChart from "../../components/charts/QuarterChart";
 import PieChart from "../../components/charts/PieChart";
 import GenericLineChart from "../../components/charts/GenericLineChart";
 import ChartCard from "../../components/charts/ChartCard";
-import { BarChartBig, TrendingUp, TrendingDown, Minus, CalendarDays } from "lucide-react";
+import { BarChartBig, TrendingUp, TrendingDown, Minus, CalendarDays, Menu } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { fetchRevenuesPerMonth } from "../../store/features/dashboardSlices/revenueSlice";
 import { fetchLowStock } from "../../store/features/dashboardSlices/lowStockSlice";
@@ -20,6 +20,7 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const {
     loading,
@@ -94,7 +95,16 @@ const Dashboard = () => {
     <div className="h-screen flex flex-col">
       <Header />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
+        {/* Mobile Menu Toggle Button */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="lg:hidden fixed top-20 left-4 z-30 p-2 bg-gray-800 text-white rounded-lg shadow-lg hover:bg-gray-700 transition-colors duration-200"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
+
+        <Sidebar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
+        
         <div className="flex-1 overflow-y-auto p-4 dark:bg-gray-700">
           <ProfitGrid />
 
