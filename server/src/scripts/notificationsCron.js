@@ -169,7 +169,7 @@ async function main() {
 let isJobRunning = false;
 
 const job = new cron.CronJob(
-  "0 0 * * *",
+  "*/1 * * * *",
   async () => {
     if (isJobRunning) {
       logger.warn("Previous job still running - skipping execution");

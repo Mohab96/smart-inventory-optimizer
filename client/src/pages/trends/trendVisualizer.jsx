@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import Header from "../../components/common/Header";
-import Sidebar from "../../components/common/Sidebar";
 import CategorySalesTrendCard from "../../components/cards/CategorySalesTrendCard";
 import CategoryRevenueTrendCard from "../../components/cards/CategoryRevenueTrendCard";
 import { useDispatch, useSelector } from "react-redux";
@@ -241,10 +239,8 @@ const TrendVisualizer = () => {
   const categoryLineKeys = Object.keys(categoryColors);
 
   return (
-    <div className="h-screen flex flex-col">
-      <Header />
+    <div className="flex flex-col">
       <div className="flex flex-1 ">
-        <Sidebar />
         <div className="flex flex-col w-full">
           <div className="flex-1 w-full">
             <CategorySalesTrendCard

@@ -3,8 +3,6 @@ import Select from "react-select";
 import { CheckCircleIcon, XCircleIcon, PlusIcon, CubeIcon } from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
 import { selectToken } from "../../store/features/authSlice";
-import Header from "../../components/common/Header";
-import Sidebar from "../../components/common/Sidebar";
 
 const NewProductAddition = () => {
   const [formData, setFormData] = useState({
@@ -81,6 +79,7 @@ const NewProductAddition = () => {
   };
 
   return (
+
     <div className="h-auto flex flex-col bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Header />
       <div className="flex flex-1">
@@ -93,6 +92,7 @@ const NewProductAddition = () => {
                 <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg">
                   <CubeIcon className="w-8 h-8 text-white" />
                 </div>
+
                 <div>
                   <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
                     Add New Product

@@ -49,10 +49,8 @@ const RecommendationPage = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col">
-      <Header />
+    <div className="flex flex-col">
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
 
         <div className="flex-1 overflow-y-auto p-6 dark:bg-gray-700 text-white">
           {/* Input Controls Section */}

@@ -1,4 +1,5 @@
 const axios = require("axios");
+const dwhClient = require("../../prisma/dwh/client");
 
 async function fetchInsightsData(
   businessId,
@@ -20,7 +21,7 @@ async function fetchInsightsData(
     throw error;
   }
 
-  const { high_demand_products } = response.data;  
+  const { high_demand_products } = response.data;
   const finalProducts = [];
 
   for (const product of high_demand_products) {
@@ -41,34 +42,35 @@ async function fetchInsightsData(
 
 const fetchDiscounts = async (businessId, limit, mainClient) => {
   const discountsEndpoint =
-    process.env.MODEL_BASE_URL + "/predict_discount?businessId=" + businessId;
+    process.env.DISCOUNTS_MODEL_BASE_URL +
+    "/predict_discount?businessId=" +
+    businessId;
 
   const response = await axios.get(discountsEndpoint);
   const { discounts } = await response.data;
-
   const newDiscounts = discounts.slice(0, limit);
   const finalDiscounts = [];
 
   for (const discount of newDiscounts) {
-    const batch = await mainClient.batch.findUnique({
-      where: { generatedId: discount.batchId },
-      include: { productRelation: true },
+    const batch = await dwhClient.batchInfo.findUnique({
+      where: { batchId: discount.batchId },
+      include: { product: true },
     });
 
-    const category = await mainClient.category.findUnique({
-      where: { id: batch.productRelation.categoryId },
+    const category = await dwhClient.categoryDimension.findUnique({
+      where: { categoryId: batch.product.categoryId },
     });
 
     finalDiscounts.push({
       productName: discount.productName,
       suggestedDiscount: discount.suggested_discount,
-      categoryName: category.name,
+      categoryName: category.categoryName,
       batchId: discount.batchId,
       productPrice: batch.sellingPrice,
       productPriceAfterDiscount:
         +batch.sellingPrice -
         (+batch.sellingPrice * +discount.suggested_discount) / 100,
-      productId: batch.productRelation.id,
+      productId: batch.product.productId,
     });
   }
 

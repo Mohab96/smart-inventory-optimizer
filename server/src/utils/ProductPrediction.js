@@ -1,4 +1,6 @@
 const mainClient = require("../../prisma/main/client");
+const dwhClient = require("../../prisma/dwh/client");
+
 const { fetchInsightsData } = require("./insightUtils");
 
 async function getProductPredection({ businessId, days = 7, topProducts = 5 }) {
@@ -10,7 +12,7 @@ async function getProductPredection({ businessId, days = 7, topProducts = 5 }) {
     businessId,
     days,
     topProducts,
-    mainClient
+    dwhClient
   );
 
   if (!Array.isArray(insights)) {
@@ -19,14 +21,14 @@ async function getProductPredection({ businessId, days = 7, topProducts = 5 }) {
 
   const filteredData = insights
     .map((item) => {
+      if (!item.product || !item.product.category.categoryName) return null;
       return {
         productName: item.product.name,
-        categoryName: item.product.categoryRelation.name,
+        categoryName: item.product.category.categoryName,
         totalAmount: item.totalAmount,
       };
     })
     .filter((item) => item !== null);
-
   const ret = JSON.stringify(filteredData, null, 2);
   return ret;
 }

@@ -23,10 +23,12 @@ import CsvSubmissions from "./pages/TransactionsFeeding/CsvSubmissions";
 import RecommendationPage from "./pages/recommendation/RecommendationPage";
 import TrendVisualizer from "./pages/trends/trendVisualizer";
 import BusinessAnalyticsDashboard from "./pages/report/Report";
-import NotificationsPage from "./pages/NotificationsPage"
+import NotificationsPage from "./pages/NotificationsPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CategoriesSales from "./pages/dashboard/CategoriesSales";
+import About from "./pages/About";
+import Layout from "./utils/Layout";
 
 function App() {
   return (
@@ -72,7 +74,9 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Layout>
+                <Dashboard />
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -80,7 +84,9 @@ function App() {
           path="/expiryDateProducts"
           element={
             <ProtectedRoute>
-              <ExpiryDateProducts />
+              <Layout>
+                <ExpiryDateProducts />
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -88,7 +94,9 @@ function App() {
           path="/categoriesExpiringSoon"
           element={
             <ProtectedRoute>
-              <CategoriesExpiringSoon />
+              <Layout>
+                <CategoriesExpiringSoon />
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -96,7 +104,9 @@ function App() {
           path="/yearRevenues"
           element={
             <ProtectedRoute>
-              <YearRevenues />
+              <Layout>
+                <YearRevenues />
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -104,7 +114,9 @@ function App() {
           path="/quarterRevenues"
           element={
             <ProtectedRoute>
-              <QuarterlyRevenues />
+              <Layout>
+                <QuarterlyRevenues />
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -120,7 +132,9 @@ function App() {
           path="/lowStockProducts"
           element={
             <ProtectedRoute>
-              <LowStockProducts />
+              <Layout>
+                <LowStockProducts />
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -128,9 +142,11 @@ function App() {
           path="/transactionsFeeding"
           element={
             <ProtectedRoute>
-              <div className="">
-                <TransactionsFeeding />
-              </div>
+              <Layout>
+                <div className="">
+                  <TransactionsFeeding />
+                </div>
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -138,7 +154,9 @@ function App() {
           path="/prediction"
           element={
             <ProtectedRoute>
-              <RecommendationPage />
+              <Layout>
+                <RecommendationPage />
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -146,7 +164,9 @@ function App() {
           path="/trends"
           element={
             <ProtectedRoute>
-              <TrendVisualizer />
+              <Layout>
+                <TrendVisualizer />
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -154,7 +174,9 @@ function App() {
           path="/csvsubmissions"
           element={
             <ProtectedRoute>
-              <CsvSubmissions />
+              <Layout>
+                <CsvSubmissions />
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -162,9 +184,11 @@ function App() {
           path="/transactionsLog"
           element={
             <ProtectedRoute>
-              <div className="">
-                <Transactions />
-              </div>
+              <Layout>
+                <div className="">
+                  <Transactions />
+                </div>
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -172,7 +196,9 @@ function App() {
           path="/staffmanagement"
           element={
             <ProtectedRoute>
-              <StaffManagement />
+              <Layout>
+                <StaffManagement />
+              </Layout>
             </ProtectedRoute>
           }
         ></Route>
@@ -181,7 +207,9 @@ function App() {
           path="/newProductAddition"
           element={
             <ProtectedRoute>
-              <NewProductAddition />
+              <Layout>
+                <NewProductAddition />
+              </Layout>
             </ProtectedRoute>
           }
         ></Route>
@@ -189,7 +217,9 @@ function App() {
           path="/imageUpload"
           element={
             <ProtectedRoute>
-              <ImageUpload />
+              <Layout>
+                <ImageUpload />
+              </Layout>
             </ProtectedRoute>
           }
         ></Route>
@@ -198,7 +228,9 @@ function App() {
           element={
             <div className="min-h-screen bg-gray-50 ">
               <ProtectedRoute>
-                <BusinessAnalyticsDashboard />
+                <Layout>
+                  <BusinessAnalyticsDashboard />
+                </Layout>
               </ProtectedRoute>
             </div>
           }
@@ -207,10 +239,20 @@ function App() {
           path="/notifications"
           element={
             <ProtectedRoute>
-              <NotificationsPage />
+              <Layout>
+                <NotificationsPage />
+              </Layout>
             </ProtectedRoute>
           }
         ></Route>
+        <Route
+          path="/about"
+          element={
+            <Layout>
+              <About />
+            </Layout>
+          }
+        />
         {/* Not Found */}
         <Route path="*" element={<NotFound />} />
       </Routes>

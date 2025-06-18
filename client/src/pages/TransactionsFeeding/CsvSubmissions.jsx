@@ -13,6 +13,7 @@ import {
 import Header from "../../components/common/Header";
 import Sidebar from "../../components/common/Sidebar";
 
+
 const CsvSubmissions = () => {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -117,6 +118,7 @@ const CsvSubmissions = () => {
               <p className="text-red-600 dark:text-red-400">{error}</p>
             </div>
           </div>
+
         </div>
       </div>
     );
@@ -192,6 +194,7 @@ const CsvSubmissions = () => {
                   {typeof errors === 'object' ? JSON.stringify(errors, null, 2) : errors}
                 </pre>
               </div>
+
             )}
           </div>
           
@@ -229,6 +232,7 @@ const CsvSubmissions = () => {
                     Track your CSV file processing history and status
                   </p>
                 </div>
+
               </div>
             </div>
 

@@ -29,7 +29,7 @@ async function login(req, res, next) {
     }
 
     ///JWT
-    const token = generateToken(user);
+    const token = await generateToken(user);
 
     res.status(200).json({
       message: "Login successfully",
