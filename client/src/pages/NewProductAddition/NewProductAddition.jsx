@@ -3,8 +3,6 @@ import Select from "react-select";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
 import { selectToken } from "../../store/features/authSlice";
-import Header from "../../components/common/Header";
-import Sidebar from "../../components/common/Sidebar";
 
 const NewProductAddition = () => {
   const [formData, setFormData] = useState({
@@ -80,9 +78,7 @@ const NewProductAddition = () => {
   };
   return (
     <div className="h-screen flex flex-col">
-      <Header />
       <div className="flex flex-1">
-        <Sidebar />
         <div className="flex flex-col w-full dark:bg-gray-900 p-6 overflow-y-auto">
           <div className="max-w-2xl mx-auto w-full">
             <div className="dark:bg-gray-800 rounded-xl shadow-lg p-6">
