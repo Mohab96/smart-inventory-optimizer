@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectToken } from "../../store/features/authSlice";
-import Header from "../../components/common/Header";
-import Sidebar from "../../components/common/Sidebar";
 import DeleteModal from "../../components/common/DeleteModal";
 import AddModal from "../../components/common/AddModal";
 
@@ -52,10 +50,8 @@ const StaffManagement = () => {
   }, [currentPage, orderBy, sortOrder, token]);
   return (
     <div className="h-screen flex flex-col">
-      <Header />
       <div className="flex flex-1">
-        <Sidebar />
-        <div className="flex flex-col w-full dark:bg-gray-900 p-6 overflow-y-auto">
+        <div className="flex flex-col w-full dark:bg-gray-700 p-6 overflow-y-auto">
           {errorMessage && (
             <div className="mb-4 p-4 bg-red-900/30 text-red-300 rounded-lg">
               {errorMessage}
@@ -113,7 +109,7 @@ const StaffManagement = () => {
                 </select>
 
                 <button
-                  className="w-full md:w-auto dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap"
+                  className="w-full md:w-auto dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-gray-200 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap"
                   onClick={() => setShowAddModal(true)}
                 >
                   Add Member
@@ -148,7 +144,7 @@ const StaffManagement = () => {
                 .map((member) => (
                   <div
                     key={member.id}
-                    className="grid grid-cols-12 px-6 py-4 border-t dark:border-gray-700 hover:dark:bg-gray-700 transition-colors"
+                    className="grid grid-cols-12 px-6 py-4 border-t dark:border-gray-700 hover:dark:bg-gray-900 transition-colors"
                   >
                     <div className="col-span-4">
                       <div className="text-sm font-medium dark:text-gray-200">
@@ -202,7 +198,7 @@ const StaffManagement = () => {
             <button
               onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="dark:bg-gray-800 dark:hover:bg-gray-700 px-4 py-2 rounded-lg disabled:opacity-50 transition-colors"
+              className="dark:bg-gray-800 dark:hover:bg-gray-900 px-4 py-2 rounded-lg disabled:opacity-50 transition-colors"
             >
               Previous
             </button>
@@ -210,7 +206,7 @@ const StaffManagement = () => {
             <button
               onClick={() => setCurrentPage((prev) => prev + 1)}
               disabled={teamMembers.length < 5}
-              className="dark:bg-gray-800 dark:hover:bg-gray-700 px-4 py-2 rounded-lg disabled:opacity-50 transition-colors"
+              className="dark:bg-gray-800 dark:hover:bg-gray-900 px-4 py-2 rounded-lg disabled:opacity-50 transition-colors"
             >
               Next
             </button>

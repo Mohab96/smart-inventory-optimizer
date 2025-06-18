@@ -4,8 +4,6 @@ import { useDropzone } from "react-dropzone";
 import { useSelector } from "react-redux";
 import { selectToken } from "../../store/features/authSlice";
 import { Link } from "react-router-dom";
-import Header from "../../components/common/Header";
-import Sidebar from "../../components/common/Sidebar";
 
 const TransactionsFeeding = () => {
   const [file, setFile] = useState(null);
@@ -70,9 +68,7 @@ const TransactionsFeeding = () => {
   };
   return (
     <div className="h-screen flex flex-col">
-      <Header />
       <div className="flex flex-1">
-        <Sidebar />
         <div className="flex flex-col w-full dark:bg-gray-900 p-6 overflow-y-auto">
           <div className="max-w-2xl mx-auto w-full">
             <div className="text-center mb-8">

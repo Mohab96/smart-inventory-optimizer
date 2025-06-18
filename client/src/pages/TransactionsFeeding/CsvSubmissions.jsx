@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
-import Header from "../../components/common/Header";
-import Sidebar from "../../components/common/Sidebar";
 
 const CsvSubmissions = () => {
   const [submissions, setSubmissions] = useState([]);
@@ -65,9 +63,7 @@ const CsvSubmissions = () => {
   if (error)
     return (
       <div className="h-screen flex flex-col">
-        <Header />
         <div className="flex flex-1">
-          <Sidebar />
           <div className="p-10 dark:text-red-400 text-center">{error}</div>;
         </div>
       </div>
@@ -122,7 +118,9 @@ const CsvSubmissions = () => {
               </div>
             ) : (
               <pre className="whitespace-pre-wrap dark:text-red-300 text-sm">
-                {typeof errors === 'object' ? JSON.stringify(errors, null, 2) : errors}
+                {typeof errors === "object"
+                  ? JSON.stringify(errors, null, 2)
+                  : errors}
               </pre>
             )}
           </div>

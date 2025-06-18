@@ -24,7 +24,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
     { name: "Upload Transactions", icon: <Upload className="h-5 w-5" />, path: "/transactionsFeeding" },
     { name: "Transactions Log", icon: <FileText className="h-5 w-5" />, path: "/transactionsLog" },
     { name: "Add Product", icon: <Package className="h-5 w-5" />, path: "/newproductaddition" },
-    { name: "About", icon: <Info className="h-5 w-5" />, path: "*" },
+    { name: "About", icon: <Info className="h-5 w-5" />, path: "/about" },
   ];
 
   const handleNavigation = (path) => {
@@ -46,9 +46,9 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
 
       {/* Sidebar */}
       <div className={`
-        fixed lg:sticky lg:top-0 inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out
+        fixed lg:sticky lg:top-16 inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        bg-gray-800 border-r border-gray-700 shadow-xl lg:shadow-none
+        bg-gray-800 shadow-xl lg:shadow-none
         h-screen lg:h-auto
       `}>
         <div className="h-full p-4 overflow-y-auto">
@@ -67,16 +67,6 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
           </div>
 
           {/* Desktop Header */}
-          <div className="hidden lg:block mb-8">
-            <h5 className="text-lg font-bold text-white mb-2">Smart Inventory</h5>
-            <p className="text-sm text-gray-400">Management System</p>
-          </div>
-
-          <div className="mb-6">
-            <h6 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-              Navigation
-            </h6>
-          </div>
 
           <ul className="space-y-1">
             {menuItems.map((item, index) => (

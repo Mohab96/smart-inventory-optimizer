@@ -1,125 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { FaTrash } from "react-icons/fa";
-import Header from "../components/common/Header";
-import Sidebar from "../components/common/Sidebar";
+import { useSelector } from "react-redux";
+import { selectToken } from "../store/features/authSlice";
 
 const NotificationsPage = () => {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: "Products Expiring Soon",
-      date: "2024-03-15T09:30:00.000Z",
-      data: [
-        {
-          productName: "Organic Whole Milk",
-          categoryName: "Dairy",
-          expiryDate: "2024-03-25T00:00:00.000Z",
-          quantity: 10,
-          batchNumber: "MILK-2024-03-01",
-          supplier: "Fresh Farms Co.",
-        },
-        {
-          productName: "Almond Milk",
-          categoryName: "Dairy Alternatives",
-          expiryDate: "2024-03-28T00:00:00.000Z",
-          quantity: 20,
-          batchNumber: "ALM-2024-03-05",
-          supplier: "Nutty Producers Ltd.",
-        },
-        {
-          productName: "Free Range Eggs",
-          categoryName: "Poultry",
-          expiryDate: "2024-03-30T00:00:00.000Z",
-          quantity: 15,
-          batchNumber: "EGG-2024-03-10",
-          supplier: "Happy Hens Farm",
-        },
-        {
-          productName: "Whole Grain Bread",
-          categoryName: "Bakery",
-          expiryDate: "2024-04-02T00:00:00.000Z",
-          quantity: 8,
-          batchNumber: "BREAD-2024-03-15",
-          supplier: "Golden Grains Bakery",
-        },
-      ],
-    },
-    {
-      id: 2,
-      title: "Products Demand Prediction",
-      date: "2024-03-15T14:45:00.000Z",
-      data: [
-        {
-          productName: "iPhone 15 Pro",
-          totalAmount: 58,
-          categoryName: "Electronics",
-        },
-        {
-          productName: "iPhone 16",
-          totalAmount: 40,
-          categoryName: "Electronics",
-        },
-      ],
-    },
-    {
-      id: 3,
-      title: "Low Stock Alerts",
-      date: "2024-03-15T11:15:00.000Z",
-      data: [
-        {
-          productName: "Premium Coffee Beans",
-          categoryName: "Beverages",
-          predictedStock: 120,
-          inventoryStock: 35,
-          difference: 85,
-          daysOutOfStock: 2,
-          lastOrderDate: "2024-03-10",
-          supplier: "Global Beans Inc.",
-        },
-        {
-          productName: "Olive Oil Extra Virgin",
-          categoryName: "Pantry",
-          predictedStock: 80,
-          inventoryStock: 12,
-          difference: 68,
-          daysOutOfStock: 1,
-          lastOrderDate: "2024-03-12",
-          supplier: "Mediterranean Oils",
-        },
-        {
-          productName: "Organic Honey",
-          categoryName: "Condiments",
-          predictedStock: 60,
-          inventoryStock: 8,
-          difference: 52,
-          daysOutOfStock: 1,
-          lastOrderDate: "2024-03-08",
-          supplier: "Bee Natural",
-        },
-        {
-          productName: "Quinoa",
-          categoryName: "Grains",
-          predictedStock: 75,
-          inventoryStock: 18,
-          difference: 57,
-          daysOutOfStock: 3,
-          lastOrderDate: "2024-03-05",
-          supplier: "Andean Harvest",
-        },
-      ],
-    },
-  ]);
-  const [loading] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const token = useSelector(selectToken);
 
-  const handleDelete = async (id) => {
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("/api/notifications/get-notifications", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch notifications");
+        }
+
+        const result = await response.json();
+        setNotifications(result.data || []);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+        toast.error("Failed to load notifications");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (token) {
+      fetchNotifications();
+    }
+  }, [token]);
+
+  const handleDelete = (title, date) => {
     try {
-      setNotifications(
-        notifications.filter((notification) => notification.id !== id)
+      setNotifications((prev) =>
+        prev.filter(
+          (notification) =>
+            !(notification.title === title && notification.date === date)
+        )
       );
-      toast.success("Notification deleted successfully");
+      toast.success("Notification removed");
     } catch (error) {
-      toast.error("Failed to delete notification");
+      toast.error("Failed to remove notification");
       console.error("Error deleting notification:", error);
     }
   };
@@ -279,7 +208,7 @@ const NotificationsPage = () => {
             </p>
           </div>
           <button
-            onClick={() => handleDelete(notification.id)}
+            onClick={() => handleDelete(title, date)}
             className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 p-2 transition-colors"
             title="Delete notification"
           >
@@ -291,10 +220,8 @@ const NotificationsPage = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col dark:bg-gray-700">
-      <Header />
+    <div className="flex flex-col dark:bg-gray-700 min-h-screen">
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
         <div className="flex-1 overflow-y-auto p-6 md:p-8 dark:bg-gray-700">
           <div className="max-w-4xl mx-auto">
             <div className="mb-8">
@@ -321,9 +248,9 @@ const NotificationsPage = () => {
               </div>
             ) : (
               <div className="space-y-5">
-                {notifications.map((notification) => (
+                {notifications.map((notification, index) => (
                   <NotificationItem
-                    key={notification.id}
+                    key={`${notification.title}-${notification.date}-${index}`}
                     notification={notification}
                   />
                 ))}
