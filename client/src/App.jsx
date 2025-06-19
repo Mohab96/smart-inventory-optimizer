@@ -29,234 +29,248 @@ import "react-toastify/dist/ReactToastify.css";
 import CategoriesSales from "./pages/dashboard/CategoriesSales";
 import About from "./pages/About";
 import Layout from "./utils/Layout";
+import Discounts from "./pages/discounts";
+import { ThemeProvider } from "./components/common/ThemeContext";
 
 function App() {
   return (
-    <Router>
-      <ToastContainer position="top-right" autoClose={3000} />
-      <Routes>
-        <Route path="/register" element={<Register />} />
-        {/* Auth Routes */}
-        <Route
-          path="/"
-          element={
-            <AuthRoute>
-              <Start />
-            </AuthRoute>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <AuthRoute>
-              <Login />
-            </AuthRoute>
-          }
-        />
-        <Route
-          path="/forgotpassword"
-          element={
-            <AuthRoute>
-              <ForgotPassword />
-            </AuthRoute>
-          }
-        />
-        <Route
-          path="/resetpassword"
-          element={
-            <AuthRoute>
-              <ResetPassword />
-            </AuthRoute>
-          }
-        />
-        {/* Protected Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <Dashboard />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/expiryDateProducts"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <ExpiryDateProducts />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/categoriesExpiringSoon"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <CategoriesExpiringSoon />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/yearRevenues"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <YearRevenues />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/quarterRevenues"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <QuarterlyRevenues />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/bestCategories"
-          element={
-            <ProtectedRoute>
-              <CategoriesSales />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/lowStockProducts"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <LowStockProducts />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/transactionsFeeding"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <div className="">
-                  <TransactionsFeeding />
-                </div>
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/prediction"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <RecommendationPage />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/trends"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <TrendVisualizer />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/csvsubmissions"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <CsvSubmissions />
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/transactionsLog"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <div className="">
-                  <Transactions />
-                </div>
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/staffmanagement"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <StaffManagement />
-              </Layout>
-            </ProtectedRoute>
-          }
-        ></Route>
-
-        <Route
-          path="/newProductAddition"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <NewProductAddition />
-              </Layout>
-            </ProtectedRoute>
-          }
-        ></Route>
-        <Route
-          path="/imageUpload"
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <ImageUpload />
-              </Layout>
-            </ProtectedRoute>
-          }
-        ></Route>
-        <Route
-          path="/businessAnalytics"
-          element={
-            <div className="min-h-screen bg-gray-50 ">
+    <ThemeProvider>
+      <Router>
+        <ToastContainer position="top-right" autoClose={3000} />
+        <Routes>
+          <Route path="/register" element={<Register />} />
+          {/* Auth Routes */}
+          <Route
+            path="/"
+            element={
+              <AuthRoute>
+                <Start />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <AuthRoute>
+                <Login />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="/forgotpassword"
+            element={
+              <AuthRoute>
+                <ForgotPassword />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="/resetpassword"
+            element={
+              <AuthRoute>
+                <ResetPassword />
+              </AuthRoute>
+            }
+          />
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
               <ProtectedRoute>
                 <Layout>
-                  <BusinessAnalyticsDashboard />
+                  <Dashboard />
                 </Layout>
               </ProtectedRoute>
-            </div>
-          }
-        ></Route>
-        <Route
-          path="/notifications"
-          element={
-            <ProtectedRoute>
+            }
+          />
+          <Route
+            path="/expiryDateProducts"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <ExpiryDateProducts />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/categoriesExpiringSoon"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <CategoriesExpiringSoon />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/yearRevenues"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <YearRevenues />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/quarterRevenues"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <QuarterlyRevenues />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/bestCategories"
+            element={
+              <ProtectedRoute>
+                <CategoriesSales />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/lowStockProducts"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <LowStockProducts />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/transactionsFeeding"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <div className="">
+                    <TransactionsFeeding />
+                  </div>
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/prediction"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <RecommendationPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/trends"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <TrendVisualizer />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/csvsubmissions"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <CsvSubmissions />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/transactionsLog"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <div className="">
+                    <Transactions />
+                  </div>
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/staffmanagement"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <StaffManagement />
+                </Layout>
+              </ProtectedRoute>
+            }
+          ></Route>
+
+          <Route
+            path="/newProductAddition"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <NewProductAddition />
+                </Layout>
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            path="/imageUpload"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <ImageUpload />
+                </Layout>
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            path="/businessAnalytics"
+            element={
+              <div className="min-h-screen bg-gray-50 ">
+                <ProtectedRoute>
+                  <Layout>
+                    <BusinessAnalyticsDashboard />
+                  </Layout>
+                </ProtectedRoute>
+              </div>
+            }
+          ></Route>
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <NotificationsPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            path="/about"
+            element={
               <Layout>
-                <NotificationsPage />
+                <About />
               </Layout>
-            </ProtectedRoute>
-          }
-        ></Route>
-        <Route
-          path="/about"
-          element={
-            <Layout>
-              <About />
-            </Layout>
-          }
-        />
-        {/* Not Found */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Router>
+            }
+          />
+          <Route
+            path="/discounts"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Discounts />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          {/* Not Found */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }
 export default App;

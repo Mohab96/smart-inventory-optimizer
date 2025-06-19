@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import Select from "react-select";
 import { setCredentials } from "../../store/features/authSlice";
 import ImageUpload from "./ImageUpload";
+import { useTheme } from "../../components/common/ThemeContext";
 
 const countryOptions = [
   { value: "+93", label: "Afghanistan (+93)" },
@@ -248,6 +249,7 @@ const countryOptions = [
 ];
 
 export default function Register() {
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState(1);
@@ -343,33 +345,21 @@ export default function Register() {
 
   // Rest of the component remains the same
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
-      <div className="max-w-2xl w-full space-y-8 bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl shadow-2xl border border-gray-700/50 transform transition-all duration-200">
-        {/* Rest of JSX remains the same */}
+    <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200'} py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200`}>
+      <div className={`max-w-2xl w-full space-y-8 ${theme === 'dark' ? 'bg-gray-800/50' : 'bg-white/80'} backdrop-blur-sm p-8 rounded-xl shadow-2xl ${theme === 'dark' ? 'border border-gray-700/50' : 'border border-gray-200/50'} transform transition-all duration-200`}>
         <div>
           <div className="flex justify-center">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-12 w-12 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
               </svg>
             </div>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+          <h2 className={`mt-6 text-center text-3xl font-extrabold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             Create your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-400">
-            Register your business and start managing inventory
+          <p className={`mt-2 text-center text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            Join our platform and start managing your business
           </p>
         </div>
 
@@ -422,20 +412,20 @@ export default function Register() {
         {/* Manager Form */}
         {currentStep === 1 && (
           <form className="space-y-4">
-            <h3 className="text-xl font-medium text-gray-200 mb-6">
+            <h3 className={`text-xl font-medium ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'} mb-6`}>
               Manager Information
             </h3>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
                 Name
               </label>
               <input
                 {...registerManager("name")}
-                className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200"
+                className={`appearance-none block w-full px-3 py-2 border ${theme === 'dark' ? 'border-gray-700 bg-gray-900/50 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200`}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
                 Email *
               </label>
               <input
@@ -446,7 +436,7 @@ export default function Register() {
                     message: "Invalid email address",
                   },
                 })}
-                className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200"
+                className={`appearance-none block w-full px-3 py-2 border ${theme === 'dark' ? 'border-gray-700 bg-gray-900/50 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200`}
               />
               {errorsManager.email && (
                 <p className="mt-1 text-sm text-red-400">
@@ -455,7 +445,7 @@ export default function Register() {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
                 Phone Number *
               </label>
               <div className="flex items-center space-x-2">
@@ -475,7 +465,7 @@ export default function Register() {
                         styles={{
                           control: (base) => ({
                             ...base,
-                            background: "rgba(17, 24, 39, 0.5)",
+                            background: theme === 'dark' ? '#1f2937' : '#ffffff',
                             borderColor: "rgb(55, 65, 81)",
                             "&:hover": {
                               borderColor: "rgb(55, 65, 81)",
@@ -483,7 +473,7 @@ export default function Register() {
                           }),
                           menu: (base) => ({
                             ...base,
-                            background: "rgb(17, 24, 39)",
+                            background: theme === 'dark' ? '#1f2937' : '#ffffff',
                             border: "1px solid rgb(55, 65, 81)",
                           }),
                           option: (base, state) => ({
@@ -511,7 +501,7 @@ export default function Register() {
                 </div>
                 <input
                   {...registerManager("phoneNumber", {})}
-                  className="w-[70%] px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200"
+                  className={`w-[70%] px-3 py-2 border ${theme === 'dark' ? 'border-gray-700 bg-gray-900/50 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200`}
                 />
               </div>
               {errorsManager.phoneNumber && (
@@ -521,14 +511,14 @@ export default function Register() {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
                 Username *
               </label>
               <input
                 {...registerManager("username", {
                   required: "Username is required",
                 })}
-                className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200"
+                className={`appearance-none block w-full px-3 py-2 border ${theme === 'dark' ? 'border-gray-700 bg-gray-900/50 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200`}
               />
               {errorsManager.username && (
                 <p className="mt-1 text-sm text-red-400">
@@ -537,7 +527,7 @@ export default function Register() {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
                 Password *
               </label>
               <input
@@ -549,7 +539,7 @@ export default function Register() {
                   },
                 })}
                 type="password"
-                className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200"
+                className={`appearance-none block w-full px-3 py-2 border ${theme === 'dark' ? 'border-gray-700 bg-gray-900/50 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200`}
               />
               {errorsManager.password && (
                 <p className="mt-1 text-sm text-red-400">
@@ -563,7 +553,7 @@ export default function Register() {
               <button
                 type="button"
                 onClick={handleNextStep}
-                className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-900 transform transition-all duration-200 hover:scale-[1.02]"
+                className={`group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200 hover:scale-[1.02]`}
               >
                 Next Step →
               </button>
@@ -577,18 +567,18 @@ export default function Register() {
             className="space-y-4"
             onSubmit={handleSubmitBusiness(onSubmitBusiness)}
           >
-            <h3 className="text-xl font-medium text-gray-200 mb-6">
+            <h3 className={`text-xl font-medium ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'} mb-6`}>
               Business Information
             </h3>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
                 Business Name *
               </label>
               <input
                 {...registerBusiness("name", {
                   required: "Business name is required",
                 })}
-                className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200"
+                className={`appearance-none block w-full px-3 py-2 border ${theme === 'dark' ? 'border-gray-700 bg-gray-900/50 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200`}
               />
               {errorsBusiness.name && (
                 <p className="mt-1 text-sm text-red-400">
@@ -597,14 +587,14 @@ export default function Register() {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
                 Business Description
               </label>
               <textarea
                 {...registerBusiness("description")}
                 rows={3}
                 placeholder="Write a brief description about your business"
-                className="appearance-none block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200"
+                className={`appearance-none block w-full px-3 py-2 border ${theme === 'dark' ? 'border-gray-700 bg-gray-900/50 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200`}
               />
             </div>
 
@@ -613,13 +603,13 @@ export default function Register() {
               <button
                 type="button"
                 onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
-                className="text-sm font-medium text-gray-400 hover:text-gray-300 transition-colors duration-200"
+                className={`text-sm font-medium text-gray-400 hover:text-gray-300 transition-colors duration-200 ${theme === 'dark' ? 'text-gray-600 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-200'}`}
               >
                 ← Back
               </button>
               <button
                 type="submit"
-                className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-900 transform transition-all duration-200 hover:scale-[1.02]"
+                className={`group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200 hover:scale-[1.02]`}
               >
                 Submit
               </button>
@@ -630,7 +620,7 @@ export default function Register() {
         {/* Image Upload Step */}
         {currentStep === 3 && (
           <div className="space-y-6">
-            <h3 className="text-xl font-medium text-gray-200 mb-6">
+            <h3 className={`text-xl font-medium ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'} mb-6`}>
               Upload Business Logo
             </h3>
             <ImageUpload isRegistrationFlow={true} />
@@ -638,14 +628,14 @@ export default function Register() {
               <button
                 type="button"
                 onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
-                className="text-sm font-medium text-gray-400 hover:text-gray-300 transition-colors duration-200"
+                className={`text-sm font-medium text-gray-400 hover:text-gray-300 transition-colors duration-200 ${theme === 'dark' ? 'text-gray-600 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-200'}`}
               >
                 ← Back
               </button>
               <button
                 type="button"
                 onClick={() => navigate("/dashboard")}
-                className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-900 transform transition-all duration-200 hover:scale-[1.02]"
+                className={`group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200 hover:scale-[1.02]`}
               >
                 Finish
               </button>
@@ -654,11 +644,11 @@ export default function Register() {
         )}
 
         {currentStep === 1 && (
-          <p className="mt-6 text-center text-sm text-gray-400">
+          <p className={`mt-6 text-center text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
             Already have an account?{" "}
             <Link
               to="/login"
-              className="font-medium text-blue-400 hover:text-blue-300 transition-colors duration-200"
+              className={`font-medium ${theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'} transition-colors duration-200`}
             >
               Sign in
             </Link>

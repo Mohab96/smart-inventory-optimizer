@@ -3,6 +3,7 @@ import Select from "react-select";
 import { CheckCircleIcon, XCircleIcon, PlusIcon, CubeIcon } from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
 import { selectToken } from "../../store/features/authSlice";
+import Header from "../../components/common/Header";
 
 const NewProductAddition = () => {
   const [formData, setFormData] = useState({

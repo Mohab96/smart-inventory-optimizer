@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 import { fetchLowStock } from "../../store/features/dashboardSlices/lowStockSlice";
 import { AlertTriangle, Package } from "lucide-react";
 import QuantityIndicator from "../../components/common/QuantityIndicator";
+import { useTheme } from "../../components/common/ThemeContext";
 
 const LowStockProducts = () => {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
+  const { theme } = useTheme();
   const {
     loading,
     data: products,
@@ -54,12 +56,12 @@ const LowStockProducts = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-900">
+    <div className={`h-screen flex flex-col ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <div className="flex flex-1 overflow-hidden">
         <div className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center space-x-3 mb-6">
             <AlertTriangle className="h-8 w-8 text-yellow-500" />
-            <h2 className="text-2xl font-bold text-white">
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Low Stock Products
             </h2>
           </div>
@@ -72,47 +74,47 @@ const LowStockProducts = () => {
               {error}
             </div>
           ) : (
-            <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.01] transition-all duration-300">
-              <div className="p-6 border-b border-gray-700">
-                <h3 className="text-xl font-semibold text-white">Low Stock Details</h3>
+            <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.01] transition-all duration-300 border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+              <div className={`p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Low Stock Details</h3>
               </div>
               <div className="overflow-x-auto">
                 {products.data && products.data.length > 0 ? (
-                  <table className="min-w-full divide-y divide-gray-700">
-                    <thead className="bg-gray-800/50">
+                  <table className={`min-w-full divide-y ${theme === 'dark' ? 'divide-gray-700' : 'divide-gray-200'}`}>
+                    <thead className={`${theme === 'dark' ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
                       <tr>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className={`px-6 py-4 text-left text-xs font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} uppercase tracking-wider`}>
                           Product Details
                         </th>
-                        <th className="px-6 py-4 text-center text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className={`px-6 py-4 text-center text-xs font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} uppercase tracking-wider`}>
                           Current Stock
                         </th>
-                        <th className="px-6 py-4 text-center text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className={`px-6 py-4 text-center text-xs font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} uppercase tracking-wider`}>
                           Stock Status
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-gray-800 divide-y divide-gray-700">
+                    <tbody className={`${theme === 'dark' ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'}`}>
                       {products.data.map((product, index) => {
                         const stockStatus = getStockStatus(product.currentStock);
                         const stockStatusColor = getStockStatusColor(stockStatus);
                         return (
                           <tr
                             key={`${product.productId}-${product.dateId}-${index}`}
-                            className="hover:bg-gray-700/50 transition-colors duration-200"
+                            className={`hover:${theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'} transition-colors duration-200`}
                           >
                             <td className="px-6 py-4 whitespace-nowrap text-left">
                               <div className="flex items-center">
                                 <div className="flex-shrink-0 h-10 w-10">
-                                  <div className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center">
+                                  <div className={`h-10 w-10 rounded-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'} flex items-center justify-center`}>
                                     <Package className="h-5 w-5 text-blue-400" />
                                   </div>
                                 </div>
                                 <div className="ml-4">
-                                  <div className="text-sm font-medium text-white">
+                                  <div className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                                     {product.product.name}
                                   </div>
-                                  <div className="text-sm text-gray-400">
+                                  <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                                     ID: {product.productId}
                                   </div>
                                 </div>
@@ -141,24 +143,24 @@ const LowStockProducts = () => {
                   </table>
                 ) : (
                   <div className="p-8 text-center">
-                    <p className="text-gray-400 text-lg">No products found.</p>
+                    <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-lg`}>No products found.</p>
                   </div>
                 )}
               </div>
 
               {/* Pagination Controls */}
-              <div className="mt-6 flex justify-between items-center p-6 border-t border-gray-700">
+              <div className={`mt-6 flex justify-between items-center p-6 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
                 <button
                   onClick={handlePrevPage}
                   disabled={page === 1}
-                  className="inline-flex items-center px-4 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 hover:bg-gray-600 transition-colors duration-200 disabled:hover:bg-gray-700"
+                  className={`inline-flex items-center px-4 py-2 ${theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} rounded-lg disabled:opacity-50 transition-colors duration-200 ${theme === 'dark' ? 'disabled:hover:bg-gray-700' : 'disabled:hover:bg-gray-200'}`}
                 >
                   Previous
                 </button>
-                <span className="text-gray-300 font-medium">Page {page}</span>
+                <span className={`font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Page {page}</span>
                 <button
                   onClick={handleNextPage}
-                  className="inline-flex items-center px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200"
+                  className={`inline-flex items-center px-4 py-2 ${theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} rounded-lg transition-colors duration-200`}
                 >
                   Next
                 </button>

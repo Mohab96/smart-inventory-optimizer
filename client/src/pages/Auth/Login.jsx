@@ -4,11 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectPosition } from "../../store/features/positionSlice";
 import { login } from "../../store/actions/authActions";
 import { selectAuthError } from "../../store/features/authSlice";
+import { useTheme } from "../../components/common/ThemeContext";
 
 export default function Login() {
   const dispatch = useDispatch();
   const position = useSelector(selectPosition);
   const error = useSelector(selectAuthError);
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({
     username: "",
     password: ""
@@ -73,8 +75,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
-      <div className="max-w-md w-full space-y-8 bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl shadow-2xl border border-gray-700/50 transform transition-all duration-200">
+    <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200'} py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200`}>
+      <div className={`max-w-md w-full space-y-8 ${theme === 'dark' ? 'bg-gray-800/50' : 'bg-white/80'} backdrop-blur-sm p-8 rounded-xl shadow-2xl ${theme === 'dark' ? 'border border-gray-700/50' : 'border border-gray-200/50'} transform transition-all duration-200`}>
         <div>
           <div className="flex justify-center">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
@@ -83,10 +85,10 @@ export default function Login() {
               </svg>
             </div>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+          <h2 className={`mt-6 text-center text-3xl font-extrabold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             Welcome Back
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-400">
+          <p className={`mt-2 text-center text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
             Please sign in to your account
           </p>
         </div>
@@ -94,7 +96,7 @@ export default function Login() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
           <div className="rounded-md space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="username" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Username
               </label>
               <div className="mt-1 relative">
@@ -109,8 +111,8 @@ export default function Login() {
                   className={`appearance-none block w-full px-3 py-2 border ${
                     touched.username && errors.username 
                       ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
-                      : 'border-gray-700 focus:ring-indigo-500 focus:border-indigo-500'
-                  } rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200 hover:scale-[1.01]`}
+                      : theme === 'dark' ? 'border-gray-700 focus:ring-indigo-500 focus:border-indigo-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                  } rounded-md shadow-sm ${theme === 'dark' ? 'placeholder-gray-500 bg-gray-900/50 text-white' : 'placeholder-gray-500 bg-white text-gray-900'} focus:outline-none focus:ring-2 focus:ring-offset-2 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200 hover:scale-[1.01]`}
                   placeholder="Enter your username"
                 />
                 {touched.username && errors.username && (
@@ -120,7 +122,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="password" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Password
               </label>
               <div className="mt-1 relative">
@@ -135,8 +137,8 @@ export default function Login() {
                   className={`appearance-none block w-full px-3 py-2 border ${
                     touched.password && errors.password 
                       ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
-                      : 'border-gray-700 focus:ring-indigo-500 focus:border-indigo-500'
-                  } rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200 hover:scale-[1.01]`}
+                      : theme === 'dark' ? 'border-gray-700 focus:ring-indigo-500 focus:border-indigo-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                  } rounded-md shadow-sm ${theme === 'dark' ? 'placeholder-gray-500 bg-gray-900/50 text-white' : 'placeholder-gray-500 bg-white text-gray-900'} focus:outline-none focus:ring-2 focus:ring-offset-2 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200 hover:scale-[1.01]`}
                   placeholder="Enter your password"
                 />
                 {touched.password && errors.password && (
@@ -158,7 +160,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isSubmitting || !isValid}
-            className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-900 transform transition-all duration-200 hover:scale-[1.02] ${
+            className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200 hover:scale-[1.02] ${
               (isSubmitting || !isValid) ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
@@ -182,7 +184,7 @@ export default function Login() {
 
           {position === "manager" && (
             <div className="text-sm text-center space-y-4">
-              <p className="text-gray-400">
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 {"Don't have an account?"}{" "}
                 <Link
                   to="/register"
@@ -191,7 +193,7 @@ export default function Login() {
                   Register
                 </Link>
               </p>
-              <p className="text-gray-400">
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 Forgot your password?{" "}
                 <Link
                   to="/forgotpassword"

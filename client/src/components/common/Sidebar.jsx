@@ -11,9 +11,11 @@ import {
   Info,
   X
 } from "lucide-react";
+import { useTheme } from "./ThemeContext";
 
 const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const menuItems = [
     { name: "Dashboard", icon: <LayoutDashboard className="h-5 w-5" />, path: "/dashboard" },
@@ -24,6 +26,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
     { name: "Upload Transactions", icon: <Upload className="h-5 w-5" />, path: "/transactionsFeeding" },
     { name: "Transactions Log", icon: <FileText className="h-5 w-5" />, path: "/transactionsLog" },
     { name: "Add Product", icon: <Package className="h-5 w-5" />, path: "/newproductaddition" },
+    { name: "Discounts", icon: <TrendingUp className="h-5 w-5" />, path: "/discounts" },
     { name: "About", icon: <Info className="h-5 w-5" />, path: "/about" },
   ];
 
@@ -48,19 +51,19 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
       <div className={`
         fixed lg:sticky lg:top-16 inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        bg-gray-800 shadow-xl lg:shadow-none
+        ${theme === 'dark' ? 'bg-gray-800' : 'bg-white border-r border-gray-200'} shadow-xl lg:shadow-none
         h-screen lg:h-auto
       `}>
         <div className="h-full p-4 overflow-y-auto">
           {/* Mobile Close Button */}
           <div className="flex justify-between items-center mb-8 lg:hidden">
             <div>
-              <h5 className="text-lg font-bold text-white mb-2">Smart Inventory</h5>
-              <p className="text-sm text-gray-400">Management System</p>
+              <h5 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mb-2`}>Smart Inventory</h5>
+              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Management System</p>
             </div>
             <button
               onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-200"
+              className={`p-2 ${theme === 'dark' ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'} rounded-lg transition-colors duration-200`}
             >
               <X className="h-6 w-6" />
             </button>
@@ -72,10 +75,10 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
             {menuItems.map((item, index) => (
               <li key={index}>
                 <button
-                  className="flex items-center w-full p-3 text-left rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 group"
+                  className={`flex items-center w-full p-3 text-left rounded-lg ${theme === 'dark' ? 'text-gray-300 hover:bg-gray-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'} transition-all duration-200 group`}
                   onClick={() => handleNavigation(item.path)}
                 >
-                  <span className="mr-3 text-gray-400 group-hover:text-blue-400 transition-colors duration-200">
+                  <span className={`mr-3 ${theme === 'dark' ? 'text-gray-400 group-hover:text-blue-400' : 'text-gray-500 group-hover:text-blue-600'} transition-colors duration-200`}>
                     {item.icon}
                   </span>
                   <span className="font-medium">{item.name}</span>
@@ -84,8 +87,8 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
             ))}
           </ul>
 
-          <div className="mt-8 pt-6 border-t border-gray-700">
-            <div className="text-xs text-gray-500 text-center">
+          <div className={`mt-8 pt-6 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+            <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'} text-center`}>
               © 2024 Smart Inventory
             </div>
           </div>
