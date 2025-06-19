@@ -1,5 +1,3 @@
-import Header from "../../components/common/Header";
-import Sidebar from "../../components/common/Sidebar";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchRecommendations } from "../../store/features/recommendationSices/recommendationsSlice";
