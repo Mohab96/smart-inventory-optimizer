@@ -17,7 +17,7 @@ import {
 import { useTheme } from "../../components/common/ThemeContext";
 
 const YearRevenues = () => {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()-1);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const { theme } = useTheme();
