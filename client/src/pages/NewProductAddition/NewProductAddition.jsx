@@ -81,9 +81,7 @@ const NewProductAddition = () => {
   return (
 
     <div className="h-auto flex flex-col bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <Header />
       <div className="flex flex-1">
-        <Sidebar />
         <div className="flex flex-col w-full p-6 overflow-y-auto">
           <div className="max-w-4xl mx-auto w-full">
             {/* Header Section */}

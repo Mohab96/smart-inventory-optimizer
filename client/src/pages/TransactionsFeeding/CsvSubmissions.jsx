@@ -10,8 +10,6 @@ import {
   XMarkIcon,
   ArrowPathIcon
 } from "@heroicons/react/24/outline";
-import Header from "../../components/common/Header";
-import Sidebar from "../../components/common/Sidebar";
 
 
 const CsvSubmissions = () => {
@@ -88,9 +86,7 @@ const CsvSubmissions = () => {
   if (loading) {
     return (
       <div className="h-screen flex flex-col bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <Header />
         <div className="flex flex-1">
-          <Sidebar />
           <div className="flex justify-center items-center w-full">
             <div className="text-center">
               <div className="relative">
@@ -108,9 +104,7 @@ const CsvSubmissions = () => {
   if (error) {
     return (
       <div className="h-screen flex flex-col bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <Header />
         <div className="flex flex-1">
-          <Sidebar />
           <div className="flex justify-center items-center w-full">
             <div className="text-center p-8 bg-white/80 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-red-200/50 dark:border-red-800/50">
               <XCircleIcon className="w-16 h-16 text-red-500 mx-auto mb-4" />
@@ -213,9 +207,7 @@ const CsvSubmissions = () => {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <Header />
       <div className="flex flex-1">
-        <Sidebar />
         <div className="flex flex-col w-full p-6 overflow-y-auto">
           <div className="max-w-7xl mx-auto w-full">
             {/* Header Section */}

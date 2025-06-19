@@ -4,8 +4,6 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { selectToken } from "../../store/features/authSlice";
 import PropTypes from "prop-types";
-import Header from "../../components/common/Header";
-import Sidebar from "../../components/common/Sidebar";
 
 const ImageUpload = ({ isRegistrationFlow = false }) => {
   const [file, setFile] = useState(null);
