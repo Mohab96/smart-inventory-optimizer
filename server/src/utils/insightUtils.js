@@ -52,25 +52,21 @@ const fetchDiscounts = async (businessId, limit, mainClient) => {
   const finalDiscounts = [];
 
   for (const discount of newDiscounts) {
-    const batch = await dwhClient.batchInfo.findUnique({
-      where: { batchId: discount.batchId },
-      include: { product: true },
+    const product = await dwhClient.productDimension.findUnique({
+      where: { productId: discount.productId },
     });
 
     const category = await dwhClient.categoryDimension.findUnique({
-      where: { categoryId: batch.product.categoryId },
+      where: { categoryId: product.categoryId },
     });
-
     finalDiscounts.push({
       productName: discount.productName,
-      suggestedDiscount: discount.suggested_discount,
+      suggestedDiscount: discount.suggestedDiscount,
       categoryName: category.categoryName,
       batchId: discount.batchId,
-      productPrice: batch.sellingPrice,
-      productPriceAfterDiscount:
-        +batch.sellingPrice -
-        (+batch.sellingPrice * +discount.suggested_discount) / 100,
-      productId: batch.product.productId,
+      productPrice: discount.productPrice,
+      productPriceAfterDiscount: discount.productPriceAfterDiscount,
+      productId: discount.productId,
     });
   }
 
