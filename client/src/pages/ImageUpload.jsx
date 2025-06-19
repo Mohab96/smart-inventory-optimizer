@@ -5,8 +5,6 @@ import { useSelector } from "react-redux";
 import { selectToken } from "../store/features/authSlice";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
-import Header from "../components/common/Header";
-import Sidebar from "../components/common/Sidebar";
 
 const ImageUpload = ({ isRegistrationFlow = false }) => {
   const [file, setFile] = useState(null);
@@ -238,9 +236,7 @@ const ImageUpload = ({ isRegistrationFlow = false }) => {
   if (!isRegistrationFlow) {
     return (
       <div className="min-h-screen flex flex-col dark:bg-gray-900">
-        <Header />
         <div className="flex flex-1">
-          <Sidebar />
           <div className="flex-1 p-8">
             <div className="max-w-md mx-auto">
               <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl shadow-2xl border border-gray-700/50">

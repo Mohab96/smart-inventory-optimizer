@@ -20,7 +20,7 @@ class XGBoostPredictor:
             learning_rate=0.05,
             subsample=0.8,
             colsample_bytree=0.8,
-            enable_categorical=True  # Added to enable categorical support
+            enable_categorical=True  
         )
         self.scaler = StandardScaler()
 

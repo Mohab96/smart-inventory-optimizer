@@ -14,7 +14,6 @@ const QuarterlyRevenues = () => {
   return (
     <div className="h-screen flex flex-col">
       <div className="flex flex-1 overflow-hidden">
-
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto p-4 dark:bg-gray-700">
           <h2 className="text-2xl font-semibold text-white mb-4">
