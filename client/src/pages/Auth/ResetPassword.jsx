@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTheme } from "../../components/common/ThemeContext";
 
+
 const ResetPassword = () => {
   const { theme } = useTheme();
   const {
@@ -16,7 +17,7 @@ const ResetPassword = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
-  console.log(token);
+
   const onSubmit = async (data) => {
     try {
       setErrorMessage("");
@@ -37,7 +38,6 @@ const ResetPassword = () => {
         throw new Error("Failed to reset password. Please try again.");
       }
 
-      // Handle success
       setIsSubmitted(true);
     } catch (err) {
       setErrorMessage(err.message || "An error occurred. Please try again.");
@@ -45,6 +45,7 @@ const ResetPassword = () => {
   };
 
   return (
+
     <div className={`my-24 max-w-md mx-auto p-6 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-md border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
       <h2 className={`text-2xl font-bold mb-6 text-center ${theme === 'dark' ? 'text-orange-400' : 'text-orange-500'}`}>
         Reset Password
@@ -77,8 +78,8 @@ const ResetPassword = () => {
               <p className="text-red-500 text-sm mt-1">
                 {errors.password.message}
               </p>
+
             )}
-          </div>
 
           <div>
             <label
@@ -154,6 +155,7 @@ const ResetPassword = () => {
           </Link>
         </div>
       )}
+
     </div>
   );
 };
