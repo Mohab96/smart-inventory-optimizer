@@ -37,7 +37,7 @@ const CategoriesSales = () => {
     const fetchCategorySales = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}/api/categories/sales?page=${page}&limit=10`,
+          `${import.meta.env.VITE_BASE_URL}/api/statistics/category-sales?page=${page}&limit=10&orderBy=desc`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -162,8 +162,8 @@ const CategoriesSales = () => {
       x: {
         ticks: {
           color: theme === 'dark' ? 'white' : '#1f2937',
-          maxRotation: 45,
-          minRotation: 45,
+          maxRotation: 20,
+          minRotation: 20,
           font: {
             size: 12
           }
@@ -268,7 +268,9 @@ const CategoriesSales = () => {
                 </div>
 
                 <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} p-6 rounded-xl shadow-lg mb-6 transform hover:scale-[1.01] transition-all duration-300 border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-                  <Bar data={chartData} options={chartOptions} />
+                  <div style={{ height: 400 }}>
+                    <Bar data={chartData} options={chartOptions} />
+                  </div>
                 </div>
                 
                 <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.01] transition-all duration-300 border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>

@@ -78,9 +78,8 @@ const ResetPassword = () => {
               <p className="text-red-500 text-sm mt-1">
                 {errors.password.message}
               </p>
-
             )}
-
+          </div>
           <div>
             <label
               htmlFor="confirmPassword"

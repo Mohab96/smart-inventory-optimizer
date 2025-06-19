@@ -6,7 +6,7 @@ import { useTheme } from "./ThemeContext";
 const TransactionList = () => {
   const dispatch = useDispatch();
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0]
+    `${new Date().getFullYear() - 1}-01-01`
   );
   const { theme } = useTheme();
 
@@ -66,7 +66,7 @@ const TransactionList = () => {
         {/* Statistics Cards */}
         {!loading && !error && transactionData.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className={`rounded-xl shadow-xl p-6 border-l-4 border-blue-500 hover:scale-[1.01] transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+            <div className={`flex-1 rounded-xl shadow-xl p-6 border-l-4 border-blue-500 hover:scale-[1.01] transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
               <div className="flex items-center">
                 <div className={`p-3 rounded-full mr-4 ${theme === 'dark' ? 'bg-blue-900 bg-opacity-50' : 'bg-blue-100'}`}>
                   <svg
@@ -90,8 +90,8 @@ const TransactionList = () => {
               </div>
             </div>
 
-            <div className={`rounded-xl shadow-xl p-6 border-l-4 border-green-500 hover:scale-[1.01] transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-              <div className="flex items-center">
+            <div className={`flex-1 rounded-xl shadow-xl p-6 border-l-4 border-green-500 hover:scale-[1.01] transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+              <div className="flex flex-row gap-6">
                 <div className={`p-3 rounded-full mr-4 ${theme === 'dark' ? 'bg-green-900 bg-opacity-50' : 'bg-green-100'}`}>
                   <svg
                     className="w-6 h-6 text-green-400"
@@ -114,7 +114,7 @@ const TransactionList = () => {
               </div>
             </div>
 
-            <div className={`rounded-xl shadow-xl p-6 border-l-4 border-emerald-500 hover:scale-[1.01] transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+            <div className={`flex-1 rounded-xl shadow-xl p-6 border-l-4 border-emerald-500 hover:scale-[1.01] transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
               <div className="flex items-center">
                 <div className={`p-3 rounded-full mr-4 ${theme === 'dark' ? 'bg-emerald-900 bg-opacity-50' : 'bg-emerald-100'}`}>
                   <svg
@@ -134,30 +134,6 @@ const TransactionList = () => {
                 <div>
                   <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Sales</p>
                   <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{positiveTransactions}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className={`rounded-xl shadow-xl p-6 border-l-4 border-red-500 hover:scale-[1.01] transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-              <div className="flex items-center">
-                <div className={`p-3 rounded-full mr-4 ${theme === 'dark' ? 'bg-red-900 bg-opacity-50' : 'bg-red-100'}`}>
-                  <svg
-                    className="w-6 h-6 text-red-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 13l-5 5m0 0l-5-5m5 5V6"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Returns</p>
-                  <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{negativeTransactions}</p>
                 </div>
               </div>
             </div>

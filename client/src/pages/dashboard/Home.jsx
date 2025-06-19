@@ -25,7 +25,7 @@ import { useTheme } from "../../components/common/ThemeContext";
 const Dashboard = () => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()-1);
   const { theme } = useTheme();
 
   const {
