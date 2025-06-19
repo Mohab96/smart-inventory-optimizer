@@ -3,8 +3,10 @@ import { useSelector } from "react-redux";
 import { selectToken } from "../../store/features/authSlice";
 import DeleteModal from "../../components/common/DeleteModal";
 import AddModal from "../../components/common/AddModal";
+import { useTheme } from "../../components/common/ThemeContext";
 
 const StaffManagement = () => {
+  const { theme } = useTheme();
   // States
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -51,7 +53,7 @@ const StaffManagement = () => {
   return (
     <div className="h-screen flex flex-col">
       <div className="flex flex-1">
-        <div className="flex flex-col w-full dark:bg-gray-700 p-6 overflow-y-auto">
+        <div className={`flex flex-col w-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'} p-6 overflow-y-auto`}>
           {errorMessage && (
             <div className="mb-4 p-4 bg-red-900/30 text-red-300 rounded-lg">
               {errorMessage}
@@ -59,7 +61,7 @@ const StaffManagement = () => {
           )}
 
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-            <h2 className="text-xl font-semibold dark:text-gray-200 lg:text-2xl">
+            <h2 className={`text-xl font-semibold lg:text-2xl ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>
               Team Members
             </h2>
 
@@ -68,12 +70,12 @@ const StaffManagement = () => {
                 <input
                   type="text"
                   placeholder="Search by name"
-                  className="w-full pl-3 pr-10 py-2 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className={`w-full pl-3 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-white border-gray-300 text-gray-900'}`}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <svg
-                  className="absolute right-3 top-2.5 h-5 w-5 dark:text-gray-400"
+                  className={`absolute right-3 top-2.5 h-5 w-5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -91,7 +93,7 @@ const StaffManagement = () => {
                 <select
                   value={orderBy}
                   onChange={(e) => setOrderBy(e.target.value)}
-                  className="w-full md:w-[160px] pl-3 pr-8 py-2 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className={`w-full md:w-[160px] pl-3 pr-8 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-white border-gray-300 text-gray-900'}`}
                 >
                   <option value="name">Name</option>
                   <option value="email">Email</option>
@@ -102,14 +104,14 @@ const StaffManagement = () => {
                 <select
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value)}
-                  className="w-full md:w-[120px] pl-3 pr-8 py-2 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className={`w-full md:w-[120px] pl-3 pr-8 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-white border-gray-300 text-gray-900'}`}
                 >
                   <option value="asc">Asc</option>
                   <option value="desc">Desc</option>
                 </select>
 
                 <button
-                  className="w-full md:w-auto dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-gray-200 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap"
+                  className={`w-full md:w-auto px-4 py-2 rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap ${theme === 'dark' ? 'bg-gray-800 hover:bg-gray-900 text-gray-200' : 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-300'}`}
                   onClick={() => setShowAddModal(true)}
                 >
                   Add Member
@@ -118,22 +120,22 @@ const StaffManagement = () => {
             </div>
           </div>
 
-          <div className="dark:bg-gray-800 rounded-lg overflow-hidden border dark:border-gray-700">
-            <div className="grid grid-cols-12 px-6 py-3 dark:bg-gray-700">
-              <div className="col-span-4 text-sm font-medium dark:text-gray-300">
+          <div className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-lg overflow-hidden border`}>
+            <div className={`grid grid-cols-12 px-6 py-3 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
+              <div className={`col-span-4 text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Name
               </div>
-              <div className="col-span-4 text-sm font-medium dark:text-gray-300">
+              <div className={`col-span-4 text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Username
               </div>
-              <div className="col-span-3 text-sm font-medium dark:text-gray-300">
+              <div className={`col-span-3 text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Phone Number
               </div>
-              <div className="col-span-1 text-sm font-medium dark:text-gray-300" />
+              <div className={`col-span-1 text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`} />
             </div>
 
             {isLoading ? (
-              <div className="text-center py-4 dark:text-gray-400">
+              <div className={`text-center py-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 Loading team members...
               </div>
             ) : teamMembers.length > 0 ? (
@@ -144,27 +146,27 @@ const StaffManagement = () => {
                 .map((member) => (
                   <div
                     key={member.id}
-                    className="grid grid-cols-12 px-6 py-4 border-t dark:border-gray-700 hover:dark:bg-gray-900 transition-colors"
+                    className={`grid grid-cols-12 px-6 py-4 border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-900' : 'border-gray-200 hover:bg-gray-50'} transition-colors`}
                   >
                     <div className="col-span-4">
-                      <div className="text-sm font-medium dark:text-gray-200">
+                      <div className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>
                         {member.name || "N/A"}
                       </div>
-                      <div className="text-sm dark:text-gray-400 overflow-auto">
+                      <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} overflow-auto`}>
                         {member.email}
                       </div>
                     </div>
-                    <div className="col-span-4 dark:text-gray-300">
+                    <div className={`col-span-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                       {member.username}
                     </div>
                     <div className="col-span-3">
-                      <span className="text-sm dark:text-gray-300">
+                      <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                         {member.phoneNumber || "N/A"}
                       </span>
                     </div>
                     <div className="col-span-1 flex justify-end">
                       <button
-                        className="dark:text-gray-400 hover:dark:text-gray-300"
+                        className={`${theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`}
                         onClick={() => {
                           setMemberToDelete(member);
                           setShowDeleteModal(true);
@@ -188,59 +190,74 @@ const StaffManagement = () => {
                   </div>
                 ))
             ) : (
-              <div className="text-center py-4 dark:text-gray-400">
+              <div className={`text-center py-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 No team members found
               </div>
             )}
           </div>
 
-          <div className="mt-4 flex justify-between items-center dark:text-gray-300">
+          <div className={`mt-4 flex justify-between items-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
             <button
               onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="dark:bg-gray-800 dark:hover:bg-gray-900 px-4 py-2 rounded-lg disabled:opacity-50 transition-colors"
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                currentPage === 1
+                  ? "opacity-50 cursor-not-allowed"
+                  : theme === 'dark' 
+                    ? "bg-gray-700 hover:bg-gray-600 text-gray-200" 
+                    : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+              }`}
             >
               Previous
             </button>
-            <span>Page {currentPage}</span>
+            <span className="font-medium">Page {currentPage}</span>
             <button
               onClick={() => setCurrentPage((prev) => prev + 1)}
-              disabled={teamMembers.length < 5}
-              className="dark:bg-gray-800 dark:hover:bg-gray-900 px-4 py-2 rounded-lg disabled:opacity-50 transition-colors"
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                theme === 'dark' 
+                  ? "bg-gray-700 hover:bg-gray-600 text-gray-200" 
+                  : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+              }`}
             >
               Next
             </button>
           </div>
-
-          {showDeleteModal && (
-            <DeleteModal
-              setErrorMessage={setErrorMessage}
-              setShowDeleteModal={setShowDeleteModal}
-              memberToDelete={memberToDelete}
-              setMemberToDelete={setMemberToDelete}
-              fetchStaffMembers={fetchStaffMembers}
-            />
-          )}
-
-          {showAddModal && (
-            <AddModal
-              setErrorMessage={setErrorMessage}
-              token={token}
-              fetchStaffMembers={fetchStaffMembers}
-              showAddModal={showAddModal}
-              setShowAddModal={setShowAddModal}
-              initialStaffState={{
-                name: "",
-                email: "",
-                username: "",
-                password: "",
-                phoneNumber: "",
-              }}
-            />
-          )}
         </div>
       </div>
+
+      {showDeleteModal && (
+        <DeleteModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={() => {
+            // Handle delete confirmation
+            setShowDeleteModal(false);
+            setMemberToDelete(null);
+          }}
+          title="Delete Team Member"
+          message={`Are you sure you want to delete ${memberToDelete?.name}? This action cannot be undone.`}
+        />
+      )}
+
+      {showAddModal && (
+        <AddModal
+          isOpen={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          onConfirm={(data) => {
+            // Handle add confirmation
+            setShowAddModal(false);
+          }}
+          title="Add Team Member"
+          fields={[
+            { name: "name", label: "Name", type: "text", required: true },
+            { name: "email", label: "Email", type: "email", required: true },
+            { name: "username", label: "Username", type: "text", required: true },
+            { name: "phoneNumber", label: "Phone Number", type: "tel" },
+          ]}
+        />
+      )}
     </div>
   );
 };
+
 export default StaffManagement;

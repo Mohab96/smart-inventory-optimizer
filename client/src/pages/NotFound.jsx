@@ -1,17 +1,19 @@
 // src/pages/NotFound.jsx
 import { Link, useNavigate } from "react-router-dom";
+import { useTheme } from "../components/common/ThemeContext";
 
 const NotFound = () => {
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'} flex items-center justify-center p-6`}>
       <div className="max-w-2xl text-center">
         <h1 className="text-6xl font-bold text-green-600 mb-4">Soon</h1>
-        <p className="text-2xl font-bold text-gray-800 mb-4">
+        <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'} mb-4`}>
           Still working on it
         </p>
-        <p className="text-gray-600 text-lg font-semibold mb-8">
+        <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-lg font-semibold mb-8`}>
           {`This feature is under development. We're working hard to bring it to you soon. Stay tuned for updates!`}
         </p>
 

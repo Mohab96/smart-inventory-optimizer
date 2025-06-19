@@ -47,9 +47,9 @@ const TrendChart = ({
   colors = {},
 }) => {
   // Debug log
-  console.log('TrendChart data:', data);
-  console.log('TrendChart lineKeys:', lineKeys);
-  console.log('TrendChart colors:', colors);
+  // console.log('TrendChart data:', data);
+  // console.log('TrendChart lineKeys:', lineKeys);
+  // console.log('TrendChart colors:', colors);
 
   return (
     <div className="bg-gray-800 p-4 rounded-lg shadow">

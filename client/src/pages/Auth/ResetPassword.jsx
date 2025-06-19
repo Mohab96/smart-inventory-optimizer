@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useSearchParams } from "react-router-dom";
+import { useTheme } from "../../components/common/ThemeContext";
+
 const ResetPassword = () => {
+  const { theme } = useTheme();
   const {
     register,
     handleSubmit,
@@ -42,8 +45,8 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="my-24 max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center text-orange-500">
+    <div className={`my-24 max-w-md mx-auto p-6 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-md border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+      <h2 className={`text-2xl font-bold mb-6 text-center ${theme === 'dark' ? 'text-orange-400' : 'text-orange-500'}`}>
         Reset Password
       </h2>
 
@@ -52,7 +55,7 @@ const ResetPassword = () => {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-orange-500"
+              className={`block text-sm font-medium ${theme === 'dark' ? 'text-orange-400' : 'text-orange-500'}`}
             >
               New Password
             </label>
@@ -67,8 +70,8 @@ const ResetPassword = () => {
                 },
               })}
               className={`mt-1 block w-full rounded-md border ${
-                errors.password ? "border-red-500" : "border-gray-300"
-              } shadow-sm focus:border-orange-500 focus:outline-none focus:ring-orange-500 p-2`}
+                errors.password ? "border-red-500" : (theme === 'dark' ? 'border-gray-600' : 'border-gray-300')
+              } shadow-sm focus:border-orange-500 focus:outline-none focus:ring-orange-500 p-2 ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}
             />
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">
@@ -80,7 +83,7 @@ const ResetPassword = () => {
           <div>
             <label
               htmlFor="confirmPassword"
-              className="block text-sm font-medium text-orange-500"
+              className={`block text-sm font-medium ${theme === 'dark' ? 'text-orange-400' : 'text-orange-500'}`}
             >
               Confirm New Password
             </label>
@@ -93,8 +96,8 @@ const ResetPassword = () => {
                   value === watch("password") || "Passwords do not match",
               })}
               className={`mt-1 block w-full rounded-md border ${
-                errors.confirmPassword ? "border-red-500" : "border-gray-300"
-              } shadow-sm focus:border-orange-500 focus:outline-none focus:ring-orange-500 p-2`}
+                errors.confirmPassword ? "border-red-500" : (theme === 'dark' ? 'border-gray-600' : 'border-gray-300')
+              } shadow-sm focus:border-orange-500 focus:outline-none focus:ring-orange-500 p-2 ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}
             />
             {errors.confirmPassword && (
               <p className="text-red-500 text-sm mt-1">
@@ -140,7 +143,7 @@ const ResetPassword = () => {
           <p className="text-green-600 font-medium mb-2">
             Password reset successfully!
           </p>
-          <p className="text-gray-600 text-sm mb-4">
+          <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
             You can now log in with your new password.
           </p>
           <Link

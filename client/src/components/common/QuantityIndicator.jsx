@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Package, AlertTriangle } from "lucide-react";
+import { useTheme } from "./ThemeContext";
 
 const QuantityIndicator = ({ 
   quantity,
@@ -8,45 +9,46 @@ const QuantityIndicator = ({
   showIcon = true,
   className = ""
 }) => {
+  const { theme } = useTheme();
   // Get status and colors based on quantity
   const getQuantityInfo = (quantity) => {
     if (quantity <= 0) {
       return {
         status: "Out of Stock",
         color: "red",
-        bgColor: "bg-red-500/10",
-        textColor: "text-red-500",
-        borderColor: "border-red-500",
-        icon: <AlertTriangle className="h-5 w-5 text-red-500" />
+        bgColor: theme === 'dark' ? "bg-red-500/10" : "bg-red-100/60",
+        textColor: theme === 'dark' ? "text-red-500" : "text-red-600",
+        borderColor: theme === 'dark' ? "border-red-500" : "border-red-200",
+        icon: <AlertTriangle className={`h-5 w-5 ${theme === 'dark' ? 'text-red-500' : 'text-red-600'}`} />
       };
     }
     if (quantity <= 5) {
       return {
         status: "Low Stock",
         color: "orange",
-        bgColor: "bg-orange-500/10",
-        textColor: "text-orange-500",
-        borderColor: "border-orange-500",
-        icon: <AlertTriangle className="h-5 w-5 text-orange-500" />
+        bgColor: theme === 'dark' ? "bg-orange-500/10" : "bg-orange-100/60",
+        textColor: theme === 'dark' ? "text-orange-500" : "text-orange-600",
+        borderColor: theme === 'dark' ? "border-orange-500" : "border-orange-200",
+        icon: <AlertTriangle className={`h-5 w-5 ${theme === 'dark' ? 'text-orange-500' : 'text-orange-600'}`} />
       };
     }
     if (quantity <= 20) {
       return {
         status: "Medium Stock",
         color: "yellow",
-        bgColor: "bg-yellow-500/10",
-        textColor: "text-yellow-500",
-        borderColor: "border-yellow-500",
-        icon: <Package className="h-5 w-5 text-yellow-500" />
+        bgColor: theme === 'dark' ? "bg-yellow-500/10" : "bg-yellow-100/60",
+        textColor: theme === 'dark' ? "text-yellow-500" : "text-yellow-600",
+        borderColor: theme === 'dark' ? "border-yellow-500" : "border-yellow-200",
+        icon: <Package className={`h-5 w-5 ${theme === 'dark' ? 'text-yellow-500' : 'text-yellow-600'}`} />
       };
     }
     return {
       status: "In Stock",
       color: "green",
-      bgColor: "bg-green-500/10",
-      textColor: "text-green-500",
-      borderColor: "border-green-500",
-      icon: <Package className="h-5 w-5 text-green-500" />
+      bgColor: theme === 'dark' ? "bg-green-500/10" : "bg-green-100/60",
+      textColor: theme === 'dark' ? "text-green-500" : "text-green-600",
+      borderColor: theme === 'dark' ? "border-green-500" : "border-green-200",
+      icon: <Package className={`h-5 w-5 ${theme === 'dark' ? 'text-green-500' : 'text-green-600'}`} />
     };
   };
 

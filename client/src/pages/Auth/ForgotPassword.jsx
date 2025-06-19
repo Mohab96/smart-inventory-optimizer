@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTheme } from "../../components/common/ThemeContext";
 
 const ForgotPassword = () => {
+  const { theme } = useTheme();
   const {
     register,
     handleSubmit,
@@ -43,8 +45,8 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="my-24 max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center text-orange-500">
+    <div className={`my-24 max-w-md mx-auto p-6 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-md border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+      <h2 className={`text-2xl font-bold mb-6 text-center ${theme === 'dark' ? 'text-orange-400' : 'text-orange-500'}`}>
         Forgot Password
       </h2>
 
@@ -53,7 +55,7 @@ const ForgotPassword = () => {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-orange-500"
+              className={`block text-sm font-medium ${theme === 'dark' ? 'text-orange-400' : 'text-orange-500'}`}
             >
               Email Address
             </label>
@@ -68,8 +70,8 @@ const ForgotPassword = () => {
                 },
               })}
               className={`mt-1 block w-full rounded-md border ${
-                errors.email ? "border-red-500" : "border-gray-300"
-              } shadow-sm focus:border-orange-500 focus:outline-none focus:ring-orange-500 p-2`}
+                errors.email ? "border-red-500" : (theme === 'dark' ? 'border-gray-600' : 'border-gray-300')
+              } shadow-sm focus:border-orange-500 focus:outline-none focus:ring-orange-500 p-2 ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">
@@ -115,7 +117,7 @@ const ForgotPassword = () => {
           <p className="text-green-600 font-medium mb-2">
             Password reset instructions sent!
           </p>
-          <p className="text-gray-600 text-sm mb-4">
+          <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
             Check your email (including spam folder)
           </p>
           <button

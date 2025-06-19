@@ -238,6 +238,14 @@ const TrendVisualizer = () => {
   // Category line keys
   const categoryLineKeys = Object.keys(categoryColors);
 
+  // Debug: Log processed chart data
+  useEffect(() => {
+    console.log('Sales Chart Data:', salesChartData);
+    console.log('Revenue Chart Data:', revenueChartData);
+    console.log('Product Sales Chart Data:', productSalesChartData);
+    console.log('Product Revenue Chart Data:', productRevenueChartData);
+  }, [salesChartData, revenueChartData, productSalesChartData, productRevenueChartData]);
+
   return (
     <div className="flex flex-col">
       <div className="flex flex-1 ">

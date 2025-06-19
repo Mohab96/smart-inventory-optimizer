@@ -9,8 +9,7 @@ import { fetchCategorySales } from "../../store/features/dashboardSlices/salesSl
 import { fetchTotalProducts, fetchTotalCategories } from "../../store/features/dashboardSlices/overviewSlice";
 import { DollarSign, ShoppingBag, Package, LayoutGrid } from "lucide-react";
 
-const ProfitGrid = () => {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+const ProfitGrid = ({ selectedYear }) => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
 
@@ -25,7 +24,7 @@ const ProfitGrid = () => {
     if (token) {
       dispatch(fetchRevenuesPerMonth({ year: selectedYear }));
       dispatch(fetchRevenuesPerQuarter({ year: selectedYear }));
-      dispatch(fetchCategorySales({ page, limit, orderBy: "desc" }));
+      dispatch(fetchCategorySales({ page, limit, orderBy: "desc", year: selectedYear }));
       dispatch(fetchTotalProducts());
       dispatch(fetchTotalCategories());
     }

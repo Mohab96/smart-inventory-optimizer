@@ -1,6 +1,9 @@
 import Footer from "../components/common/Footer";
+import { useTheme } from "../components/common/ThemeContext";
 
 const About = () => {
+  const { theme } = useTheme();
+  
   const features = [
     {
       icon: (
@@ -69,14 +72,14 @@ const About = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <div className="flex flex-1">
-        <div className="flex flex-col w-full dark:bg-gray-900 overflow-y-auto">
+        <div className={`flex flex-col w-full ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'} overflow-y-auto`}>
           {/* Hero Section */}
-          <div className="dark:bg-gray-700 px-6 py-16">
+          <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'} px-6 py-16`}>
             <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-4xl md:text-5xl font-bold dark:text-gray-200 mb-6">
+              <h1 className={`text-4xl md:text-5xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'} mb-6`}>
                 About Our Platform
               </h1>
-              <p className="text-xl dark:text-gray-400 leading-relaxed max-w-3xl mx-auto">
+              <p className={`text-xl ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} leading-relaxed max-w-3xl mx-auto`}>
                 Empowering businesses with comprehensive management solutions that streamline 
                 operations, enhance productivity, and drive growth through intelligent automation 
                 and insightful analytics.
@@ -87,30 +90,30 @@ const About = () => {
           {/* Mission Section */}
           <div className="px-6 py-16">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl font-bold dark:text-gray-200 mb-8">
+              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'} mb-8`}>
                 Our Mission
               </h2>
-              <p className="text-lg dark:text-gray-400 leading-relaxed mb-8">
+              <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} leading-relaxed mb-8`}>
                 We believe that every business, regardless of size, deserves access to powerful 
                 management tools that were once only available to large enterprises. Our mission 
                 is to democratize business management technology and help companies of all sizes 
                 achieve operational excellence.
               </p>
               <div className="grid md:grid-cols-2 gap-8 mt-12">
-                <div className="dark:bg-gray-800 p-6 rounded-lg">
-                  <h3 className="text-xl font-semibold dark:text-gray-200 mb-4">
+                <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} p-6 rounded-lg shadow-lg border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                  <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'} mb-4`}>
                     Innovation First
                   </h3>
-                  <p className="dark:text-gray-400">
+                  <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     We continuously evolve our platform with cutting-edge technologies 
                     and user-centered design to stay ahead of business needs.
                   </p>
                 </div>
-                <div className="dark:bg-gray-800 p-6 rounded-lg">
-                  <h3 className="text-xl font-semibold dark:text-gray-200 mb-4">
+                <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} p-6 rounded-lg shadow-lg border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                  <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'} mb-4`}>
                     Customer Success
                   </h3>
-                  <p className="dark:text-gray-400">
+                  <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Your success is our success. We provide comprehensive support 
                     and resources to ensure you get the most out of our platform.
                   </p>
@@ -120,13 +123,13 @@ const About = () => {
           </div>
 
           {/* Features Section */}
-          <div className="px-6 py-16 dark:bg-gray-700">
+          <div className={`px-6 py-16 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'}`}>
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold dark:text-gray-200 mb-4">
+                <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'} mb-4`}>
                   Platform Features
                 </h2>
-                <p className="text-lg dark:text-gray-400 max-w-2xl mx-auto">
+                <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} max-w-2xl mx-auto`}>
                   Discover the comprehensive suite of tools designed to transform 
                   your business operations and drive sustainable growth.
                 </p>
@@ -136,15 +139,15 @@ const About = () => {
                 {features.map((feature, index) => (
                   <div 
                     key={index} 
-                    className="dark:bg-gray-900 p-6 rounded-lg transition-colors"
+                    className={`${theme === 'dark' ? 'bg-gray-900' : 'bg-white'} p-6 rounded-lg transition-colors shadow-lg border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}
                   >
-                    <div className="dark:text-gray-400 mb-4">
+                    <div className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
                       {feature.icon}
                     </div>
-                    <h3 className="text-xl font-semibold dark:text-gray-200 mb-3">
+                    <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'} mb-3`}>
                       {feature.title}
                     </h3>
-                    <p className="dark:text-gray-400 leading-relaxed">
+                    <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} leading-relaxed`}>
                       {feature.description}
                     </p>
                   </div>
@@ -156,38 +159,38 @@ const About = () => {
           {/* Technology Section */}
           <div className="px-6 py-16">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl font-bold dark:text-gray-200 mb-8">
+              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'} mb-8`}>
                 Built with Modern Technology
               </h2>
-              <p className="text-lg dark:text-gray-400 leading-relaxed mb-12">
+              <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} leading-relaxed mb-12`}>
                 Our platform leverages the latest technologies to ensure scalability, 
                 security, and performance that grows with your business.
               </p>
               
               <div className="grid md:grid-cols-3 gap-8">
-                <div className="dark:bg-gray-800 p-6 rounded-lg">
-                  <h3 className="text-lg font-semibold dark:text-gray-200 mb-3">
+                <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} p-6 rounded-lg shadow-lg border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                  <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'} mb-3`}>
                     Cloud-Native Architecture
                   </h3>
-                  <p className="dark:text-gray-400 text-sm">
+                  <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-sm`}>
                     Built for the cloud with microservices architecture ensuring 
                     high availability and seamless scaling.
                   </p>
                 </div>
-                <div className="dark:bg-gray-800 p-6 rounded-lg">
-                  <h3 className="text-lg font-semibold dark:text-gray-200 mb-3">
+                <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} p-6 rounded-lg shadow-lg border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                  <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'} mb-3`}>
                     Real-time Processing
                   </h3>
-                  <p className="dark:text-gray-400 text-sm">
+                  <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-sm`}>
                     Instant data processing and updates across all modules for 
                     real-time business insights and decision making.
                   </p>
                 </div>
-                <div className="dark:bg-gray-800 p-6 rounded-lg">
-                  <h3 className="text-lg font-semibold dark:text-gray-200 mb-3">
+                <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} p-6 rounded-lg shadow-lg border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                  <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'} mb-3`}>
                     Enterprise Security
                   </h3>
-                  <p className="dark:text-gray-400 text-sm">
+                  <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-sm`}>
                     Bank-level security with encryption, secure authentication, 
                     and compliance with industry standards.
                   </p>
@@ -197,20 +200,20 @@ const About = () => {
           </div>
 
           {/* CTA Section */}
-          <div className="px-6 py-16 dark:bg-gray-700">
+          <div className={`px-6 py-16 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'}`}>
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl font-bold dark:text-gray-200 mb-6">
+              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'} mb-6`}>
                 Ready to Transform Your Business?
               </h2>
-              <p className="text-lg dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+              <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} mb-8 max-w-2xl mx-auto`}>
                 Join thousands of businesses that trust our platform to streamline 
                 their operations and accelerate growth.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="px-8 py-3 dark:bg-gray-600 dark:hover:bg-gray-700 dark:text-white rounded-lg font-medium transition-colors">
+                <button className={`px-8 py-3 ${theme === 'dark' ? 'bg-gray-600 hover:bg-gray-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'} rounded-lg font-medium transition-colors`}>
                   Get Started Today
                 </button>
-                <button className="px-8 py-3 border border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 rounded-lg font-medium transition-colors">
+                <button className={`px-8 py-3 border ${theme === 'dark' ? 'border-gray-600 text-gray-300 hover:bg-gray-800' : 'border-gray-300 text-gray-700 hover:bg-gray-50'} rounded-lg font-medium transition-colors`}>
                   Schedule Demo
                 </button>
               </div>
@@ -218,6 +221,7 @@ const About = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
