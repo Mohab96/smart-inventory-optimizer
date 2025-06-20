@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { logout } from "../../store/features/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, selectToken } from "../../store/features/authSlice";
 import { Menu, X } from "lucide-react";
 import { FaBell, FaEye, FaSignOutAlt, FaUser } from "react-icons/fa";
+import { jwtDecode } from "jwt-decode";
 import { useTheme } from "./ThemeContext";
 import { Sun, Moon } from "lucide-react";
 
@@ -12,19 +13,31 @@ export default function Header() {
   const [showNotificationDropdown, setShowNotificationDropdown] =
     useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [businessImage, setBusinessImage] = useState(null);
+  const [imageLoadError, setImageLoadError] = useState(false);
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const token = useSelector(selectToken);
+
+  // Extract user info from token
+  const decodedToken = token ? jwtDecode(token) : null;
+  const userName = decodedToken?.name || "User Name";
+  const businessName = decodedToken?.businessName || "Business Name";
+  const userRole = decodedToken?.isAdmin ? "admin" : "staff";
 
   const handleLogout = () => {
     dispatch(logout());
     navigate("/");
   };
+
   const notificationRef = useRef(null);
   const userDropdownRef = useRef(null);
 
   const [notificationCount] = useState(3);
 
-  // Sample notifications - replace with your actual notification data
+  // Sample notifications
   const [recentNotifications] = useState([
     {
       id: 1,
@@ -56,36 +69,16 @@ export default function Header() {
     { name: "Trends", path: "/trends" },
     { name: "Upload Transactions", path: "/transactionsFeeding" },
   ];
+
   const menuItems = [
-    {
-      name: "Dashboard",
-      path: "/dashboard",
-    },
-    {
-      name: "Business Analytics",
-      path: "/businessAnalytics",
-    },
-    {
-      name: "Predictions",
-      path: "/prediction",
-    },
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Business Analytics", path: "/businessAnalytics" },
+    { name: "Predictions", path: "/prediction" },
     { name: "Trends", path: "/trends" },
-    {
-      name: "Staff Management",
-      path: "/staffManagement",
-    },
-    {
-      name: "Upload Transactions",
-      path: "/transactionsFeeding",
-    },
-    {
-      name: "Transactions Log",
-      path: "/transactionsLog",
-    },
-    {
-      name: "Add Product",
-      path: "/newproductaddition",
-    },
+    { name: "Staff Management", path: "/staffManagement" },
+    { name: "Upload Transactions", path: "/transactionsFeeding" },
+    { name: "Transactions Log", path: "/transactionsLog" },
+    { name: "Add Product", path: "/newproductaddition" },
     { name: "About", path: "/about" },
   ];
 
@@ -103,6 +96,34 @@ export default function Header() {
     setShowUserDropdown(!showUserDropdown);
     setShowNotificationDropdown(false);
   };
+
+  // Fetch business image
+  useEffect(() => {
+    const fetchBusinessImage = async () => {
+      if (!token) return;
+
+      setIsLoadingImage(true);
+      try {
+        const response = await fetch("/api/storage/access", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setBusinessImage(data.URL);
+        } else {
+          setImageLoadError(true);
+        }
+      } catch (error) {
+        console.error("Error fetching business image:", error);
+        setImageLoadError(true);
+      } finally {
+        setIsLoadingImage(false);
+      }
+    };
+
+    fetchBusinessImage();
+  }, [token]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -235,6 +256,7 @@ export default function Header() {
               )}
             </div>
 
+            {/* Enhanced User Menu */}
             {/* Theme Toggle Button */}
             <ThemeToggleButton />
 
@@ -245,7 +267,20 @@ export default function Header() {
                 className="flex items-center gap-2 p-2 text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                 title="User Menu"
               >
-                <FaUser className="w-4 h-4" />
+                {isLoadingImage ? (
+                  <div className="bg-gray-200 dark:bg-gray-700 rounded-full w-8 h-8 animate-pulse" />
+                ) : businessImage && !imageLoadError ? (
+                  <img
+                    src={businessImage}
+                    alt="Business"
+                    className="w-8 h-8 rounded-full object-cover border border-gray-300 dark:border-gray-600"
+                    onError={() => setImageLoadError(true)}
+                  />
+                ) : (
+                  <div className="bg-gray-200 dark:bg-gray-700 rounded-full p-1.5">
+                    <FaUser className="w-4 h-4" />
+                  </div>
+                )}
                 <svg
                   className="w-3 h-3"
                   fill="currentColor"
@@ -259,16 +294,54 @@ export default function Header() {
                 </svg>
               </button>
 
-              {/* User Dropdown */}
+              {/* Enhanced User Dropdown */}
               {showUserDropdown && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
+                  {/* User Info Section */}
+                  <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 dark:bg-gray-750">
+                    <div className="flex items-center gap-3">
+                      {businessImage && !imageLoadError ? (
+                        <img
+                          src={businessImage}
+                          alt="Business"
+                          className="w-10 h-10 rounded-full object-cover border border-gray-300 dark:border-gray-600"
+                          onError={() => setImageLoadError(true)}
+                        />
+                      ) : (
+                        <div className="bg-gray-200 dark:bg-gray-700 rounded-full p-2">
+                          <FaUser className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                          {userName}
+                        </p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                          {businessName}
+                        </p>
+                        <div className="mt-0.5">
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded-full capitalize ${
+                              userRole === "admin"
+                                ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                                : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                            }`}
+                          >
+                            {userRole}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions Section */}
                   <div className="py-2">
                     <button
                       onClick={handleLogout}
                       className="flex items-center gap-2 w-full px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                     >
-                      <FaSignOutAlt className="w-4 h-4" />
-                      Log out
+                      <FaSignOutAlt className="w-4 h-4 flex-shrink-0" />
+                      <span>Log out</span>
                     </button>
                   </div>
                 </div>
