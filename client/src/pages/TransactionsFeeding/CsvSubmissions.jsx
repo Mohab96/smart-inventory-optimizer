@@ -34,6 +34,7 @@ const CsvSubmissions = () => {
 
         const { data } = await response.json();
         setSubmissions(data);
+        console.log(data)
       } catch (err) {
         setError(err.message);
       } finally {
@@ -77,7 +78,6 @@ const CsvSubmissions = () => {
 
     return (
       <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold shadow-lg ${config.colors}`}>
-        <IconComponent className="w-4 h-4" />
         {status}
       </span>
     );
@@ -233,7 +233,7 @@ const CsvSubmissions = () => {
                 {
                   label: 'Completed',
                   icon: <CheckCircleIcon className="w-6 h-6 text-green-600 dark:text-green-400" />, 
-                  count: submissions.filter(s => s.status.toLowerCase() === 'completed').length,
+                  count: submissions.filter(s => s.status.toLowerCase() === 'done').length,
                   bg: 'from-green-400/30 to-emerald-400/20',
                   border: 'border-green-200/60 dark:border-green-800/60',
                   hover: 'hover:shadow-green-400/30',
