@@ -217,107 +217,88 @@ const CsvSubmissions = () => {
                   <DocumentTextIcon className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                  <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 bg-clip-text text-transparent drop-shadow-lg tracking-tight">
                     CSV Submissions
                   </h1>
-                  <p className="text-gray-600 dark:text-gray-400 mt-1">
+                  <p className="text-gray-500 dark:text-gray-300 mt-1 text-lg font-medium">
                     Track your CSV file processing history and status
                   </p>
                 </div>
-
               </div>
             </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white/80 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-lg">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg">
-                    <CheckCircleIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Completed</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {submissions.filter(s => s.status.toLowerCase() === 'completed').length}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white/80 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-lg">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-yellow-100 dark:bg-yellow-900/50 rounded-lg">
-                    <ArrowPathIcon className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Processing</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {submissions.filter(s => s.status.toLowerCase() === 'processing').length}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white/80 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-lg">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-red-100 dark:bg-red-900/50 rounded-lg">
-                    <XCircleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Failed</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {submissions.filter(s => s.status.toLowerCase() === 'failed').length}
-                    </p>
+              {[
+                {
+                  label: 'Completed',
+                  icon: <CheckCircleIcon className="w-6 h-6 text-green-600 dark:text-green-400" />, 
+                  count: submissions.filter(s => s.status.toLowerCase() === 'completed').length,
+                  bg: 'from-green-400/30 to-emerald-400/20',
+                  border: 'border-green-200/60 dark:border-green-800/60',
+                  hover: 'hover:shadow-green-400/30',
+                },
+                {
+                  label: 'Processing',
+                  icon: <ArrowPathIcon className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />, 
+                  count: submissions.filter(s => s.status.toLowerCase() === 'processing').length,
+                  bg: 'from-yellow-400/30 to-orange-400/20',
+                  border: 'border-yellow-200/60 dark:border-yellow-800/60',
+                  hover: 'hover:shadow-yellow-400/30',
+                },
+                {
+                  label: 'Failed',
+                  icon: <XCircleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />, 
+                  count: submissions.filter(s => s.status.toLowerCase() === 'failed').length,
+                  bg: 'from-red-400/30 to-pink-400/20',
+                  border: 'border-red-200/60 dark:border-red-800/60',
+                  hover: 'hover:shadow-red-400/30',
+                },
+              ].map((card, idx) => (
+                <div key={card.label} className={`bg-gradient-to-br ${card.bg} dark:bg-opacity-80 backdrop-blur-lg rounded-xl p-6 border ${card.border} shadow-lg transition-all duration-300 transform hover:scale-[1.03] ${card.hover}`}>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-white/30 dark:bg-white/10 shadow">
+                      {card.icon}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-600 dark:text-gray-300">{card.label}</p>
+                      <p className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">{card.count}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
 
             {/* Main Table Card */}
-            <div className="bg-white/80 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white/20 rounded-lg">
-                    <DocumentTextIcon className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-semibold text-white">
-                      Submission History
-                    </h2>
-                    <p className="text-blue-100 text-sm">
-                      Recent CSV file processing records
-                    </p>
-                  </div>
+            <div className="bg-white/80 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden transition-all duration-300 hover:shadow-blue-500/10">
+              <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-6 flex items-center gap-3">
+                <div className="p-2 bg-white/20 rounded-lg">
+                  <DocumentTextIcon className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white drop-shadow">Submission History</h2>
+                  <p className="text-blue-100 text-sm">Recent CSV file processing records</p>
                 </div>
               </div>
-
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead className="bg-gray-50 dark:bg-gray-900/50">
+                  <thead className="bg-gray-50 dark:bg-gray-900/50 sticky top-0 z-10">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                        Submission ID
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                        Upload Date
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                        Details
-                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Submission ID</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Upload Date</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Details</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {submissions.map((submission, index) => (
                       <tr
                         key={submission.id}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300 group"
+                        className="hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300 group rounded-xl"
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-400 border border-blue-200 dark:border-blue-800 shadow">
                               #{submission.id}
                             </span>
                           </div>
@@ -343,7 +324,7 @@ const CsvSubmissions = () => {
                               View Errors
                             </button>
                           ) : (
-                            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-400 border border-green-200 dark:border-green-800">
+                            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-400 border border-green-200 dark:border-green-800 shadow">
                               <CheckCircleIcon className="w-4 h-4" />
                               No errors
                             </span>
@@ -353,7 +334,6 @@ const CsvSubmissions = () => {
                     ))}
                   </tbody>
                 </table>
-
                 {submissions.length === 0 && (
                   <div className="text-center py-12 bg-gray-50 dark:bg-gray-900/50">
                     <DocumentTextIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />

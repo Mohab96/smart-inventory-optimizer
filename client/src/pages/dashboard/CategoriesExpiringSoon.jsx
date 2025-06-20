@@ -4,10 +4,12 @@ import { selectToken } from "../../store/features/authSlice";
 import { fetchCategoriesExpiringSoon } from "../../store/features/dashboardSlices/expiryDateSlice";
 import CategoriesExpiringSoonTable from "../../components/tables/CategoriesExpiringSoonTable";
 import { AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react";
+import { useTheme } from "../../components/common/ThemeContext";
 
 const CategoriesExpiringSoon = () => {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
+  const { theme } = useTheme();
   const {
     loading,
     data: categories,
@@ -27,12 +29,12 @@ const CategoriesExpiringSoon = () => {
   const handlePrevPage = () => page > 1 && setPage((prevPage) => prevPage - 1);
 
   return (
-    <div className="h-screen flex flex-col bg-gray-900">
+    <div className={`h-screen flex flex-col ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <div className="flex flex-1 overflow-hidden">
         <div className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center space-x-3 mb-6">
             <AlertTriangle className="h-8 w-8 text-yellow-500" />
-            <h2 className="text-2xl font-bold text-white">
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Categories Expiring Soon
             </h2>
           </div>
@@ -50,10 +52,10 @@ const CategoriesExpiringSoon = () => {
               {categories.data.map((category) => (
                 <div 
                   key={category.categoryId} 
-                  className="bg-gray-800 rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.01] transition-all duration-300"
+                  className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.01] transition-all duration-300 border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}
                 >
-                  <div className="p-6 border-b border-gray-700">
-                    <h3 className="text-xl font-semibold text-white">
+                  <div className={`p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                    <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       {category.categoryName}
                     </h3>
                   </div>
@@ -77,8 +79,8 @@ const CategoriesExpiringSoon = () => {
               ))}
             </div>
           ) : (
-            <div className="bg-gray-800 rounded-xl p-8 text-center">
-              <p className="text-gray-400 text-lg">No categories found.</p>
+            <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl p-8 text-center border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-lg`}>No categories found.</p>
             </div>
           )}
 
@@ -87,15 +89,15 @@ const CategoriesExpiringSoon = () => {
             <button
               onClick={handlePrevPage}
               disabled={page === 1}
-              className="inline-flex items-center px-4 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 hover:bg-gray-600 transition-colors duration-200 disabled:hover:bg-gray-700"
+              className={`inline-flex items-center px-4 py-2 ${theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} rounded-lg disabled:opacity-50 transition-colors duration-200 ${theme === 'dark' ? 'disabled:hover:bg-gray-700' : 'disabled:hover:bg-gray-200'}`}
             >
               <ChevronLeft className="h-5 w-5 mr-2" />
               Previous
             </button>
-            <span className="text-gray-300 font-medium">Page {page}</span>
+            <span className={`font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Page {page}</span>
             <button
               onClick={handleNextPage}
-              className="inline-flex items-center px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200"
+              className={`inline-flex items-center px-4 py-2 ${theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} rounded-lg transition-colors duration-200`}
             >
               Next
               <ChevronRight className="h-5 w-5 ml-2" />

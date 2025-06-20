@@ -7,7 +7,7 @@ import { CalendarDays, PieChart, TrendingUp, TrendingDown, Minus } from "lucide-
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function QuarterPieChart() {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()-1);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

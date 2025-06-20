@@ -9,8 +9,7 @@ import { fetchCategorySales } from "../../store/features/dashboardSlices/salesSl
 import { fetchTotalProducts, fetchTotalCategories } from "../../store/features/dashboardSlices/overviewSlice";
 import { DollarSign, ShoppingBag, Package, LayoutGrid } from "lucide-react";
 
-const ProfitGrid = () => {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+const ProfitGrid = ({ selectedYear }) => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
 
@@ -25,7 +24,7 @@ const ProfitGrid = () => {
     if (token) {
       dispatch(fetchRevenuesPerMonth({ year: selectedYear }));
       dispatch(fetchRevenuesPerQuarter({ year: selectedYear }));
-      dispatch(fetchCategorySales({ page, limit, orderBy: "desc" }));
+      dispatch(fetchCategorySales({ page, limit, orderBy: "desc", year: selectedYear }));
       dispatch(fetchTotalProducts());
       dispatch(fetchTotalCategories());
     }
@@ -48,7 +47,7 @@ const ProfitGrid = () => {
     quarterlyRevenue?.data?.quarterlyRevenue[currentQuarter].totalRevenue ?? 0
   );
   const previousQuarterRevenue =
-    quarterlyRevenue?.data?.[currentQuarter - 1] ?? 0;
+    Number(quarterlyRevenue?.data?.quarterlyRevenue[currentQuarter - 1]?.totalRevenue ?? 0);
 
   const calculatePercentageChange = (current, previous) => {
     // Handle division by zero for percentage change calculation
@@ -79,7 +78,7 @@ const ProfitGrid = () => {
     <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 py-5 bg-transparent">
       <MonthCard
         value={currentMonthRevenue.toLocaleString()}
-        label="Revenues this month"
+        label={`Revenues this Month (${currentMonth.charAt(0).toUpperCase() + currentMonth.slice(1)})`}
         percentage={`${monthlyChange.toFixed(2)}%`}
         color={monthlyChange >= 0 ? "text-green-400" : "text-red-400"}
         path="/yearRevenues"
@@ -88,7 +87,7 @@ const ProfitGrid = () => {
 
       <MonthCard
         value={currentQuarterRevenue.toLocaleString()}
-        label="Revenues this Quarter"
+        label={`Revenues this Quarter (Q${currentQuarter + 1})`}
         percentage={`${quarterlyChange.toFixed(2)}%`}
         color={quarterlyChange >= 0 ? "text-green-400" : "text-red-400"}
         path="/quarterRevenues"

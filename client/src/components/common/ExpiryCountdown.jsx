@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { AlertTriangle, Clock } from "lucide-react";
+import { useTheme } from "./ThemeContext";
 
 const ExpiryCountdown = ({ 
   expiryDate,
@@ -8,6 +9,7 @@ const ExpiryCountdown = ({
   showIcon = true,
   className = ""
 }) => {
+  const { theme } = useTheme();
   // Calculate days until expiry
   const getDaysUntilExpiry = (expiryDate) => {
     const today = new Date();
@@ -23,43 +25,43 @@ const ExpiryCountdown = ({
       return {
         status: "Expired",
         color: "red",
-        bgColor: "bg-red-500/10",
-        textColor: "text-red-500",
-        borderColor: "border-red-500/20",
-        progressColor: "stroke-red-500",
-        icon: <AlertTriangle className="h-5 w-5 text-red-500" />
+        bgColor: theme === 'dark' ? "bg-red-500/10" : "bg-red-100/60",
+        textColor: theme === 'dark' ? "text-red-500" : "text-red-600",
+        borderColor: theme === 'dark' ? "border-red-500/20" : "border-red-200/80",
+        progressColor: theme === 'dark' ? "stroke-red-500" : "stroke-red-400",
+        icon: <AlertTriangle className={`h-5 w-5 ${theme === 'dark' ? 'text-red-500' : 'text-red-600'}`} />
       };
     }
     if (days <= 7) {
       return {
         status: "Critical",
         color: "orange",
-        bgColor: "bg-orange-500/10",
-        textColor: "text-orange-500",
-        borderColor: "border-orange-500/20",
-        progressColor: "stroke-orange-500",
-        icon: <AlertTriangle className="h-5 w-5 text-orange-500" />
+        bgColor: theme === 'dark' ? "bg-orange-500/10" : "bg-orange-100/60",
+        textColor: theme === 'dark' ? "text-orange-500" : "text-orange-600",
+        borderColor: theme === 'dark' ? "border-orange-500/20" : "border-orange-200/80",
+        progressColor: theme === 'dark' ? "stroke-orange-500" : "stroke-orange-400",
+        icon: <AlertTriangle className={`h-5 w-5 ${theme === 'dark' ? 'text-orange-500' : 'text-orange-600'}`} />
       };
     }
     if (days <= 30) {
       return {
         status: "Warning",
         color: "yellow",
-        bgColor: "bg-yellow-500/10",
-        textColor: "text-yellow-500",
-        borderColor: "border-yellow-500/20",
-        progressColor: "stroke-yellow-500",
-        icon: <Clock className="h-5 w-5 text-yellow-500" />
+        bgColor: theme === 'dark' ? "bg-yellow-500/10" : "bg-yellow-100/60",
+        textColor: theme === 'dark' ? "text-yellow-500" : "text-yellow-600",
+        borderColor: theme === 'dark' ? "border-yellow-500/20" : "border-yellow-200/80",
+        progressColor: theme === 'dark' ? "stroke-yellow-500" : "stroke-yellow-400",
+        icon: <Clock className={`h-5 w-5 ${theme === 'dark' ? 'text-yellow-500' : 'text-yellow-600'}`} />
       };
     }
     return {
       status: "Good",
       color: "green",
-      bgColor: "bg-green-500/10",
-      textColor: "text-green-500",
-      borderColor: "border-green-500/20",
-      progressColor: "stroke-green-500",
-      icon: <Clock className="h-5 w-5 text-green-500" />
+      bgColor: theme === 'dark' ? "bg-green-500/10" : "bg-green-100/60",
+      textColor: theme === 'dark' ? "text-green-500" : "text-green-600",
+      borderColor: theme === 'dark' ? "border-green-500/20" : "border-green-200/80",
+      progressColor: theme === 'dark' ? "stroke-green-500" : "stroke-green-400",
+      icon: <Clock className={`h-5 w-5 ${theme === 'dark' ? 'text-green-500' : 'text-green-600'}`} />
     };
   };
 

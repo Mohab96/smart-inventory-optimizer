@@ -20,11 +20,13 @@ import { fetchRevenuesPerMonth } from "../../store/features/dashboardSlices/reve
 import { fetchLowStock } from "../../store/features/dashboardSlices/lowStockSlice";
 import { fetchCategoriesExpiringSoon } from "../../store/features/dashboardSlices/expiryDateSlice";
 import { fetchProductsExpiringSoon } from "../../store/features/dashboardSlices/expiryProductsSlice";
+import { useTheme } from "../../components/common/ThemeContext";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()-1);
+  const { theme } = useTheme();
 
   const {
     loading,
@@ -113,10 +115,10 @@ const Dashboard = () => {
   const total = chartData.reduce((sum, d) => sum + (d.value || 0), 0);
 
   return (
-    <div className="h-auto flex flex-col">
+    <div className="min-h-screen h-auto flex flex-col bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-4 dark:bg-gray-700">
-          <ProfitGrid />
+        <div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-gray-700">
+          <ProfitGrid selectedYear={selectedYear} />
 
           <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 py-5">
             <div className="col-span-1 md:col-span-2 xl:col-span-2">
@@ -134,21 +136,22 @@ const Dashboard = () => {
                 chart={
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
+                      <CartesianGrid strokeDasharray="3 3" stroke={theme === "dark" ? "#4B5563" : "#e5e7eb"} />
                       <XAxis
                         dataKey="month"
-                        stroke="#9CA3AF"
+                        stroke={theme === "dark" ? "#9CA3AF" : "#6b7280"}
                         tickLine={false}
                       />
-                      <YAxis stroke="#9CA3AF" tickLine={false} />
+                      <YAxis stroke={theme === "dark" ? "#9CA3AF" : "#6b7280"} tickLine={false} />
                       <Tooltip
                         formatter={(value) => `$${value.toLocaleString()}`}
                         contentStyle={{
-                          backgroundColor: "#1F2937",
+                          backgroundColor: theme === "dark" ? "#1F2937" : "#fff",
+                          color: theme === "dark" ? "#E5E7EB" : "#1F2937",
                           border: "none",
                           borderRadius: "8px",
                         }}
-                        itemStyle={{ color: "#E5E7EB" }}
+                        itemStyle={{ color: theme === "dark" ? "#E5E7EB" : "#1F2937" }}
                       />
                       <Line
                         type="monotone"
@@ -158,13 +161,13 @@ const Dashboard = () => {
                         dot={{
                           r: 4,
                           fill: "#3B82F6",
-                          stroke: "#1F2937",
+                          stroke: theme === "dark" ? "#1F2937" : "#fff",
                           strokeWidth: 2,
                         }}
                         activeDot={{
                           r: 6,
                           fill: "#3B82F6",
-                          stroke: "#1F2937",
+                          stroke: theme === "dark" ? "#1F2937" : "#fff",
                           strokeWidth: 2,
                         }}
                       />
@@ -173,6 +176,7 @@ const Dashboard = () => {
                 }
                 loading={loading}
                 error={error}
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-200"
               />
             </div>
             <div className="col-span-1">

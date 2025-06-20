@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { useTheme } from "../../components/common/ThemeContext";
 
 const ForgotPassword = () => {
+  const { theme } = useTheme();
   const {
     register,
     handleSubmit,
@@ -41,35 +43,28 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
-      <div className="max-w-md w-full space-y-8 bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl shadow-2xl border border-gray-700/50 transform transition-all duration-200">
+    <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200'} py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200`}>
+      <div className={`max-w-md w-full space-y-8 ${theme === 'dark' ? 'bg-gray-800/50' : 'bg-white/80'} backdrop-blur-sm p-8 rounded-xl shadow-2xl ${theme === 'dark' ? 'border border-gray-700/50' : 'border border-gray-200/50'} transform transition-all duration-200`}>
         <div>
           <div className="flex justify-center">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-            Reset Your Password
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-400">
-            Enter your email to receive reset instructions
-          </p>
+          <h2 className={`mt-6 text-center text-3xl font-extrabold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Forgot Password</h2>
+          <p className={`mt-2 text-center text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Enter your email to receive reset instructions</p>
         </div>
-        
+
         {!isSubmitted ? (
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6" noValidate>
             <div className="rounded-md space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300">
-                  Email Address
-                </label>
+                <label htmlFor="email" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Email Address</label>
                 <div className="mt-1 relative">
                   <input
                     id="email"
-                    name="email"
                     type="email"
                     {...register("email", {
                       required: "Email is required",
@@ -79,10 +74,8 @@ const ForgotPassword = () => {
                       },
                     })}
                     className={`appearance-none block w-full px-3 py-2 border ${
-                      errors.email 
-                        ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
-                        : 'border-gray-700 focus:ring-indigo-500 focus:border-indigo-500'
-                    } rounded-md shadow-sm placeholder-gray-500 bg-gray-900/50 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 transform transition-all duration-200 hover:scale-[1.01]`}
+                      errors.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : theme === 'dark' ? 'border-gray-700 focus:ring-indigo-500 focus:border-indigo-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                    } rounded-md shadow-sm ${theme === 'dark' ? 'placeholder-gray-500 bg-gray-900/50 text-white' : 'placeholder-gray-500 bg-white text-gray-900'} focus:outline-none focus:ring-2 focus:ring-offset-2 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200 hover:scale-[1.01]`}
                     placeholder="Enter your email"
                   />
                   {errors.email && (
@@ -104,9 +97,7 @@ const ForgotPassword = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-900 transform transition-all duration-200 hover:scale-[1.02] ${
-                isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${theme === 'dark' ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'} transform transition-all duration-200 hover:scale-[1.02] ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                 <svg className="h-5 w-5 text-indigo-300 group-hover:text-indigo-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -126,24 +117,12 @@ const ForgotPassword = () => {
                 "Send Reset Instructions"
               )}
             </button>
-
-            <div className="text-sm text-center">
-              <p className="text-gray-400">
-                Remember your password?{" "}
-                <Link
-                  to="/login"
-                  className="font-medium text-blue-400 hover:text-blue-300 transition-colors duration-200"
-                >
-                  Sign in
-                </Link>
-              </p>
-            </div>
           </form>
         ) : (
-          <div className="text-center p-6 bg-gray-800/30 rounded-xl border border-gray-700/50">
+          <div className="text-center p-6">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-16 w-16 mx-auto text-green-400 mb-4"
+              className="h-12 w-12 mx-auto text-green-500 mb-4"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -151,21 +130,19 @@ const ForgotPassword = () => {
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
               />
             </svg>
-            <p className="text-green-400 font-medium text-lg mb-2">
+            <p className="text-green-600 font-medium mb-2">
               Password reset instructions sent!
             </p>
-            <p className="text-gray-300 text-sm mb-6">
-              Check your email (including spam folder) for a link to reset your password.
-            </p>
+            <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Check your email (including spam folder)</p>
             <button
               onClick={handleTryAgain}
-              className="w-full py-3 px-4 rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-900 transform transition-all duration-200 hover:scale-[1.02]"
+              className="w-full py-2 px-4 rounded-md text-white bg-orange-500 hover:bg-orange-700 transition-colors"
             >
-              Send Another Email
+              Try Again
             </button>
           </div>
         )}

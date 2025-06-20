@@ -9,15 +9,18 @@ import PieChart from "../../components/charts/PieChart";
 import AreaChart from "../../components/charts/AreaChart";
 import QuarterChart from "../../components/charts/QuarterChart";
 import QuarterPieChart from "../../components/charts/QuarterPieChart";
+import { useTheme } from "../../components/common/ThemeContext";
 
 const QuarterlyRevenues = () => {
+  const { theme } = useTheme();
+  
   return (
     <div className="h-screen flex flex-col">
       <div className="flex flex-1 overflow-hidden">
         {/* Main Content */}
-        <div className="flex-1 overflow-y-auto p-4 dark:bg-gray-700">
-          <h2 className="text-2xl font-semibold text-white mb-4">
-            Qurater Revenues
+        <div className={`flex-1 overflow-y-auto p-4 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
+          <h2 className={`text-2xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mb-4`}>
+            Quarter Revenues
           </h2>
 
           {/* Charts Section */}
