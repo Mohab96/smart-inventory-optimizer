@@ -4,7 +4,7 @@ const prisma = require("../../../../prisma/dwh/client");
 const BATCH_SIZE = 5000;
 
 async function productRevenueFactLoader(transformedData) {
-  if (!Array.isArray(traynsformedData) || transformedData.length === 0) return;
+  if (!Array.isArray(transformedData) || transformedData.length === 0) return;
   try {
     await prisma.$transaction(
       async (tx) => {
