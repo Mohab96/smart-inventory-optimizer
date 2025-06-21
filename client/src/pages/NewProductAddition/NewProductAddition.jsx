@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
-import { CheckCircleIcon, XCircleIcon, PlusIcon, CubeIcon } from "@heroicons/react/24/outline";
+import {
+  CheckCircleIcon,
+  XCircleIcon,
+  PlusIcon,
+  CubeIcon,
+} from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
 import { selectToken } from "../../store/features/authSlice";
 import Header from "../../components/common/Header";
@@ -80,7 +85,6 @@ const NewProductAddition = () => {
   };
 
   return (
-
     <div className="h-auto flex flex-col bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="flex flex-1">
         <div className="flex flex-col w-full p-6 overflow-y-auto">
@@ -167,16 +171,22 @@ const NewProductAddition = () => {
                       onChange={(selectedOption) =>
                         setFormData({
                           ...formData,
-                          categoryId: selectedOption?.value,
+                          categoryId: selectedOption?.value ?? null,
                         })
                       }
                       value={
-                        categories.find(
-                          (cat) => cat.id === formData.categoryId
-                        ) || null
+                        categories.find((cat) => cat.id === formData.categoryId)
+                          ? {
+                              value: formData.categoryId,
+                              label: categories.find(
+                                (cat) => cat.id === formData.categoryId
+                              )?.name,
+                            }
+                          : null
                       }
                       placeholder="Select a category"
                       isSearchable
+                      menuPortalTarget={document.body} // 👈 Renders dropdown portal into body
                       styles={{
                         control: (base, state) => ({
                           ...base,
@@ -185,10 +195,14 @@ const NewProductAddition = () => {
                           borderWidth: "2px",
                           minHeight: "56px",
                           borderRadius: "12px",
-                          boxShadow: state.isFocused ? "0 0 0 4px rgba(59, 130, 246, 0.1)" : "none",
-                          "&:hover": { 
-                            borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
-                            backgroundColor: "#f3f4f6"
+                          boxShadow: state.isFocused
+                            ? "0 0 0 4px rgba(59, 130, 246, 0.1)"
+                            : "none",
+                          "&:hover": {
+                            borderColor: state.isFocused
+                              ? "#3b82f6"
+                              : "#d1d5db",
+                            backgroundColor: "#f3f4f6",
                           },
                           transition: "all 0.3s ease",
                         }),
@@ -197,8 +211,10 @@ const NewProductAddition = () => {
                           backgroundColor: "#ffffff",
                           border: "2px solid #e5e7eb",
                           borderRadius: "12px",
-                          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                          boxShadow:
+                            "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
                           overflow: "hidden",
+                          zIndex: 9999, // 👈 Ensures dropdown is on top
                         }),
                         option: (base, state) => ({
                           ...base,
@@ -305,9 +321,16 @@ const NewProductAddition = () => {
                     Product Management Tips
                   </h3>
                   <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                    <li>• Choose the most appropriate category for better organization</li>
-                    <li>• Use descriptive product names for easy identification</li>
-                    <li>• Products will be automatically tracked in your inventory</li>
+                    <li>
+                      • Choose the most appropriate category for better
+                      organization
+                    </li>
+                    <li>
+                      • Use descriptive product names for easy identification
+                    </li>
+                    <li>
+                      • Products will be automatically tracked in your inventory
+                    </li>
                   </ul>
                 </div>
               </div>
