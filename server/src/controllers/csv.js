@@ -11,6 +11,9 @@ const listSubmissions = async (req, res) => {
         uploadedDate: true,
         errors: true,
       },
+      orderBy: {
+        id: "desc",
+      },
     });
     return res.status(200).json({ data: submissions });
   } catch (error) {

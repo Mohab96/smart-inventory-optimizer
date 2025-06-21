@@ -4,12 +4,11 @@ const validatePurchases = require("../../validators/purchasesCSValidator");
 const insertPurchasesTransactions = require("../maindb/insertPurchasesTransactions");
 const { updateCsvStatus } = require("../maindb/csvStatus");
 const winston = require("winston");
-///TODO: investigate why the channel closes on its own
 const purchasesConsumer = async () => {
   let channel;
   try {
     channel = await createChannel();
-    const queue = "purchases";
+    const queue = "purchases2";
     await channel.assertQueue(queue, { durable: true });
     winston.info("Purchases consumer started successfully...");
     await channel.consume(

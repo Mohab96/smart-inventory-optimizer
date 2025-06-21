@@ -4,7 +4,6 @@ const validateSales = require("../../validators/salesCSValidator");
 const insertSalesTransaction = require("../maindb/insertSalesTransaction");
 const { updateCsvStatus } = require("../maindb/csvStatus");
 const winston = require("winston");
-///TODO: investigate why the channel closes on its own
 const salesConsumer = async () => {
   let channel;
   try {
