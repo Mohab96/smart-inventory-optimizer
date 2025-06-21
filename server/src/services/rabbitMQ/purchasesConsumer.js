@@ -8,7 +8,7 @@ const purchasesConsumer = async () => {
   let channel;
   try {
     channel = await createChannel();
-    const queue = "purchases2";
+    const queue = "purchases";
     await channel.assertQueue(queue, { durable: true });
     winston.info("Purchases consumer started successfully...");
     await channel.consume(
